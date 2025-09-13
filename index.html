@@ -125,6 +125,21 @@
             color: white;
             margin-top: 2rem;
         }
+        .login-section {
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        .login-section input {
+            padding: 0.5rem;
+            margin: 0.5rem;
+            width: 200px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+        }
+        .error {
+            color: red;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
@@ -140,17 +155,27 @@
             <a href="#referral" class="cta-button">Get Your Referral Link</a>
         </section>
 
-        <section id="referral" class="referral-section">
+        <section class="login-section">
+            <h2>Sign Up or Log In</h2>
+            <input type="email" id="email" placeholder="Enter your email" required>
+            <input type="password" id="password" placeholder="Enter your password" required>
+            <button class="cta-button" onclick="signUp()">Sign Up</button>
+            <button class="cta-button" onclick="logIn()">Log In</button>
+            <button class="cta-button" onclick="logOut()" style="display:none;" id="logoutBtn">Log Out</button>
+            <p id="error" class="error"></p>
+        </section>
+
+        <section id="referral" class="referral-section" style="display:none;">
             <h2>Your Personalized Referral Link</h2>
             <div class="your-link">
-                <input type="text" id="refLink" value="https://yourusername.github.io/earneasy/?ref=youruniqueid" readonly>
+                <input type="text" id="refLink" readonly>
                 <button class="copy-btn" onclick="copyLink()">Copy Link</button>
             </div>
             <div class="share-buttons">
-                <a href="https://twitter.com/intent/tweet?text=Check out EarnEasy and start earning with referrals!&url=https://yourusername.github.io/earneasy/?ref=youruniqueid" class="share-btn" target="_blank">Share on X</a>
-                <a href="https://www.facebook.com/sharer/sharer.php?u=https://yourusername.github.io/earneasy/?ref=youruniqueid" class="share-btn" target="_blank">Share on Facebook</a>
+                <a id="shareX" href="#" class="share-btn" target="_blank">Share on X</a>
+                <a id="shareFB" href="#" class="share-btn" target="_blank">Share on Facebook</a>
             </div>
-            <p style="text-align: center; font-size: 0.9rem; color: #666;">Replace 'yourusername' and 'youruniqueid' with your actual GitHub username and a unique ID for tracking.</p>
+            <p style="text-align: center; font-size: 0.9rem; color: #666;">Share this link to earn commissions!</p>
         </section>
 
         <section class="affiliate-section">
@@ -160,28 +185,108 @@
                 <div class="affiliate-card">
                     <h3>Amazon Associates</h3>
                     <p>Earn on every purchase.</p>
-                    <a href="https://amazon.com?tag=YOURAFFILIATETAG&ref=youruniqueid" target="_blank">Refer Now</a>
+                    <a href="https://amazon.com?tag=referral99-21&ref=user123" target="_blank">Refer Now</a>
                 </div>
                 <div class="affiliate-card">
                     <h3>ClickBank</h3>
                     <p>Digital products with high commissions.</p>
-                    <a href="https://clickbank.com?hop=YOURHOPLINK&ref=youruniqueid" target="_blank">Refer Now</a>
+                    <a href="https://clickbank.com?hop=YOURHOPLINK&ref=user123" target="_blank">Refer Now</a>
                 </div>
                 <div class="affiliate-card">
                     <h3>ShareASale</h3>
                     <p>Thousands of merchants.</p>
-                    <a href="https://shareasale.com?r=YOURREFID&ref=youruniqueid" target="_blank">Refer Now</a>
+                    <a href="https://shareasale.com?r=YOURREFID&ref=user123" target="_blank">Refer Now</a>
                 </div>
             </div>
-            <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #666;">Sign up for these programs, get your affiliate links, and replace the placeholders above. The ?ref= param helps track your referrals.</p>
+            <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #666;">Sign up for these programs, get your affiliate links, and start earning.</p>
         </section>
     </div>
 
     <footer>
         <p>&copy; 2025 EarnEasy Referrals. Built with ❤️ for passive income.</p>
+        <p>Disclosure: This site contains affiliate links. We may earn a commission if you make a purchase or sign up through these links.</p>
     </footer>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore.js"></script>
     <script>
+        // Your Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCUMNj69kfcMVegUBye2KZPAkIg_w71MAY",
+            authDomain: "bestproduct-c2a0d.firebaseapp.com",
+            projectId: "bestproduct-c2a0d",
+            storageBucket: "bestproduct-c2a0d.appspot.com",
+            messagingSenderId: "656094184362",
+            appId: "1:656094184362:web:3e65a7d389e6448669e1d3"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.firestore();
+
+        // Sign Up
+        function signUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            auth.createUserWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    const refId = generateRefId(); // Generate unique ID
+                    db.collection('users').doc(user.uid).set({
+                        email: email,
+                        refId: refId,
+                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                    }).then(() => {
+                        showReferralLink(refId);
+                    });
+                })
+                .catch((error) => {
+                    document.getElementById('error').textContent = error.message;
+                });
+        }
+
+        // Log In
+        function logIn() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            auth.signInWithEmailAndPassword(email, password)
+                .then((userCredential) => {
+                    const user = userCredential.user;
+                    db.collection('users').doc(user.uid).get().then((doc) => {
+                        if (doc.exists) {
+                            showReferralLink(doc.data().refId);
+                        }
+                    });
+                })
+                .catch((error) => {
+                    document.getElementById('error').textContent = error.message;
+                });
+        }
+
+        // Log Out
+        function logOut() {
+            auth.signOut().then(() => {
+                document.getElementById('referral').style.display = 'none';
+                document.getElementById('logoutBtn').style.display = 'none';
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+            });
+        }
+
+        // Show Referral Link
+        function showReferralLink(refId) {
+            const refLink = `https://referral99.github.io/bestproduct/?ref=${refId}`;
+            document.getElementById('refLink').value = refLink;
+            document.getElementById('shareX').href = `https://twitter.com/intent/tweet?text=Check out EarnEasy and start earning with referrals!&url=${encodeURIComponent(refLink)}`;
+            document.getElementById('shareFB').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(refLink)}`;
+            document.getElementById('referral').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'inline-block';
+        }
+
+        // Copy Link
         function copyLink() {
             const link = document.getElementById('refLink');
             link.select();
@@ -189,13 +294,17 @@
             alert('Link copied to clipboard!');
         }
 
-        // Simple referral tracking (client-side only; for real tracking, use a service like Google Analytics or affiliate dashboard)
+        // Track Referral Clicks
         const urlParams = new URLSearchParams(window.location.search);
         const ref = urlParams.get('ref');
         if (ref) {
-            console.log('Referral from: ' + ref); // Log for owner to check in console or integrate with analytics
-            // You could add a cookie or localStorage to track, but for earnings, rely on affiliate programs' tracking
+            db.collection('clicks').add({
+                refId: ref,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                userAgent: navigator.userAgent
+            });
         }
     </script>
+    <script src="referral.js"></script>
 </body>
 </html>
