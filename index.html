@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EarnEasy Referrals - Make Money with Referrals</title>
-    <link rel="stylesheet" href="style.css">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -155,7 +154,7 @@
             <p>Share your unique referral link with friends and earn commissions on every sign-up they make through your link. It's free and easy!</p>
             <a href="#referral" class="cta-button">Get Your Referral Link</a>
         </section>
-   <dev class="login_data"
+
         <section class="login-section">
             <h2>Sign Up or Log In</h2>
             <input type="email" id="email" placeholder="Enter your email" required>
@@ -165,7 +164,6 @@
             <button class="cta-button" onclick="logOut()" style="display:none;" id="logoutBtn">Log Out</button>
             <p id="error" class="error"></p>
         </section>
-   </dev>
 
         <section id="referral" class="referral-section" style="display:none;">
             <h2>Your Personalized Referral Link</h2>
@@ -209,105 +207,143 @@
         <p>Disclosure: This site contains affiliate links. We may earn a commission if you make a purchase or sign up through these links.</p>
     </footer>
 
-    <!-- Firebase SDK -->
-   <script type="module" src="referral.js"></script>
-   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js"></script>
-   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js"></script>
-   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js"></script>
+    <!-- Firebase Compatibility SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
     <script>
-        // Your Firebase configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyCUMNj69kfcMVegUBye2KZPAkIg_w71MAY",
-            authDomain: "bestproduct-c2a0d.firebaseapp.com",
-            projectId: "bestproduct-c2a0d",
-            storageBucket: "bestproduct-c2a0d.appspot.com",
-            messagingSenderId: "656094184362",
-            appId: "1:656094184362:web:3e65a7d389e6448669e1d3"
-        };
+        // Check if Firebase SDK loaded
+        if (typeof firebase === 'undefined') {
+            document.getElementById('error').textContent = 'Firebase SDK failed to load. Please check your network or try again later.';
+            console.error('Firebase SDK not loaded');
+        } else {
+            // Your Firebase configuration
+            const firebaseConfig = {
+                apiKey: "YOUR_API_KEY",
+                authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+                projectId: "YOUR_PROJECT_ID",
+                storageBucket: "YOUR_PROJECT_ID.appspot.com",
+                messagingSenderId: "YOUR_SENDER_ID",
+                appId: "YOUR_APP_ID"
+            };
 
-        // Initialize Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.firestore();
+            // Initialize Firebase
+            try {
+                firebase.initializeApp(firebaseConfig);
+                console.log('Firebase initialized successfully');
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                document.getElementById('error').textContent = 'Failed to connect to Firebase. Please try again later.';
+            }
 
-        // Sign Up
-        function signUp() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            auth.createUserWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
-                    const refId = generateRefId(); // Generate unique ID
-                    db.collection('users').doc(user.uid).set({
-                        email: email,
-                        refId: refId,
-                        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-                    }).then(() => {
-                        showReferralLink(refId);
-                    });
-                })
-                .catch((error) => {
-                    document.getElementById('error').textContent = error.message;
-                });
-        }
+            const auth = firebase.auth();
+            const db = firebase.firestore();
 
-        // Log In
-        function logIn() {
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            auth.signInWithEmailAndPassword(email, password)
-                .then((userCredential) => {
-                    const user = userCredential.user;
+            // Monitor Auth State
+            auth.onAuthStateChanged((user) => {
+                if (user) {
                     db.collection('users').doc(user.uid).get().then((doc) => {
                         if (doc.exists) {
                             showReferralLink(doc.data().refId);
+                        } else {
+                            document.getElementById('error').textContent = 'User data not found. Please sign up again.';
                         }
+                    }).catch((error) => {
+                        console.error('Error fetching user data:', error);
+                        document.getElementById('error').textContent = 'Error fetching your referral link.';
                     });
-                })
-                .catch((error) => {
-                    document.getElementById('error').textContent = error.message;
-                });
-        }
+                } else {
+                    document.getElementById('referral').style.display = 'none';
+                    document.getElementById('logoutBtn').style.display = 'none';
+                }
+            });
 
-        // Log Out
-        function logOut() {
-            auth.signOut().then(() => {
-                document.getElementById('referral').style.display = 'none';
-                document.getElementById('logoutBtn').style.display = 'none';
+            // Sign Up
+            function signUp() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                if (!email || !password) {
+                    document.getElementById('error').textContent = 'Please enter both email and password.';
+                    return;
+                }
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        const user = userCredential.user;
+                        const refId = generateRefId();
+                        return db.collection('users').doc(user.uid).set({
+                            email: email,
+                            refId: refId,
+                            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                        }).then(() => {
+                            showReferralLink(refId);
+                        });
+                    })
+                    .catch((error) => {
+                        console.error('Sign-up error:', error);
+                        document.getElementById('error').textContent = error.message;
+                    });
+            }
+
+            // Log In
+            function logIn() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                if (!email || !password) {
+                    document.getElementById('error').textContent = 'Please enter both email and password.';
+                    return;
+                }
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(() => {
+                        // Auth state change handles showing the referral link
+                    })
+                    .catch((error) => {
+                        console.error('Login error:', error);
+                        document.getElementById('error').textContent = error.message;
+                    });
+            }
+
+            // Log Out
+            function logOut() {
+                auth.signOut().catch((error) => {
+                    console.error('Logout error:', error);
+                    document.getElementById('error').textContent = 'Error logging out.';
+                });
+            }
+
+            // Show Referral Link
+            function showReferralLink(refId) {
+                const refLink = `https://referral99.github.io/bestproduct/?ref=${refId}`;
+                document.getElementById('refLink').value = refLink;
+                document.getElementById('shareX').href = `https://twitter.com/intent/tweet?text=Check out EarnEasy and start earning with referrals!&url=${encodeURIComponent(refLink)}`;
+                document.getElementById('shareFB').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(refLink)}`;
+                document.getElementById('referral').style.display = 'block';
+                document.getElementById('logoutBtn').style.display = 'inline-block';
                 document.getElementById('email').value = '';
                 document.getElementById('password').value = '';
-            });
-        }
+            }
 
-        // Show Referral Link
-        function showReferralLink(refId) {
-            const refLink = `https://referral99.github.io/bestproduct/?ref=${refId}`;
-            document.getElementById('refLink').value = refLink;
-            document.getElementById('shareX').href = `https://twitter.com/intent/tweet?text=Check out EarnEasy and start earning with referrals!&url=${encodeURIComponent(refLink)}`;
-            document.getElementById('shareFB').href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(refLink)}`;
-            document.getElementById('referral').style.display = 'block';
-            document.getElementById('logoutBtn').style.display = 'inline-block';
-        }
+            // Copy Link
+            function copyLink() {
+                const link = document.getElementById('refLink');
+                link.select();
+                document.execCommand('copy');
+                alert('Link copied to clipboard!');
+            }
 
-        // Copy Link
-        function copyLink() {
-            const link = document.getElementById('refLink');
-            link.select();
-            document.execCommand('copy');
-            alert('Link copied to clipboard!');
-        }
-
-        // Track Referral Clicks
-        const urlParams = new URLSearchParams(window.location.search);
-        const ref = urlParams.get('ref');
-        if (ref) {
-            db.collection('clicks').add({
-                refId: ref,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                userAgent: navigator.userAgent
-            });
+            // Track Referral Clicks
+            const urlParams = new URLSearchParams(window.location.search);
+            const ref = urlParams.get('ref');
+            if (ref) {
+                db.collection('clicks').add({
+                    refId: ref,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                    userAgent: navigator.userAgent
+                }).catch((error) => {
+                    console.error('Error logging click:', error);
+                });
+            }
         }
     </script>
-    
+    <script src="referral.js"></script>
 </body>
 </html>
