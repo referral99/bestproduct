@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  .container {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+    background-color: #f4f7f6;
+  }
+  .office-node {
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 30px;
+    border-radius: 8px;
+    font-weight: bold;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+  }
+  .locations-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    max-width: 800px;
+  }
+  .location-card {
+    position: relative;
+    background-color: #ffffff;
+    border: 2px solid #bdc3c7;
+    border-radius: 12px;
+    width: 180px;
+    height: 100px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+  }
+  .location-card:hover {
+    border-color: #27ae60;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  }
+  .km-label {
+    font-size: 0.85rem;
+    color: #7f8c8d;
+    margin-top: 5px;
+  }
+  .location-name {
+    font-weight: bold;
+    color: #34495e;
+  }
+  /* Tooltip/Hover List */
+  .pg-list {
+    visibility: hidden;
+    position: absolute;
+    bottom: 110%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    border: 1px solid #27ae60;
+    padding: 15px;
+    border-radius: 8px;
+    width: 250px;
+    z-index: 10;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    text-align: left;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .location-card:hover .pg-list {
+    visibility: visible;
+    opacity: 1;
+  }
+  .pg-list h4 { margin: 0 0 8px 0; color: #27ae60; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 0.95rem;}
+  .pg-item { font-size: 0.85rem; margin-bottom: 8px; line-height: 1.4; }
+  .price { color: #e67e22; font-weight: bold; }
+  .contact { font-style: italic; color: #2980b9; display: block; margin-top: 4px; }
+  .line { width: 2px; height: 30px; background-color: #bdc3c7; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="office-node">
+    🏢 Taurus 4, Bagmane Constellation
+  </div>
+  
+  <div class="line"></div>
+
+  <div class="locations-grid">
+    <!-- Karthik Nagar -->
+    <div class="location-card">
+      <span class="location-name">Karthik Nagar</span>
+      <span class="km-label">~0.8 km</span>
+      <div class="pg-list">
+        <h4>Cheapest Options</h4>
+        <div class="pg-item">
+          <strong>Surya Royal Homes</strong><br>
+          <span class="price">Single Bed: ₹12,000 - ₹14,000</span><br>
+          <span class="contact">📍 Near Ferns City Rd</span>
+        </div>
+        <div class="pg-item">
+          <strong>Bliss Comfort</strong><br>
+          <span class="price">Single Bed: ₹15,000+</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- B Narayanapura -->
+    <div class="location-card">
+      <span class="location-name">B Narayanapura</span>
+      <span class="km-label">~1.2 km</span>
+      <div class="pg-list">
+        <h4>Cheapest Options</h4>
+        <div class="pg-item">
+          <strong>Sri Lakshmi Venkateshwara</strong><br>
+          <span class="price">Single Bed: ₹10,000 - ₹12,000</span><br>
+          <span class="contact">📍 Kamadhenu Nagar</span>
+        </div>
+        <div class="pg-item">
+          <strong>Unity Co-living</strong><br>
+          <span class="price">Single Bed: ₹13,000</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Munnekolala -->
+    <div class="location-card">
+      <span class="location-name">Munnekolala</span>
+      <span class="km-label">~2.5 km</span>
+      <div class="pg-list">
+        <h4>Cheapest Options</h4>
+        <div class="pg-item">
+          <strong>Colive Hayward</strong><br>
+          <span class="price">Single Bed: ₹8,000 (Basic)</span><br>
+          <span class="contact">📍 Chinnapanahalli Area</span>
+        </div>
+        <div class="pg-item">
+          <strong>Sri Sai PG</strong><br>
+          <span class="price">Single Bed: ₹9,500</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hoodi -->
+    <div class="location-card">
+      <span class="location-name">Hoodi (Interior)</span>
+      <span class="km-label">~3.0 km</span>
+      <div class="pg-list">
+        <h4>Cheapest Options</h4>
+        <div class="pg-item">
+          <strong>Local Gents PG (Near Stn)</strong><br>
+          <span class="price">Single Bed: ₹8,000 - ₹10,000</span><br>
+          <span class="contact">📍 Seetharampalya Road</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kaggadasapura -->
+    <div class="location-card">
+      <span class="location-name">Kaggadasapura</span>
+      <span class="km-label">~3.2 km</span>
+      <div class="pg-list">
+        <h4>Cheapest Options</h4>
+        <div class="pg-item">
+          <strong>SVS PG for Gents</strong><br>
+          <span class="price">Single Bed: ₹9,000 - ₹11,000</span><br>
+          <span class="contact">📍 Chinappa Layout</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
