@@ -1,183 +1,665 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hindu Succession – Uttar Pradesh Interactive Flow</title>
 <style>
-  .container {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 20px;
-    padding: 20px;
-    background-color: #f4f7f6;
+  :root {
+    --bg: #0f172a; --card: #1e293b; --border: #334155; --text: #e2e8f0;
+    --muted: #94a3b8; --process: #1d4ed8; --decision: #b45309;
+    --success: #15803d; --danger: #b91c1c; --info: #0e7490; --link: #38bdf8;
+    --btn-yes: #16a34a; --btn-no: #dc2626; --btn-alt: #7c3aed;
   }
-  .office-node {
-    background-color: #2c3e50;
-    color: white;
-    padding: 15px 30px;
-    border-radius: 8px;
-    font-weight: bold;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    margin-bottom: 20px;
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+    padding: 16px 10px 80px;
   }
-  .locations-grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 15px;
-    max-width: 800px;
+  h1 { text-align: center; font-size: 1.35rem; color: #f8fafc; margin-bottom: 4px; }
+  .subtitle { text-align: center; color: var(--muted); font-size: 0.85rem; margin-bottom: 14px; }
+  .controls {
+    max-width: 680px; margin: 0 auto 12px; display: flex; gap: 10px;
+    justify-content: center; flex-wrap: wrap; position: sticky; top: 0; z-index: 50;
+    background: var(--bg); padding: 8px 0;
   }
-  .location-card {
-    position: relative;
-    background-color: #ffffff;
-    border: 2px solid #bdc3c7;
-    border-radius: 12px;
-    width: 180px;
-    height: 100px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    text-align: center;
+  .controls button {
+    background: #334155; color: #e2e8f0; border: none; padding: 7px 14px;
+    border-radius: 8px; cursor: pointer; font-size: 0.82rem;
   }
-  .location-card:hover {
-    border-color: #27ae60;
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+  .controls button:hover { background: #475569; }
+  .history-bar {
+    max-width: 680px; margin: 0 auto 10px; font-size: 0.75rem;
+    color: var(--muted); text-align: center; min-height: 20px;
   }
-  .km-label {
-    font-size: 0.85rem;
-    color: #7f8c8d;
-    margin-top: 5px;
+  .history-bar span { background: #1e293b; padding: 2px 7px; border-radius: 4px; }
+  .flow { max-width: 680px; margin: 0 auto; display: flex; flex-direction: column; align-items: center; }
+  .step-block { display: flex; flex-direction: column; align-items: center; width: 100%; animation: fadeIn 0.28s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .box {
+    background: var(--card); border: 2px solid var(--border); border-radius: 11px;
+    padding: 13px 16px; text-align: center; width: 100%; max-width: 460px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.28);
   }
-  .location-name {
-    font-weight: bold;
-    color: #34495e;
+  .box.process { border-color: var(--process); background: #1e3a5f; }
+  .box.decision { border-color: var(--decision); background: #3f2e1e; }
+  .box.success { border-color: var(--success); background: #14532d; }
+  .box.danger  { border-color: var(--danger); background: #450a0a; }
+  .box.info    { border-color: var(--info); background: #164e63; }
+  .box.docs    { border-color: #a855f7; background: #2e1065; text-align: left; }
+  .box h3 { font-size: 0.98rem; margin-bottom: 4px; color: #f1f5f9; }
+  .box p  { font-size: 0.84rem; color: var(--muted); }
+  .box.docs h3 { text-align: center; }
+  .box.docs ul { margin: 8px 0 0 1.1rem; color: #c4b5fd; font-size: 0.82rem; }
+  .box.docs li { margin-bottom: 3px; }
+  .arrow { width: 2px; height: 20px; background: #64748b; position: relative; margin: 2px 0; }
+  .arrow::after {
+    content: ""; position: absolute; bottom: -5px; left: -5px;
+    border-left: 6px solid transparent; border-right: 6px solid transparent; border-top: 8px solid #64748b;
   }
-  /* Tooltip/Hover List */
-  .pg-list {
-    visibility: hidden;
-    position: absolute;
-    bottom: 110%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #fff;
-    border: 1px solid #27ae60;
-    padding: 15px;
-    border-radius: 8px;
-    width: 250px;
-    z-index: 10;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    text-align: left;
-    opacity: 0;
-    transition: opacity 0.3s;
+  .choice-btns { display: flex; gap: 10px; margin-top: 10px; justify-content: center; flex-wrap: wrap; }
+  .choice-btns button {
+    min-width: 100px; padding: 9px 12px; border: none; border-radius: 8px;
+    font-size: 0.88rem; font-weight: 600; cursor: pointer;
+    transition: transform 0.12s, box-shadow 0.12s;
   }
-  .location-card:hover .pg-list {
-    visibility: visible;
-    opacity: 1;
+  .choice-btns button:hover { transform: translateY(-1px); box-shadow: 0 3px 10px rgba(0,0,0,0.3); }
+  .choice-btns button:disabled { opacity: 0.4; cursor: default; transform: none; box-shadow: none; }
+  .btn-yes { background: var(--btn-yes); color: #fff; }
+  .btn-no  { background: var(--btn-no);  color: #fff; }
+  .btn-alt { background: var(--btn-alt); color: #fff; }
+  .chosen-label {
+    display: inline-block; margin-top: 7px; font-size: 0.74rem; font-weight: 700;
+    padding: 2px 10px; border-radius: 999px;
   }
-  .pg-list h4 { margin: 0 0 8px 0; color: #27ae60; border-bottom: 1px solid #eee; padding-bottom: 5px; font-size: 0.95rem;}
-  .pg-item { font-size: 0.85rem; margin-bottom: 8px; line-height: 1.4; }
-  .price { color: #e67e22; font-weight: bold; }
-  .contact { font-style: italic; color: #2980b9; display: block; margin-top: 4px; }
-  .line { width: 2px; height: 30px; background-color: #bdc3c7; }
+  .chosen-label.yes { background: #166534; color: #bbf7d0; }
+  .chosen-label.no  { background: #7f1d1d; color: #fecaca; }
+  .chosen-label.alt { background: #5b21b6; color: #e9d5ff; }
+  .path-label {
+    font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em;
+    padding: 2px 9px; border-radius: 999px; margin-bottom: 5px;
+  }
+  .path-label.yes { background: #166534; color: #bbf7d0; }
+  .path-label.no  { background: #7f1d1d; color: #fecaca; }
+  .path-label.alt { background: #5b21b6; color: #e9d5ff; }
+  .info-link {
+    display: inline-block; margin-top: 7px; font-size: 0.78rem; color: var(--link);
+    border-bottom: 1px dashed var(--link); cursor: pointer;
+  }
+  .info-link:hover { color: #7dd3fc; }
+  .note { font-size: 0.78rem; color: #fcd34d; margin-top: 6px; }
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.72);
+    z-index: 100; align-items: center; justify-content: center; padding: 12px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal {
+    background: #1e293b; border: 1px solid #475569; border-radius: 12px;
+    max-width: 580px; width: 100%; max-height: 82vh; overflow-y: auto; padding: 20px; position: relative;
+  }
+  .modal h2 { font-size: 1.1rem; margin-bottom: 10px; color: #f8fafc; }
+  .modal h3 { font-size: 0.95rem; margin: 14px 0 5px; color: #cbd5e1; }
+  .modal ul { margin-left: 1.2rem; margin-bottom: 8px; color: var(--muted); }
+  .modal li { margin-bottom: 3px; font-size: 0.86rem; }
+  .modal p  { color: var(--muted); font-size: 0.86rem; margin-bottom: 7px; }
+  .modal-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: #94a3b8; font-size: 1.3rem; cursor: pointer; }
+  .modal-close:hover { color: #f1f5f9; }
+  .tag { display: inline-block; font-size: 0.65rem; padding: 1px 6px; border-radius: 3px; background: #334155; color: #94a3b8; margin-right: 3px; }
 </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="office-node">
-    🏢 Taurus 4, Bagmane Constellation
-  </div>
-  
-  <div class="line"></div>
+<h1>Hindu Succession – Uttar Pradesh</h1>
+<p class="subtitle">Interactive path for all major combinations • Full trail stays visible<br>
+Hindu Succession Act 1956 (as amended) + UP Revenue practice</p>
 
-  <div class="locations-grid">
-    <!-- Karthik Nagar -->
-    <div class="location-card">
-      <span class="location-name">Karthik Nagar</span>
-      <span class="km-label">~0.8 km</span>
-      <div class="pg-list">
-        <h4>Cheapest Options</h4>
-        <div class="pg-item">
-          <strong>Surya Royal Homes</strong><br>
-          <span class="price">Single Bed: ₹12,000 - ₹14,000</span><br>
-          <span class="contact">📍 Near Ferns City Rd</span>
-        </div>
-        <div class="pg-item">
-          <strong>Bliss Comfort</strong><br>
-          <span class="price">Single Bed: ₹15,000+</span>
-        </div>
-      </div>
-    </div>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last choice</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
 
-    <!-- B Narayanapura -->
-    <div class="location-card">
-      <span class="location-name">B Narayanapura</span>
-      <span class="km-label">~1.2 km</span>
-      <div class="pg-list">
-        <h4>Cheapest Options</h4>
-        <div class="pg-item">
-          <strong>Sri Lakshmi Venkateshwara</strong><br>
-          <span class="price">Single Bed: ₹10,000 - ₹12,000</span><br>
-          <span class="contact">📍 Kamadhenu Nagar</span>
-        </div>
-        <div class="pg-item">
-          <strong>Unity Co-living</strong><br>
-          <span class="price">Single Bed: ₹13,000</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Munnekolala -->
-    <div class="location-card">
-      <span class="location-name">Munnekolala</span>
-      <span class="km-label">~2.5 km</span>
-      <div class="pg-list">
-        <h4>Cheapest Options</h4>
-        <div class="pg-item">
-          <strong>Colive Hayward</strong><br>
-          <span class="price">Single Bed: ₹8,000 (Basic)</span><br>
-          <span class="contact">📍 Chinnapanahalli Area</span>
-        </div>
-        <div class="pg-item">
-          <strong>Sri Sai PG</strong><br>
-          <span class="price">Single Bed: ₹9,500</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Hoodi -->
-    <div class="location-card">
-      <span class="location-name">Hoodi (Interior)</span>
-      <span class="km-label">~3.0 km</span>
-      <div class="pg-list">
-        <h4>Cheapest Options</h4>
-        <div class="pg-item">
-          <strong>Local Gents PG (Near Stn)</strong><br>
-          <span class="price">Single Bed: ₹8,000 - ₹10,000</span><br>
-          <span class="contact">📍 Seetharampalya Road</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Kaggadasapura -->
-    <div class="location-card">
-      <span class="location-name">Kaggadasapura</span>
-      <span class="km-label">~3.2 km</span>
-      <div class="pg-list">
-        <h4>Cheapest Options</h4>
-        <div class="pg-item">
-          <strong>SVS PG for Gents</strong><br>
-          <span class="price">Single Bed: ₹9,000 - ₹11,000</span><br>
-          <span class="contact">📍 Chinappa Layout</span>
-        </div>
-      </div>
-    </div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <div id="modal-content"></div>
   </div>
 </div>
 
+<script>
+const steps = {
+  start: {
+    html: `
+      <div class="box process"><h3>START</h3><p>Hindu male / female dies in Uttar Pradesh</p></div>
+      <div class="arrow"></div>
+      <div class="box process">
+        <h3>1. Obtain Death Certificate</h3>
+        <p>Municipality (urban) or Gram Panchayat / Registrar (rural)</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision" id="dec-will">
+        <h3>2. Did the deceased leave a Will?</h3>
+        <div class="choice-btns" id="btns-will">
+          <button class="btn-yes" onclick="choose('will','yes')">YES – Will exists</button>
+          <button class="btn-no"  onclick="choose('will','no')">NO – Intestate</button>
+        </div>
+      </div>`
+  },
+
+  /* ===== WILL PATH ===== */
+  'will-yes': {
+    label: 'Will exists', labelClass: 'yes',
+    html: `
+      <div class="path-label yes">You chose: YES – Will exists</div>
+      <div class="box process">
+        <h3>Verify Will</h3>
+        <p>Signed by testator + attested by ≥ 2 witnesses<br>Testator of sound mind</p>
+        <span class="info-link" onclick="openModal('will')">Will & Probate in UP →</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Is the Will valid / unchallenged?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('valid','yes')">YES – Valid</button>
+          <button class="btn-no"  onclick="choose('valid','no')">NO – Invalid / Challenged</button>
+        </div>
+      </div>`
+  },
+  'valid-yes': {
+    label: 'Valid Will', labelClass: 'yes',
+    html: `
+      <div class="path-label yes">You chose: Valid Will</div>
+      <div class="box success">
+        <h3>Property passes as per Will</h3>
+        <p>Probate advisable (especially if large estate or likely dispute)</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box docs">
+        <h3>Documents needed at this stage</h3>
+        <ul>
+          <li>Original Will + 2 attesting witnesses (or their affidavits)</li>
+          <li>Death Certificate</li>
+          <li>Probate petition (if applying) + court fee</li>
+          <li>List of legal heirs (even if Will exists)</li>
+          <li>Property details (Khata / title deeds)</li>
+        </ul>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Nature of the property?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('nature','self')">Self-acquired</button>
+          <button class="btn-no"  onclick="choose('nature','ancestral')">Ancestral / HUF</button>
+        </div>
+      </div>`
+  },
+  'valid-no': {
+    label: 'Will invalid → Intestate', labelClass: 'no',
+    html: `
+      <div class="path-label no">You chose: Will Invalid / Successfully Challenged</div>
+      <div class="box danger"><h3>Treat as Intestate</h3><p>Hindu Succession Act 1956 applies</p></div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Nature of the property?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('nature','self')">Self-acquired</button>
+          <button class="btn-no"  onclick="choose('nature','ancestral')">Ancestral / HUF</button>
+        </div>
+      </div>`
+  },
+
+  /* ===== NO WILL ===== */
+  'will-no': {
+    label: 'Intestate (No Will)', labelClass: 'no',
+    html: `
+      <div class="path-label no">You chose: NO – Intestate</div>
+      <div class="box process">
+        <h3>Hindu Succession Act 1956 applies</h3>
+        <p>Class-I → Class-II → Agnates → Cognates → Government</p>
+        <span class="info-link" onclick="openModal('class1')">Who are Class-I heirs? →</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Nature of the property?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('nature','self')">Self-acquired</button>
+          <button class="btn-no"  onclick="choose('nature','ancestral')">Ancestral / HUF</button>
+        </div>
+      </div>`
+  },
+
+  /* ===== SELF-ACQUIRED ===== */
+  'nature-self': {
+    label: 'Self-acquired', labelClass: 'yes',
+    html: `
+      <div class="path-label yes">You chose: Self-acquired Property</div>
+      <div class="box process">
+        <h3>Identify Class-I heirs</h3>
+        <p>Widow, sons, daughters, mother + children of any pre-deceased son/daughter take equal shares</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Are there any Class-I heirs alive?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('class1','yes')">YES – Class-I present</button>
+          <button class="btn-no"  onclick="choose('class1','no')">NO – No Class-I</button>
+        </div>
+      </div>`
+  },
+  'class1-yes': {
+    label: 'Class-I heirs present', labelClass: 'yes',
+    html: `
+      <div class="path-label yes">You chose: Class-I heirs exist</div>
+      <div class="box process">
+        <h3>All Class-I heirs take equal shares</h3>
+        <p>Example: Widow + 2 sons + 1 daughter = 4 equal shares<br>
+        Children of a pre-deceased son/daughter take the share their parent would have taken (per stirpes)</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box docs">
+        <h3>Documents for Mutation (Self-acquired + Class-I)</h3>
+        <ul>
+          <li>Death Certificate</li>
+          <li>Legal-heir certificate / Family tree affidavit (on stamp paper, notarised)</li>
+          <li>Identity & address proofs of all Class-I heirs</li>
+          <li>NOC / Consent affidavit from all other Class-I heirs (or their presence)</li>
+          <li>Copy of existing Khata / Jamabandi / title deed</li>
+          <li>Will + Probate (if any)</li>
+          <li>Passport-size photos of applicants</li>
+        </ul>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Is the property Agricultural land in UP?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('agri','yes')">YES – Agricultural</button>
+          <button class="btn-no"  onclick="choose('agri','no')">NO – House / Shop / Plot</button>
+        </div>
+      </div>`
+  },
+  'class1-no': {
+    label: 'No Class-I → Class-II', labelClass: 'no',
+    html: `
+      <div class="path-label no">You chose: No Class-I heirs</div>
+      <div class="box process">
+        <h3>Go to Class-II heirs</h3>
+        <p>Father, son’s daughter’s son, son’s daughter’s daughter, brother, sister, etc. (in the order given in the Schedule)</p>
+        <span class="info-link" onclick="openModal('class2')">Class-II list →</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="box docs">
+        <h3>Documents for Mutation (Class-II)</h3>
+        <ul>
+          <li>Death Certificate</li>
+          <li>Detailed family tree showing absence of Class-I</li>
+          <li>Legal-heir certificate naming Class-II claimants</li>
+          <li>Identity proofs + NOCs of all Class-II claimants</li>
+          <li>Existing revenue records</li>
+        </ul>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Is the property Agricultural land in UP?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('agri','yes')">YES – Agricultural</button>
+          <button class="btn-no"  onclick="choose('agri','no')">NO – House / Shop / Plot</button>
+        </div>
+      </div>`
+  },
+
+  /* ===== ANCESTRAL ===== */
+  'nature-ancestral': {
+    label: 'Ancestral / HUF', labelClass: 'no',
+    html: `
+      <div class="path-label no">You chose: Ancestral / Coparcenary Property</div>
+      <div class="box process">
+        <h3>Identify Coparceners</h3>
+        <p>After 9-9-2005 amendment: sons <strong>and daughters</strong> of a coparcener are coparceners by birth and take equal share</p>
+        <span class="info-link" onclick="openModal('ancestral')">Ancestral rules (Hindu + UP) →</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="box docs">
+        <h3>Documents for Mutation (Ancestral)</h3>
+        <ul>
+          <li>Death Certificate of the deceased coparcener</li>
+          <li>Family tree / genealogy showing all coparceners</li>
+          <li>Proof that property is ancestral (old Khata entries, previous mutation)</li>
+          <li>NOC / consent of all living coparceners</li>
+          <li>Identity proofs of applicants</li>
+          <li>If partition already done – registered Partition Deed</li>
+        </ul>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Is the property Agricultural land in UP?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('agri','yes')">YES – Agricultural</button>
+          <button class="btn-no"  onclick="choose('agri','no')">NO – House / Shop / Plot</button>
+        </div>
+      </div>`
+  },
+
+  /* ===== AGRICULTURAL vs NON-AGRI ===== */
+  'agri-yes': {
+    label: 'Agricultural (UP)', labelClass: 'yes',
+    html: `
+      <div class="path-label yes">You chose: Agricultural Land (UP)</div>
+      <div class="box info">
+        <h3>UP-specific rules apply</h3>
+        <p>U.P. Zamindari Abolition & Land Reforms Act + Land Revenue Code<br>
+        Mutation done by Tehsildar / Lekhpal after public notice</p>
+        <span class="info-link" onclick="openModal('upagri')">UP Agricultural Land notes →</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Any family dispute over shares / title?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('dispute','yes')">YES – Dispute</button>
+          <button class="btn-no"  onclick="choose('dispute','no')">NO – All agree</button>
+        </div>
+      </div>`
+  },
+  'agri-no': {
+    label: 'Non-Agricultural', labelClass: 'no',
+    html: `
+      <div class="path-label no">You chose: House / Shop / Plot (Non-Agricultural)</div>
+      <div class="box info">
+        <h3>Urban or Rural non-agri property</h3>
+        <p>Mutation in Municipal records (urban) or Tehsil (rural)<br>
+        Registration of transfer deeds still compulsory under Registration Act</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Any family dispute over shares / title?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('dispute','yes')">YES – Dispute</button>
+          <button class="btn-no"  onclick="choose('dispute','no')">NO – All agree</button>
+        </div>
+      </div>`
+  },
+
+  /* ===== DISPUTE ===== */
+  'dispute-yes': {
+    label: 'Dispute exists', labelClass: 'yes',
+    html: `
+      <div class="path-label yes">You chose: YES – Dispute</div>
+      <div class="box danger">
+        <h3>File Civil Suit</h3>
+        <p>Partition suit / Declaration of title in Civil Court of competent jurisdiction (usually where property is situated)</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box docs">
+        <h3>Documents for Civil Suit (Partition / Title)</h3>
+        <ul>
+          <li>Plaint with full pedigree / family tree</li>
+          <li>Death Certificate</li>
+          <li>Title documents / previous mutations</li>
+          <li>List of all legal heirs / coparceners with addresses</li>
+          <li>Court fee (ad valorem on share claimed in many cases)</li>
+          <li>Any Will / previous partition deeds</li>
+        </ul>
+      </div>
+      <div class="arrow"></div>
+      <div class="box process">
+        <h3>Court passes final decree</h3>
+        <p>Shares are determined. Decree is executable and binding on revenue authorities.</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box process">
+        <h3>Apply for Mutation with Court Decree</h3>
+        <p>Submit certified copy of decree + usual mutation papers to Tehsildar</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>After mutation – do you want to sell / gift / formally partition?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('transfer','yes')">YES – Transfer / Partition Deed</button>
+          <button class="btn-no"  onclick="choose('transfer','no')">NO – Keep as is</button>
+        </div>
+      </div>`
+  },
+  'dispute-no': {
+    label: 'No Dispute', labelClass: 'no',
+    html: `
+      <div class="path-label no">You chose: NO – All heirs agree</div>
+      <div class="box process">
+        <h3>Apply for Mutation (Tehsildar / Lekhpal)</h3>
+        <p>Public notice (usually 15–30 days) is issued. If no objection → mutation ordered.</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box docs">
+        <h3>Standard Mutation Documents (UP)</h3>
+        <ul>
+          <li>Application in prescribed form (to Tehsildar)</li>
+          <li>Death Certificate</li>
+          <li>Legal-heir / succession certificate or detailed family-tree affidavit</li>
+          <li>NOC / consent of all other legal heirs (or their personal appearance)</li>
+          <li>Identity & address proofs + photos of applicants</li>
+          <li>Copy of current Khata / Khatauni / Jamabandi</li>
+          <li>Will + Probate (if any)</li>
+          <li>Court decree (if mutation follows a suit)</li>
+        </ul>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Any objection received after public notice?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('obj','yes')">YES – Objection filed</button>
+          <button class="btn-no"  onclick="choose('obj','no')">NO – No objection</button>
+        </div>
+      </div>`
+  },
+
+  /* ===== OBJECTION ===== */
+  'obj-yes': {
+    label: 'Objection filed', labelClass: 'yes',
+    html: `
+      <div class="path-label yes">You chose: Objection received</div>
+      <div class="box danger">
+        <h3>Revenue enquiry / hearing</h3>
+        <p>Tehsildar / higher revenue authority decides the objection. Parties can lead evidence.</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box success">
+        <h3>Mutation ordered after decision</h3>
+        <p>Khata / Khatauni updated in names of successful claimants</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Do you want to sell / gift / execute formal Partition Deed?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('transfer','yes')">YES – Transfer / Partition</button>
+          <button class="btn-no"  onclick="choose('transfer','no')">NO – Keep as is</button>
+        </div>
+      </div>`
+  },
+  'obj-no': {
+    label: 'No Objection', labelClass: 'no',
+    html: `
+      <div class="path-label no">You chose: No Objection</div>
+      <div class="box success">
+        <h3>Mutation Approved</h3>
+        <p>Names of legal heirs entered in revenue records (Khata / Khatauni)</p>
+        <p class="note">Remember: Mutation only updates the public record. Title itself comes from succession + registered transfer documents.</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box decision">
+        <h3>Do you want to sell / gift / execute formal Partition Deed?</h3>
+        <div class="choice-btns">
+          <button class="btn-yes" onclick="choose('transfer','yes')">YES – Transfer / Partition</button>
+          <button class="btn-no"  onclick="choose('transfer','no')">NO – Keep as is</button>
+        </div>
+      </div>`
+  },
+
+  /* ===== TRANSFER ===== */
+  'transfer-yes': {
+    label: 'Further Transfer', labelClass: 'yes',
+    html: `
+      <div class="path-label yes">You chose: YES – Sale / Gift / Partition</div>
+      <div class="box process">
+        <h3>Prepare the document</h3>
+        <p>Sale Deed (TPA s.54) • Gift Deed (TPA s.122) • Partition Deed • Release Deed</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box docs">
+        <h3>Documents for Registration (UP)</h3>
+        <ul>
+          <li>Draft Sale / Gift / Partition / Release Deed</li>
+          <li>Stamp duty (UP Stamp Act – on circle rate / market value)</li>
+          <li>Registration fee</li>
+          <li>Identity proofs + photos of all parties & witnesses</li>
+          <li>Latest mutation / Khata extract</li>
+          <li>NOC from other co-owners if required</li>
+          <li>PAN cards (for higher value transactions)</li>
+          <li>For agricultural land – check if purchaser is eligible under UP land laws</li>
+        </ul>
+      </div>
+      <div class="arrow"></div>
+      <div class="box process">
+        <h3>Register at Sub-Registrar</h3>
+        <p>Compulsory under Registration Act s.17 for most immovable property transfers ≥ ₹100</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box process">
+        <h3>Fresh Mutation for buyer / donee</h3>
+        <p>Apply again to Tehsildar / Municipality with registered deed</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box success">
+        <h3>END – Clean registered title</h3>
+        <p>Property now stands in the name of the new owner with both revenue record and registered deed</p>
+      </div>`
+  },
+  'transfer-no': {
+    label: 'Keep in family', labelClass: 'no',
+    html: `
+      <div class="path-label no">You chose: NO – Keep as is</div>
+      <div class="box success">
+        <h3>Family retains the property</h3>
+        <p>Jointly or according to the shares already mutated. No further registered document needed unless a formal partition is desired later.</p>
+      </div>
+      <div class="arrow"></div>
+      <div class="box success"><h3>END</h3></div>`
+  }
+};
+
+const modalData = {
+  will: `<h2>Will & Probate – UP context</h2>
+    <ul>
+      <li>Will must be signed by the testator and attested by at least two witnesses (Indian Succession Act / Hindu law).</li>
+      <li>Probate is not compulsory in most of UP for Hindus, but highly advisable if the estate is large or there is likelihood of challenge.</li>
+      <li>If the Will is challenged and declared invalid, the estate is distributed under Hindu Succession Act as if the person died intestate.</li>
+      <li>A Will can dispose of self-acquired property freely. Ancestral / coparcenary property can be disposed of only to the extent of the testator’s share.</li>
+    </ul>`,
+  class1: `<h2>Class-I Heirs (Hindu Succession Act Schedule)</h2>
+    <p>Son, daughter, widow, mother, son of a pre-deceased son, daughter of a pre-deceased son, son of a pre-deceased daughter, daughter of a pre-deceased daughter, widow of a pre-deceased son, son of a pre-deceased son of a pre-deceased son, daughter of a pre-deceased son of a pre-deceased son, widow of a pre-deceased son of a pre-deceased son, son of a pre-deceased daughter of a pre-deceased daughter, daughter of a pre-deceased daughter of a pre-deceased daughter, daughter of a pre-deceased son of a pre-deceased daughter, daughter of a pre-deceased daughter of a pre-deceased son.</p>
+    <p>All Class-I heirs take simultaneously and in equal shares. The children of a pre-deceased child take the share their parent would have taken (per stirpes).</p>`,
+  class2: `<h2>Class-II Heirs (in order of preference)</h2>
+    <ol>
+      <li>Father</li>
+      <li>(1) Son’s daughter’s son (2) Son’s daughter’s daughter (3) Brother (4) Sister</li>
+      <li>(1) Daughter’s son’s son (2) Daughter’s son’s daughter (3) Daughter’s daughter’s son (4) Daughter’s daughter’s daughter</li>
+      <li>(1) Brother’s son (2) Sister’s son (3) Brother’s daughter (4) Sister’s daughter</li>
+      <li>Father’s father; Father’s mother</li>
+      <li>Father’s widow; Brother’s widow</li>
+      <li>Father’s brother; Father’s sister</li>
+      <li>Mother’s father; Mother’s mother</li>
+      <li>Mother’s brother; Mother’s sister</li>
+    </ol>
+    <p>Those in an earlier entry exclude those in a later entry.</p>`,
+  ancestral: `<h2>Ancestral / Coparcenary Property (Hindu + UP)</h2>
+    <ul>
+      <li>Property inherited from father, father’s father or father’s father’s father is ancestral in the hands of the son.</li>
+      <li>After the 2005 amendment (effective 9-9-2005), daughters are also coparceners by birth and take equal share with sons.</li>
+      <li>A coparcener can claim partition at any time. After partition the share becomes self-acquired in his/her hands.</li>
+      <li>In UP, agricultural land is also subject to the U.P. Zamindari Abolition & Land Reforms Act – check ceiling and transfer restrictions.</li>
+    </ul>`,
+  upagri: `<h2>Agricultural Land in Uttar Pradesh</h2>
+    <ul>
+      <li>Mutation is done under the U.P. Land Revenue Code / relevant rules by the Tehsildar after report of Lekhpal and public notice.</li>
+      <li>Transfer of agricultural land to a non-agriculturist may be restricted or require permission in certain cases.</li>
+      <li>Fragmentation laws and land-ceiling provisions of UP must be checked before sale or partition.</li>
+      <li>Always obtain the latest Khatauni and check for any recorded entries (charges, leases, etc.).</li>
+    </ul>`
+};
+
+let path = ['start'];
+const flowEl = document.getElementById('flow');
+
+function render() {
+  flowEl.innerHTML = '';
+  path.forEach((key, idx) => {
+    const data = steps[key];
+    if (!data) return;
+    const block = document.createElement('div');
+    block.className = 'step-block';
+    block.innerHTML = data.html;
+    flowEl.appendChild(block);
+
+    if (idx < path.length - 1) {
+      block.querySelectorAll('.choice-btns button').forEach(b => b.disabled = true);
+      const nextKey = path[idx + 1];
+      const nextData = steps[nextKey];
+      if (nextData && nextData.label) {
+        const decBox = block.querySelector('.box.decision');
+        if (decBox) {
+          const lbl = document.createElement('div');
+          lbl.className = 'chosen-label ' + (nextData.labelClass || 'yes');
+          lbl.textContent = 'Chosen → ' + nextData.label;
+          decBox.appendChild(lbl);
+        }
+      }
+    }
+  });
+
+  const labels = path.map(k => k === 'start' ? 'Start' : (steps[k] && steps[k].label) || k);
+  document.getElementById('history').innerHTML = labels.length > 1 ? '<span>' + labels.join(' → ') + '</span>' : '';
+  document.getElementById('backBtn').style.display = path.length > 1 ? 'inline-block' : 'none';
+
+  setTimeout(() => {
+    const last = flowEl.lastElementChild;
+    if (last) last.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, 40);
+}
+
+function choose(key, value) {
+  let next = '';
+  if (key === 'will') next = value === 'yes' ? 'will-yes' : 'will-no';
+  else if (key === 'valid') next = value === 'yes' ? 'valid-yes' : 'valid-no';
+  else if (key === 'nature') next = value === 'self' ? 'nature-self' : 'nature-ancestral';
+  else if (key === 'class1') next = value === 'yes' ? 'class1-yes' : 'class1-no';
+  else if (key === 'agri') next = value === 'yes' ? 'agri-yes' : 'agri-no';
+  else if (key === 'dispute') next = value === 'yes' ? 'dispute-yes' : 'dispute-no';
+  else if (key === 'obj') next = value === 'yes' ? 'obj-yes' : 'obj-no';
+  else if (key === 'transfer') next = value === 'yes' ? 'transfer-yes' : 'transfer-no';
+
+  if (next) { path.push(next); render(); }
+}
+
+function goBack() {
+  if (path.length <= 1) return;
+  path.pop();
+  render();
+}
+
+function restart() {
+  path = ['start'];
+  render();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function openModal(key) {
+  document.getElementById('modal-content').innerHTML = modalData[key] || '<p>No details.</p>';
+  document.getElementById('modal').classList.add('show');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('show');
+}
+
+render();
+</script>
 </body>
 </html>
