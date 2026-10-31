@@ -3,852 +3,127 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Complete Hindu Succession Flow – Uttar Pradesh</title>
-<style>
-  :root {
-    --bg:#0f172a; --card:#1e293b; --border:#334155; --text:#e2e8f0; --muted:#94a3b8;
-    --process:#1d4ed8; --decision:#b45309; --success:#15803d; --danger:#b91c1c;
-    --info:#0e7490; --link:#38bdf8; --btn-yes:#16a34a; --btn-no:#dc2626; --btn-alt:#7c3aed;
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;padding:14px 8px 70px}
-  h1{text-align:center;font-size:1.3rem;color:#f8fafc;margin-bottom:3px}
-  .subtitle{text-align:center;color:var(--muted);font-size:0.82rem;margin-bottom:12px}
-  .controls{max-width:700px;margin:0 auto 10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap;position:sticky;top:0;z-index:50;background:var(--bg);padding:7px 0}
-  .controls button{background:#334155;color:#e2e8f0;border:none;padding:7px 13px;border-radius:7px;cursor:pointer;font-size:0.8rem}
-  .controls button:hover{background:#475569}
-  .history-bar{max-width:700px;margin:0 auto 8px;font-size:0.72rem;color:var(--muted);text-align:center;min-height:18px}
-  .history-bar span{background:#1e293b;padding:2px 6px;border-radius:4px}
-  .flow{max-width:700px;margin:0 auto;display:flex;flex-direction:column;align-items:center}
-  .step-block{display:flex;flex-direction:column;align-items:center;width:100%;animation:fadeIn .25s ease}
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-  .box{background:var(--card);border:2px solid var(--border);border-radius:10px;padding:12px 14px;text-align:center;width:100%;max-width:480px;box-shadow:0 3px 9px rgba(0,0,0,.28)}
-  .box.process{border-color:var(--process);background:#1e3a5f}
-  .box.decision{border-color:var(--decision);background:#3f2e1e}
-  .box.success{border-color:var(--success);background:#14532d}
-  .box.danger{border-color:var(--danger);background:#450a0a}
-  .box.info{border-color:var(--info);background:#164e63}
-  .box.docs{border-color:#a855f7;background:#2e1065;text-align:left}
-  .box.example{border-color:#ca8a04;background:#422006;text-align:left}
-  .box h3{font-size:.95rem;margin-bottom:3px;color:#f1f5f9}
-  .box p{font-size:.82rem;color:var(--muted)}
-  .box.docs h3,.box.example h3{text-align:center}
-  .box.docs ul,.box.example ul{margin:6px 0 0 1rem;color:#c4b5fd;font-size:.8rem}
-  .box.example ul{color:#fde68a}
-  .box.docs li,.box.example li{margin-bottom:2px}
-  .arrow{width:2px;height:18px;background:#64748b;position:relative;margin:2px 0}
-  .arrow::after{content:"";position:absolute;bottom:-4px;left:-5px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid #64748b}
-  .choice-btns{display:flex;gap:8px;margin-top:9px;justify-content:center;flex-wrap:wrap}
-  .choice-btns button{min-width:95px;padding:8px 11px;border:none;border-radius:7px;font-size:.84rem;font-weight:600;cursor:pointer;transition:transform .12s}
-  .choice-btns button:hover{transform:translateY(-1px)}
-  .choice-btns button:disabled{opacity:.38;cursor:default;transform:none}
-  .btn-yes{background:var(--btn-yes);color:#fff}
-  .btn-no{background:var(--btn-no);color:#fff}
-  .btn-alt{background:var(--btn-alt);color:#fff}
-  .chosen-label{display:inline-block;margin-top:6px;font-size:.72rem;font-weight:700;padding:2px 9px;border-radius:999px}
-  .chosen-label.yes{background:#166534;color:#bbf7d0}
-  .chosen-label.no{background:#7f1d1d;color:#fecaca}
-  .chosen-label.alt{background:#5b21b6;color:#e9d5ff}
-  .path-label{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.03em;padding:2px 8px;border-radius:999px;margin-bottom:4px}
-  .path-label.yes{background:#166534;color:#bbf7d0}
-  .path-label.no{background:#7f1d1d;color:#fecaca}
-  .path-label.alt{background:#5b21b6;color:#e9d5ff}
-  .info-link{display:inline-block;margin-top:6px;font-size:.76rem;color:var(--link);border-bottom:1px dashed var(--link);cursor:pointer}
-  .info-link:hover{color:#7dd3fc}
-  .note{font-size:.76rem;color:#fcd34d;margin-top:5px}
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:100;align-items:center;justify-content:center;padding:10px}
-  .modal-overlay.show{display:flex}
-  .modal{background:#1e293b;border:1px solid #475569;border-radius:11px;max-width:600px;width:100%;max-height:84vh;overflow-y:auto;padding:18px;position:relative}
-  .modal h2{font-size:1.05rem;margin-bottom:8px;color:#f8fafc}
-  .modal h3{font-size:.92rem;margin:12px 0 4px;color:#cbd5e1}
-  .modal ul,.modal ol{margin-left:1.15rem;margin-bottom:7px;color:var(--muted)}
-  .modal li{margin-bottom:2px;font-size:.83rem}
-  .modal p{color:var(--muted);font-size:.83rem;margin-bottom:6px}
-  .modal-close{position:absolute;top:8px;right:10px;background:none;border:none;color:#94a3b8;font-size:1.25rem;cursor:pointer}
-  .modal-close:hover{color:#f1f5f9}
-  .tag{display:inline-block;font-size:.62rem;padding:1px 5px;border-radius:3px;background:#334155;color:#94a3b8;margin-right:3px}
-</style>
+<title>Legal Case Flow Guide – Uttar Pradesh</title>
+<link rel="icon" href="images/favicon.png">
+<link rel="stylesheet" href="assets/flow.css">
 </head>
 <body>
-<h1>Complete Hindu Succession – Uttar Pradesh</h1>
-<p class="subtitle">All major permutations • Documents • Share examples • UP procedure<br>Hindu Succession Act 1956 (as amended) + UP Revenue practice</p>
+<div class="topbar"><span class="here">Home</span></div>
+<h1>Legal Case Flow Guide – Uttar Pradesh</h1>
+<p class="subtitle">
+  Step-by-step interactive procedure for the common Civil, Criminal, Family, Revenue,
+  Succession and Municipal (Nagar Palika) matters in Uttar Pradesh, plus a city view for Khurja.<br>
+  Pick a domain, then pick a case type to walk through the process, documents and the governing Acts.
+</p>
 
-<div class="controls">
-  <button onclick="restart()">↺ Restart</button>
-  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+<div class="search-wrap">
+  <input type="search" id="caseSearch" placeholder="Search case types… e.g. cheque, divorce, mutation, bail, khurja" autocomplete="off" aria-label="Search case types">
+  <span class="ico-search">🔎</span>
 </div>
-<div class="history-bar" id="history"></div>
-<div class="flow" id="flow"></div>
+<div class="search-results" id="searchResults"></div>
 
-<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
-  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+<div class="grid" id="entityGrid">
+  <a class="card entity-civil" href="Civil/index.html">
+    <div class="ico">⚖️</div>
+    <h3>Civil</h3>
+    <p>Property, contracts, recovery, specific performance, consumer, arbitration, partnership, cheque recovery.</p>
+    <span class="count">10 case types</span>
+  </a>
+
+  <a class="card entity-criminal" href="Criminal/index.html">
+    <div class="ico">🚔</div>
+    <h3>Criminal</h3>
+    <p>FIR &amp; cognizable offences, bail, cheque dishonour (s.138), NDPS, POCSO, domestic violence, SC/ST, juvenile, MACT.</p>
+    <span class="count">10 case types</span>
+  </a>
+
+  <a class="card entity-family" href="Family/index.html">
+    <div class="ico">👪</div>
+    <h3>Family</h3>
+    <p>Hindu divorce, maintenance, guardianship &amp; custody, adoption, special marriage, Muslim divorce, senior-citizen maintenance.</p>
+    <span class="count">9 case types</span>
+  </a>
+
+  <a class="card entity-revenue" href="Revenue/index.html">
+    <div class="ico">🌾</div>
+    <h3>Revenue</h3>
+    <p>Mutation (varasat), agricultural-land partition, consolidation, record correction, bhumidhari &amp; panchayat land.</p>
+    <span class="count">8 case types</span>
+  </a>
+
+  <a class="card entity-succession" href="Succession/index.html">
+    <div class="ico">📜</div>
+    <h3>Succession</h3>
+    <p>Hindu &amp; Muslim succession, intestate/testate devolution, will &amp; probate, succession &amp; legal-heir certificate.</p>
+    <span class="count">8 case types</span>
+  </a>
+
+  <a class="card entity-nagar" href="Nagar_Palika/index.html">
+    <div class="ico">🏛️</div>
+    <h3>Nagar Palika</h3>
+    <p>Property tax, building permission, trade licence, municipal mutation, urban planning &amp; development disputes.</p>
+    <span class="count">7 case types</span>
+  </a>
+
+  <a class="card entity-khurja" href="Khurja/index.html">
+    <div class="ico">📍</div>
+    <h3>Khurja</h3>
+    <p>Common cases filed at Khurja (Dist. Bulandshahr) across Civil, Criminal and Revenue — property, recovery, FIR &amp; bail, cheque, mutation and land matters.</p>
+    <span class="count">15 case types</span>
+  </a>
 </div>
 
+<div class="footer">
+  Informational workflow guide based on the Acts available in this repository. Not legal advice —
+  verify the current provisions and consult an advocate for any actual matter.
+</div>
+
+<script src="assets/cases.js"></script>
 <script>
-const steps = {
-  /* ========== START ========== */
-  start: {
-    html: `
-      <div class="box process"><h3>START</h3><p>A Hindu dies in Uttar Pradesh</p></div>
-      <div class="arrow"></div>
-      <div class="box process">
-        <h3>1. Obtain Death Certificate</h3>
-        <p>Urban → Municipality / Nagar Palika<br>Rural → Gram Panchayat / Registrar of Births & Deaths</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>2. Gender of the deceased?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('gender','male')">Male</button>
-          <button class="btn-alt" onclick="choose('gender','female')">Female</button>
-        </div>
-      </div>`
-  },
+(function () {
+  var input = document.getElementById('caseSearch');
+  var results = document.getElementById('searchResults');
+  var grid = document.getElementById('entityGrid');
+  var cases = window.CASES || [];
 
-  /* ========== MALE PATH ========== */
-  'gender-male': {
-    label: 'Male deceased', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Male Hindu</div>
-      <div class="box decision">
-        <h3>3. Did he leave a Will?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('will','yes')">YES – Will exists</button>
-          <button class="btn-no"  onclick="choose('will','no')">NO – Intestate</button>
-        </div>
-      </div>`
-  },
-
-  /* ========== FEMALE PATH ========== */
-  'gender-female': {
-    label: 'Female deceased', labelClass: 'alt',
-    html: `
-      <div class="path-label alt">Female Hindu</div>
-      <div class="box decision">
-        <h3>3. Did she leave a Will?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('fwill','yes')">YES – Will exists</button>
-          <button class="btn-no"  onclick="choose('fwill','no')">NO – Intestate</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== MALE WILL ===== */
-  'will-yes': {
-    label: 'Will exists (Male)', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Will exists</div>
-      <div class="box process">
-        <h3>Verify Will</h3>
-        <p>Signed by testator + attested by ≥ 2 witnesses<br>Sound mind at the time of execution</p>
-        <span class="info-link" onclick="openModal('will')">Will & Probate notes →</span>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Is the Will valid / unchallenged?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('valid','yes')">YES – Valid</button>
-          <button class="btn-no"  onclick="choose('valid','no')">NO – Invalid / Challenged</button>
-        </div>
-      </div>`
-  },
-  'valid-yes': {
-    label: 'Valid Will', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Valid Will</div>
-      <div class="box success">
-        <h3>Property passes strictly as per Will</h3>
-        <p>A Hindu male can freely dispose of his self-acquired property by Will.<br>
-        He can dispose of only his share in ancestral / coparcenary property.</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Documents at this stage</h3>
-        <ul>
-          <li>Original Will</li>
-          <li>Death Certificate</li>
-          <li>Affidavits of attesting witnesses (if required)</li>
-          <li>List of legal heirs (even when Will exists)</li>
-          <li>Property details (Khata / title deeds)</li>
-          <li>Probate petition (optional but recommended for large estate)</li>
-        </ul>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Nature of the property?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('nature','self')">Self-acquired</button>
-          <button class="btn-no"  onclick="choose('nature','ancestral')">Ancestral / HUF</button>
-        </div>
-      </div>`
-  },
-  'valid-no': {
-    label: 'Will invalid → Intestate', labelClass: 'no',
-    html: `
-      <div class="path-label no">Will Invalid / Challenged successfully</div>
-      <div class="box danger"><h3>Treat as Intestate</h3><p>Hindu Succession Act 1956 applies as if no Will existed</p></div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Nature of the property?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('nature','self')">Self-acquired</button>
-          <button class="btn-no"  onclick="choose('nature','ancestral')">Ancestral / HUF</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== MALE NO WILL ===== */
-  'will-no': {
-    label: 'Male Intestate', labelClass: 'no',
-    html: `
-      <div class="path-label no">Male died Intestate</div>
-      <div class="box process">
-        <h3>Hindu Succession Act 1956 applies</h3>
-        <p>Order: Class-I → Class-II → Agnates → Cognates → Government</p>
-        <span class="info-link" onclick="openModal('class1')">Full Class-I list →</span>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Nature of the property?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('nature','self')">Self-acquired</button>
-          <button class="btn-no"  onclick="choose('nature','ancestral')">Ancestral / HUF</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== FEMALE WILL ===== */
-  'fwill-yes': {
-    label: 'Will exists (Female)', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Female – Will exists</div>
-      <div class="box process">
-        <h3>Verify Will</h3>
-        <p>Same formal requirements as for a male</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Is the Will valid?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('fvalid','yes')">YES – Valid</button>
-          <button class="btn-no"  onclick="choose('fvalid','no')">NO – Invalid</button>
-        </div>
-      </div>`
-  },
-  'fvalid-yes': {
-    label: 'Valid Will (Female)', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Valid Will – Female</div>
-      <div class="box success">
-        <h3>Property passes as per Will</h3>
-        <p>A Hindu female can dispose of her absolute property by Will.</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Continue to property type for mutation?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('agri','yes')">Agricultural land (UP)</button>
-          <button class="btn-no"  onclick="choose('agri','no')">House / Shop / Plot</button>
-        </div>
-      </div>`
-  },
-  'fvalid-no': {
-    label: 'Female Will invalid → Intestate', labelClass: 'no',
-    html: `
-      <div class="path-label no">Female Will Invalid</div>
-      <div class="box danger"><h3>Treat as Intestate</h3><p>Sections 15 & 16 of Hindu Succession Act apply</p></div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Source of the property? (critical for females)</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('fsource','husband')">Inherited from Husband / Father-in-law</button>
-          <button class="btn-alt" onclick="choose('fsource','parents')">Inherited from Parents / Father</button>
-          <button class="btn-no"  onclick="choose('fsource','self')">Self-acquired / Other</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== FEMALE INTESTATE ===== */
-  'fwill-no': {
-    label: 'Female Intestate', labelClass: 'no',
-    html: `
-      <div class="path-label no">Female died Intestate</div>
-      <div class="box process">
-        <h3>Sections 15 & 16 Hindu Succession Act</h3>
-        <p>Distribution depends on the <strong>source</strong> of the property</p>
-        <span class="info-link" onclick="openModal('female')">Female intestate rules explained →</span>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Source of the property?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('fsource','husband')">From Husband / Father-in-law</button>
-          <button class="btn-alt" onclick="choose('fsource','parents')">From Parents / Father</button>
-          <button class="btn-no"  onclick="choose('fsource','self')">Self-acquired / Other sources</button>
-        </div>
-      </div>`
-  },
-  'fsource-husband': {
-    label: 'Property from Husband', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Property inherited from Husband / Father-in-law</div>
-      <div class="box process">
-        <h3>Devolution order (s.15(2)(b))</h3>
-        <p>1. Sons, daughters and children of pre-deceased son/daughter<br>
-        2. Heirs of the husband<br>
-        3. Heirs of the father<br>
-        4. Heirs of the mother</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Documents needed</h3>
-        <ul>
-          <li>Death Certificate of the female</li>
-          <li>Proof that property came from husband / father-in-law (old mutation, Will, gift deed, etc.)</li>
-          <li>Family tree of husband’s side</li>
-          <li>Legal-heir / succession documents of the claimants</li>
-          <li>NOCs from other possible claimants</li>
-        </ul>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Is the property Agricultural land in UP?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('agri','yes')">YES – Agricultural</button>
-          <button class="btn-no"  onclick="choose('agri','no')">NO – House / Shop / Plot</button>
-        </div>
-      </div>`
-  },
-  'fsource-parents': {
-    label: 'Property from Parents', labelClass: 'alt',
-    html: `
-      <div class="path-label alt">Property inherited from Parents / Father</div>
-      <div class="box process">
-        <h3>Devolution order (s.15(2)(a))</h3>
-        <p>1. Sons, daughters and children of pre-deceased son/daughter<br>
-        2. Heirs of the father<br>
-        3. Heirs of the mother</p>
-        <p class="note">Husband and husband’s heirs do <strong>not</strong> take this property</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Documents needed</h3>
-        <ul>
-          <li>Death Certificate</li>
-          <li>Proof that property came from parents / father</li>
-          <li>Family tree of father’s side</li>
-          <li>Legal-heir documents of claimants</li>
-          <li>NOCs</li>
-        </ul>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Is the property Agricultural land in UP?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('agri','yes')">YES – Agricultural</button>
-          <button class="btn-no"  onclick="choose('agri','no')">NO – House / Shop / Plot</button>
-        </div>
-      </div>`
-  },
-  'fsource-self': {
-    label: 'Self-acquired (Female)', labelClass: 'no',
-    html: `
-      <div class="path-label no">Self-acquired or other property of Female</div>
-      <div class="box process">
-        <h3>General order under s.15(1)</h3>
-        <p>1. Sons, daughters + children of pre-deceased son/daughter<br>
-        2. Husband<br>
-        3. Heirs of husband<br>
-        4. Heirs of father<br>
-        5. Heirs of mother</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Documents needed</h3>
-        <ul>
-          <li>Death Certificate</li>
-          <li>Family tree showing all Class-I type heirs + husband</li>
-          <li>Legal-heir certificate / affidavit</li>
-          <li>NOCs from all entitled persons</li>
-          <li>Title documents showing it is her absolute property</li>
-        </ul>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Is the property Agricultural land in UP?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('agri','yes')">YES – Agricultural</button>
-          <button class="btn-no"  onclick="choose('agri','no')">NO – House / Shop / Plot</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== NATURE – SELF ===== */
-  'nature-self': {
-    label: 'Self-acquired (Male)', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Self-acquired Property of Male</div>
-      <div class="box process">
-        <h3>Identify Class-I heirs</h3>
-        <p>Widow, sons, daughters, mother + children of any pre-deceased son or daughter take simultaneously and equally</p>
-        <span class="info-link" onclick="openModal('shares')">Share calculation examples →</span>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Are there living Class-I heirs?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('class1','yes')">YES – Class-I present</button>
-          <button class="btn-no"  onclick="choose('class1','no')">NO – Go to Class-II</button>
-        </div>
-      </div>`
-  },
-  'class1-yes': {
-    label: 'Class-I present', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Class-I heirs exist</div>
-      <div class="box example">
-        <h3>Common share examples</h3>
-        <ul>
-          <li><strong>Widow + 2 sons + 1 daughter</strong> → each gets 1/4</li>
-          <li><strong>Widow + 1 son + 2 daughters of pre-deceased son</strong> → Widow 1/3, Son 1/3, two grand-daughters share the remaining 1/3 equally (1/6 each)</li>
-          <li><strong>Only daughters (no son, no widow, no mother)</strong> → daughters take equally</li>
-          <li><strong>Widow + mother + 1 son</strong> → each gets 1/3</li>
-        </ul>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Documents for Mutation (Class-I)</h3>
-        <ul>
-          <li>Death Certificate</li>
-          <li>Legal-heir certificate <strong>or</strong> detailed family-tree affidavit (notarised / on stamp paper)</li>
-          <li>Identity + address proofs of all Class-I applicants</li>
-          <li>NOC / consent affidavit of every other Class-I heir (or their personal appearance)</li>
-          <li>Copy of current Khata / Khatauni / title deed</li>
-          <li>Passport-size photos</li>
-          <li>Will + Probate (if any)</li>
-        </ul>
-        <p class="note" style="color:#fcd34d;margin-top:6px">Legal Heir Certificate is issued by Tehsildar / SDM in UP. Succession Certificate (from Civil Court) is needed mainly for debts & securities.</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Is the property Agricultural land in UP?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('agri','yes')">YES – Agricultural</button>
-          <button class="btn-no"  onclick="choose('agri','no')">NO – House / Shop / Plot</button>
-        </div>
-      </div>`
-  },
-  'class1-no': {
-    label: 'No Class-I → Class-II', labelClass: 'no',
-    html: `
-      <div class="path-label no">No Class-I heirs</div>
-      <div class="box process">
-        <h3>Class-II heirs (in order)</h3>
-        <p>Father → Brother/Sister & their children → etc. (see full list)</p>
-        <span class="info-link" onclick="openModal('class2')">Complete Class-II list →</span>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Documents for Mutation (Class-II)</h3>
-        <ul>
-          <li>Death Certificate</li>
-          <li>Detailed family tree proving absence of all Class-I heirs</li>
-          <li>Legal-heir certificate naming the Class-II claimants</li>
-          <li>Identity proofs + NOCs of all Class-II claimants of the same entry</li>
-          <li>Existing revenue records</li>
-        </ul>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Is the property Agricultural land in UP?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('agri','yes')">YES – Agricultural</button>
-          <button class="btn-no"  onclick="choose('agri','no')">NO – House / Shop / Plot</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== ANCESTRAL ===== */
-  'nature-ancestral': {
-    label: 'Ancestral / HUF', labelClass: 'no',
-    html: `
-      <div class="path-label no">Ancestral / Coparcenary Property</div>
-      <div class="box process">
-        <h3>Coparceners (after 9-9-2005)</h3>
-        <p>Sons <strong>and daughters</strong> of a coparcener are coparceners by birth and take equal share.<br>
-        On death of a coparcener his/her share is first ascertained by notional partition, then that share devolves by succession.</p>
-        <span class="info-link" onclick="openModal('ancestral')">Ancestral & notional partition explained →</span>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Documents for Mutation (Ancestral)</h3>
-        <ul>
-          <li>Death Certificate of the deceased coparcener</li>
-          <li>Genealogy / family tree of all coparceners</li>
-          <li>Proof that property is ancestral (old Khata entries going back generations)</li>
-          <li>NOC / consent of all living coparceners</li>
-          <li>If formal partition already done → registered Partition Deed</li>
-          <li>Identity proofs of applicants</li>
-        </ul>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Is the property Agricultural land in UP?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('agri','yes')">YES – Agricultural</button>
-          <button class="btn-no"  onclick="choose('agri','no')">NO – House / Shop / Plot</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== AGRI / NON-AGRI ===== */
-  'agri-yes': {
-    label: 'Agricultural (UP)', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Agricultural Land – Uttar Pradesh</div>
-      <div class="box info">
-        <h3>UP-specific law applies</h3>
-        <p>U.P. Zamindari Abolition & Land Reforms Act + U.P. Land Revenue Code<br>
-        Mutation is done by Tehsildar on report of Lekhpal after public notice.</p>
-        <span class="info-link" onclick="openModal('upmutation')">Full UP Mutation steps →</span>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Any family dispute over shares or title?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('dispute','yes')">YES – Dispute</button>
-          <button class="btn-no"  onclick="choose('dispute','no')">NO – All agree</button>
-        </div>
-      </div>`
-  },
-  'agri-no': {
-    label: 'Non-Agricultural', labelClass: 'no',
-    html: `
-      <div class="path-label no">House / Shop / Plot</div>
-      <div class="box info">
-        <h3>Non-agricultural property</h3>
-        <p>Mutation in Municipal records (urban) or Tehsil (rural).<br>
-        Transfer deeds still require compulsory registration under Registration Act s.17.</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Any family dispute over shares or title?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('dispute','yes')">YES – Dispute</button>
-          <button class="btn-no"  onclick="choose('dispute','no')">NO – All agree</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== DISPUTE ===== */
-  'dispute-yes': {
-    label: 'Dispute', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Family Dispute exists</div>
-      <div class="box danger">
-        <h3>File Civil Suit</h3>
-        <p>Partition suit or Declaration of title in the Civil Court having jurisdiction over the property</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Documents for Partition / Title Suit</h3>
-        <ul>
-          <li>Plaint with complete pedigree / family tree</li>
-          <li>Death Certificate</li>
-          <li>Title documents & previous mutation entries</li>
-          <li>List of all legal heirs / coparceners with addresses</li>
-          <li>Court fee (ad valorem on the share claimed in most cases)</li>
-          <li>Any Will, previous partition deed, or gift deed</li>
-        </ul>
-      </div>
-      <div class="arrow"></div>
-      <div class="box process">
-        <h3>Court passes final decree</h3>
-        <p>Shares are fixed. The decree is binding on revenue authorities.</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box process">
-        <h3>Apply for Mutation with certified copy of decree</h3>
-        <p>Submit to Tehsildar along with usual mutation papers</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>After mutation – sell / gift / formal partition?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('transfer','yes')">YES – Transfer / Partition Deed</button>
-          <button class="btn-no"  onclick="choose('transfer','no')">NO – Keep as mutated</button>
-        </div>
-      </div>`
-  },
-  'dispute-no': {
-    label: 'No Dispute', labelClass: 'no',
-    html: `
-      <div class="path-label no">All heirs agree</div>
-      <div class="box process">
-        <h3>Apply for Mutation</h3>
-        <p>Application to Tehsildar → Lekhpal report → Public notice (15–30 days) → Order</p>
-        <span class="info-link" onclick="openModal('upmutation')">Detailed UP Mutation procedure →</span>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Standard Mutation Documents (UP)</h3>
-        <ul>
-          <li>Application in prescribed form</li>
-          <li>Death Certificate</li>
-          <li>Legal-heir certificate <strong>or</strong> family-tree affidavit</li>
-          <li>NOC / consent of all other legal heirs (or personal appearance)</li>
-          <li>Identity + address proofs + photos of applicants</li>
-          <li>Latest Khata / Khatauni extract</li>
-          <li>Will + Probate (if any)</li>
-          <li>Court decree (if any)</li>
-        </ul>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Any objection after public notice?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('obj','yes')">YES – Objection filed</button>
-          <button class="btn-no"  onclick="choose('obj','no')">NO – No objection</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== OBJECTION ===== */
-  'obj-yes': {
-    label: 'Objection filed', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Objection received</div>
-      <div class="box danger">
-        <h3>Revenue enquiry / hearing</h3>
-        <p>Tehsildar (or higher authority on appeal) decides after giving opportunity of hearing</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box success">
-        <h3>Mutation ordered after decision</h3>
-        <p>Khata / Khatauni updated</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Sell / gift / formal Partition Deed?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('transfer','yes')">YES</button>
-          <button class="btn-no"  onclick="choose('transfer','no')">NO – Keep as is</button>
-        </div>
-      </div>`
-  },
-  'obj-no': {
-    label: 'No Objection', labelClass: 'no',
-    html: `
-      <div class="path-label no">No Objection</div>
-      <div class="box success">
-        <h3>Mutation Approved</h3>
-        <p>Names of legal heirs entered in revenue records</p>
-        <p class="note">Mutation updates the public record only. Title itself flows from succession + registered documents.</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box decision">
-        <h3>Sell / gift / formal Partition Deed?</h3>
-        <div class="choice-btns">
-          <button class="btn-yes" onclick="choose('transfer','yes')">YES</button>
-          <button class="btn-no"  onclick="choose('transfer','no')">NO – Keep as is</button>
-        </div>
-      </div>`
-  },
-
-  /* ===== TRANSFER ===== */
-  'transfer-yes': {
-    label: 'Further Transfer', labelClass: 'yes',
-    html: `
-      <div class="path-label yes">Sale / Gift / Partition</div>
-      <div class="box process">
-        <h3>Prepare the document</h3>
-        <p>Sale Deed (TPA s.54) • Gift Deed (TPA s.122) • Partition Deed • Release Deed</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box docs">
-        <h3>Documents & costs for Registration (UP)</h3>
-        <ul>
-          <li>Draft deed</li>
-          <li>Stamp duty on circle rate / market value (UP Stamp Act – rates vary; often 5–7% for sale, lower for blood relations / women in some cases)</li>
-          <li>Registration fee</li>
-          <li>Identity proofs + photos of parties & witnesses</li>
-          <li>Latest mutation / Khata extract</li>
-          <li>PAN cards (high-value transactions)</li>
-          <li>For agricultural land – check purchaser eligibility under UP land laws</li>
-        </ul>
-        <span class="info-link" onclick="openModal('stamp')">Stamp duty & registration notes →</span>
-      </div>
-      <div class="arrow"></div>
-      <div class="box process">
-        <h3>Register at Sub-Registrar</h3>
-        <p>Compulsory under Registration Act s.17 for most immovable property transfers of value ≥ ₹100</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box process">
-        <h3>Fresh Mutation for buyer / donee</h3>
-        <p>Apply again with the registered deed</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box success">
-        <h3>END – Clean registered title</h3>
-        <p>Both revenue record and registered deed now stand in the new owner’s name</p>
-      </div>`
-  },
-  'transfer-no': {
-    label: 'Keep in family', labelClass: 'no',
-    html: `
-      <div class="path-label no">Keep as is</div>
-      <div class="box success">
-        <h3>Family retains the property</h3>
-        <p>According to the shares already mutated. A formal registered Partition Deed can still be executed later if desired.</p>
-      </div>
-      <div class="arrow"></div>
-      <div class="box success"><h3>END</h3></div>`
+  function esc(s){ return s.replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function highlight(text, q){
+    if(!q) return esc(text);
+    var i = text.toLowerCase().indexOf(q);
+    if(i<0) return esc(text);
+    return esc(text.slice(0,i)) + '<mark>' + esc(text.slice(i,i+q.length)) + '</mark>' + esc(text.slice(i+q.length));
   }
-};
 
-const modalData = {
-  will: `<h2>Will & Probate – UP</h2>
-    <ul>
-      <li>Will must be signed by the testator and attested by at least two witnesses.</li>
-      <li>Probate is not compulsory for Hindus in most of UP, but strongly recommended when the estate is large or dispute is likely.</li>
-      <li>A Will can dispose of self-acquired property freely. Only the testator’s own share in ancestral property can be willed away.</li>
-      <li>If the Will is declared invalid, the estate is distributed under the Hindu Succession Act as intestate.</li>
-    </ul>`,
-  class1: `<h2>Class-I Heirs (complete list)</h2>
-    <p>Son; daughter; widow; mother; son of a pre-deceased son; daughter of a pre-deceased son; son of a pre-deceased daughter; daughter of a pre-deceased daughter; widow of a pre-deceased son; son of a pre-deceased son of a pre-deceased son; daughter of a pre-deceased son of a pre-deceased son; widow of a pre-deceased son of a pre-deceased son; son of a pre-deceased daughter of a pre-deceased daughter; daughter of a pre-deceased daughter of a pre-deceased daughter; daughter of a pre-deceased son of a pre-deceased daughter; daughter of a pre-deceased daughter of a pre-deceased son.</p>
-    <p>All take simultaneously and equally. Children of a pre-deceased child take the share their parent would have taken (per stirpes).</p>`,
-  class2: `<h2>Class-II Heirs (order of preference)</h2>
-    <ol>
-      <li>Father</li>
-      <li>(1) Son’s daughter’s son (2) Son’s daughter’s daughter (3) Brother (4) Sister</li>
-      <li>(1) Daughter’s son’s son (2) Daughter’s son’s daughter (3) Daughter’s daughter’s son (4) Daughter’s daughter’s daughter</li>
-      <li>(1) Brother’s son (2) Sister’s son (3) Brother’s daughter (4) Sister’s daughter</li>
-      <li>Father’s father; Father’s mother</li>
-      <li>Father’s widow; Brother’s widow</li>
-      <li>Father’s brother; Father’s sister</li>
-      <li>Mother’s father; Mother’s mother</li>
-      <li>Mother’s brother; Mother’s sister</li>
-    </ol>
-    <p>Heirs in an earlier entry exclude those in a later entry. Those in the same entry take equally.</p>`,
-  shares: `<h2>Share Calculation Examples (Class-I)</h2>
-    <ul>
-      <li><strong>Widow + 2 sons + 1 daughter</strong> → 4 equal shares of 1/4 each.</li>
-      <li><strong>Widow + 1 son + 2 children of a pre-deceased son</strong> → Widow 1/3, living son 1/3, the two grandchildren together take the remaining 1/3 (1/6 each).</li>
-      <li><strong>Only three daughters</strong> (no widow, no son, no mother) → each daughter takes 1/3.</li>
-      <li><strong>Widow + mother + 1 daughter</strong> → each takes 1/3.</li>
-      <li><strong>Two sons of a pre-deceased son + one daughter of another pre-deceased son</strong> → the two grandsons together take one share, the granddaughter takes one share; then the two grandsons divide their share equally.</li>
-    </ul>`,
-  female: `<h2>Female Hindu dying Intestate (ss.15 & 16)</h2>
-    <p><strong>General rule (s.15(1))</strong> – property devolves upon:</p>
-    <ol>
-      <li>Sons and daughters (including children of pre-deceased son/daughter) and husband</li>
-      <li>Heirs of the husband</li>
-      <li>Heirs of the father</li>
-      <li>Heirs of the mother</li>
-    </ol>
-    <p><strong>Special rules (s.15(2))</strong>:</p>
-    <ul>
-      <li>Property inherited from <strong>parents</strong> → does not go to husband or his heirs; goes to father’s heirs if no children.</li>
-      <li>Property inherited from <strong>husband or father-in-law</strong> → does not go to her own parents’ heirs; goes to husband’s heirs if no children.</li>
-    </ul>`,
-  ancestral: `<h2>Ancestral Property & Notional Partition</h2>
-    <ul>
-      <li>Property inherited from father, grandfather or great-grandfather is ancestral in the hands of the son.</li>
-      <li>After 9-9-2005, daughters are coparceners by birth with same rights as sons.</li>
-      <li>On death of a coparcener a <strong>notional partition</strong> is assumed immediately before death to ascertain his/her share. That share then devolves by succession (Will or intestate).</li>
-      <li>Any coparcener can demand actual partition at any time.</li>
-    </ul>`,
-  upmutation: `<h2>UP Mutation Procedure (Agricultural & Rural)</h2>
-    <ol>
-      <li>Application to Tehsildar (prescribed form) with documents.</li>
-      <li>Lekhpal inspects and submits report.</li>
-      <li>Public notice issued (usually 15–30 days) – pasted at prominent places / published.</li>
-      <li>If no objection → Tehsildar orders mutation.</li>
-      <li>If objection → enquiry / hearing → reasoned order.</li>
-      <li>Appeal lies to SDM / Collector / higher revenue authorities.</li>
-      <li>Entry is made in Khatauni / relevant registers. Bhulekh UP portal reflects the change after digitisation.</li>
-    </ol>
-    <p><strong>Legal Heir Certificate</strong> – issued by Tehsildar / SDM for general purposes (mutation, banks, etc.).<br>
-    <strong>Succession Certificate</strong> – issued by Civil Court under Indian Succession Act mainly for collecting debts and securities.</p>`,
-  stamp: `<h2>Stamp Duty & Registration – UP (indicative)</h2>
-    <ul>
-      <li>Stamp duty is levied on the higher of circle rate or actual consideration (UP Stamp Act).</li>
-      <li>Typical range for sale of immovable property: around 5–7% (exact rate depends on location, gender of buyer, and current notifications).</li>
-      <li>Concessions often exist for women buyers and for transfers between blood relations.</li>
-      <li>Registration fee is additional (usually a small percentage or fixed slabs).</li>
-      <li>Always verify the latest circle rate and stamp duty notification for the specific tehsil / district before drafting the deed.</li>
-      <li>Under-stamped documents are inadmissible in evidence and attract penalty.</li>
-    </ul>`
-};
+  function render(q){
+    q = q.trim().toLowerCase();
+    if(!q){ results.innerHTML=''; grid.style.display=''; return; }
+    grid.style.display='none';
+    var terms = q.split(/\s+/);
+    var matches = cases.filter(function(c){
+      var hay = (c.title + ' ' + c.entity + ' ' + c.kw).toLowerCase();
+      return terms.every(function(t){ return hay.indexOf(t) !== -1; });
+    });
+    if(!matches.length){
+      results.innerHTML = '<div class="search-empty">No case type matches “' + esc(q) + '”. Try another word, or browse the domains below.</div>';
+      grid.style.display='';
+      return;
+    }
+    results.innerHTML = matches.map(function(c){
+      return '<a href="' + c.href + '">' +
+        '<span class="s-ico">' + c.icon + '</span>' +
+        '<span class="s-title">' + highlight(c.title, q.split(/\s+/)[0]) + '</span>' +
+        '<span class="s-entity">' + esc(c.entity) + '</span></a>';
+    }).join('');
+  }
 
-let path = ['start'];
-const flowEl = document.getElementById('flow');
-
-function render() {
-  flowEl.innerHTML = '';
-  path.forEach((key, idx) => {
-    const data = steps[key];
-    if (!data) return;
-    const block = document.createElement('div');
-    block.className = 'step-block';
-    block.innerHTML = data.html;
-    flowEl.appendChild(block);
-    if (idx < path.length - 1) {
-      block.querySelectorAll('.choice-btns button').forEach(b => b.disabled = true);
-      const nextKey = path[idx + 1];
-      const nextData = steps[nextKey];
-      if (nextData && nextData.label) {
-        const decBox = block.querySelector('.box.decision');
-        if (decBox) {
-          const lbl = document.createElement('div');
-          lbl.className = 'chosen-label ' + (nextData.labelClass || 'yes');
-          lbl.textContent = 'Chosen → ' + nextData.label;
-          decBox.appendChild(lbl);
-        }
-      }
+  input.addEventListener('input', function(){ render(input.value); });
+  input.addEventListener('keydown', function(e){
+    if(e.key === 'Enter'){
+      var first = results.querySelector('a');
+      if(first){ window.location.href = first.getAttribute('href'); }
     }
   });
-  const labels = path.map(k => k === 'start' ? 'Start' : (steps[k] && steps[k].label) || k);
-  document.getElementById('history').innerHTML = labels.length > 1 ? '<span>' + labels.join(' → ') + '</span>' : '';
-  document.getElementById('backBtn').style.display = path.length > 1 ? 'inline-block' : 'none';
-  setTimeout(() => {
-    const last = flowEl.lastElementChild;
-    if (last) last.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, 40);
-}
-
-function choose(key, value) {
-  let next = '';
-  if (key === 'gender') next = value === 'male' ? 'gender-male' : 'gender-female';
-  else if (key === 'will') next = value === 'yes' ? 'will-yes' : 'will-no';
-  else if (key === 'valid') next = value === 'yes' ? 'valid-yes' : 'valid-no';
-  else if (key === 'fwill') next = value === 'yes' ? 'fwill-yes' : 'fwill-no';
-  else if (key === 'fvalid') next = value === 'yes' ? 'fvalid-yes' : 'fvalid-no';
-  else if (key === 'fsource') {
-    if (value === 'husband') next = 'fsource-husband';
-    else if (value === 'parents') next = 'fsource-parents';
-    else next = 'fsource-self';
-  }
-  else if (key === 'nature') next = value === 'self' ? 'nature-self' : 'nature-ancestral';
-  else if (key === 'class1') next = value === 'yes' ? 'class1-yes' : 'class1-no';
-  else if (key === 'agri') next = value === 'yes' ? 'agri-yes' : 'agri-no';
-  else if (key === 'dispute') next = value === 'yes' ? 'dispute-yes' : 'dispute-no';
-  else if (key === 'obj') next = value === 'yes' ? 'obj-yes' : 'obj-no';
-  else if (key === 'transfer') next = value === 'yes' ? 'transfer-yes' : 'transfer-no';
-
-  if (next) { path.push(next); render(); }
-}
-
-function goBack() { if (path.length > 1) { path.pop(); render(); } }
-function restart() { path = ['start']; render(); window.scrollTo({top:0,behavior:'smooth'}); }
-function openModal(key) {
-  document.getElementById('modal-content').innerHTML = modalData[key] || '<p>No details.</p>';
-  document.getElementById('modal').classList.add('show');
-}
-function closeModal() { document.getElementById('modal').classList.remove('show'); }
-
-render();
+})();
 </script>
 </body>
 </html>
