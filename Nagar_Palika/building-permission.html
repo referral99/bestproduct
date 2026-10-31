@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building / Map Sanction – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Building / Map Sanction & Unauthorised Construction (Uttar Pradesh)",
+  subtitle: "Plan sanction • Deviation • Compounding • Demolition<br>UP Urban Planning & Development Act 1973 (Development Authority) + UP Municipal Corporation Act 1959 + UP Municipalities Act 1916",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Nagar Palika", href:"index.html"},
+    {label:"Building Permission"}
+  ],
+  acts: [
+    {name:"UP Urban Planning & Development Act, 1973", href:"UP_Urban_Planning_Development_Act_1973.pdf"},
+    {name:"UP Municipal Corporation Act, 1959", href:"UP_Municipal_Corporation_Act_1959.pdf"},
+    {name:"UP Municipalities Act, 1916", href:"UP_Municipalities_Act_1916.pdf"}
+  ],
+  related: [
+    {label:"Demolition / Sealing Notice", href:"demolition-notice.html"},
+    {label:"Development Authority Dispute", href:"development-dispute.html"},
+    {label:"Encroachment Removal", href:"encroachment.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>You want to construct, re-construct or add to a building on an urban plot in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Identify the sanctioning authority</h3>
+          <p>Within a development area → the Development Authority (1973 Act). Elsewhere in city limits → Nagar Nigam (1959) / Nagar Palika (1916).</p>
+          <span class="info-link" onclick="openModal('authority')">Which body sanctions the map? →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Does the plot fall in a Development Authority area?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('da-area')">YES – Development Authority</button>
+            <button class="btn-no"  onclick="choose('ulb-area')">NO – ULB (Nigam / Palika)</button>
+          </div>
+        </div>`
+    },
+    'da-area': {
+      label: 'Development Authority area', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Development Authority jurisdiction (1973 Act)</div>
+        <div class="box info">
+          <h3>Map sanction under the 1973 Act</h3>
+          <p>Building plan must conform to the master plan, zoning and building bye-laws of the authority.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Continue to apply for map sanction?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('apply-map')">Apply for sanction</button>
+          </div>
+        </div>`
+    },
+    'ulb-area': {
+      label: 'ULB area', labelClass: 'no',
+      html: `
+        <div class="path-label no">ULB jurisdiction (Nigam / Palika)</div>
+        <div class="box info">
+          <h3>Sanction under 1959 / 1916 Act</h3>
+          <p>Notice of intended erection with plans is given to the municipal authority under the building provisions of the Act.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Continue to apply for map sanction?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('apply-map')">Apply for sanction</button>
+          </div>
+        </div>`
+    },
+    'apply-map': {
+      label: 'Apply for map', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Application for map / plan sanction</div>
+        <div class="box process">
+          <h3>3. Submit building plan</h3>
+          <p>Plan prepared & signed by a registered architect / engineer, submitted online (e.g. OBPAS) or at the counter with the required fees.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for sanction</h3>
+          <ul>
+            <li>Ownership proof (registered deed / allotment / lease)</li>
+            <li>Approved layout / plot plan, site plan & building plan</li>
+            <li>Architect / structural engineer certificate</li>
+            <li>Latest house-tax / No-Dues; ID proof</li>
+            <li>Setback, FAR / ground-coverage & height details per bye-laws</li>
+            <li>NOCs (fire, pollution, airport, etc.) where applicable</li>
+          </ul>
+          <span class="info-link" onclick="openModal('byelaws')">Key bye-law parameters →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the plan conform to bye-laws?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('sanctioned')">YES – Sanctioned</button>
+            <button class="btn-no"  onclick="choose('objection-plan')">NO – Objection / shortfall</button>
+          </div>
+        </div>`
+    },
+    'objection-plan': {
+      label: 'Plan objected', labelClass: 'no',
+      html: `
+        <div class="path-label no">Plan objected / returned</div>
+        <div class="box danger">
+          <h3>Rectify the plan</h3>
+          <p>Authority raises objections (setbacks, FAR, use, NOC missing). Revise and resubmit within the given time.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Revised plan complies?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('sanctioned')">YES – Now compliant</button>
+            <button class="btn-no"  onclick="choose('rejected')">NO – Cannot comply</button>
+          </div>
+        </div>`
+    },
+    'rejected': {
+      label: 'Rejected', labelClass: 'no',
+      html: `
+        <div class="path-label no">Sanction refused</div>
+        <div class="box danger"><h3>Refusal of map</h3><p>Reasons recorded. Appeal lies to the prescribed authority / State Government under the 1973 Act, or the appellate authority under the municipal Act.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Appeal or redesign</h3><p>Either pursue the statutory appeal or submit a fresh conforming plan before starting any work.</p></div>`
+    },
+    'sanctioned': {
+      label: 'Map sanctioned', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Map / plan sanctioned</div>
+        <div class="box success">
+          <h3>4. Sanction granted</h3>
+          <p>Sanctioned plan is valid for a fixed period (commonly renewable). Construction must strictly follow the sanctioned drawings.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Was construction done as per the sanctioned plan?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('as-per-plan')">YES – As sanctioned</button>
+            <button class="btn-no"  onclick="choose('deviation')">NO – Deviation / extra construction</button>
+          </div>
+        </div>`
+    },
+    'as-per-plan': {
+      label: 'Built as sanctioned', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Built as per sanction</div>
+        <div class="box process">
+          <h3>Completion & occupancy</h3>
+          <p>Apply for completion certificate; after inspection the occupancy / completion certificate is issued.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for completion</h3>
+          <ul>
+            <li>Completion application with as-built drawings</li>
+            <li>Architect / engineer completion certificate</li>
+            <li>Copy of sanctioned plan & fee receipts</li>
+            <li>Applicable NOCs (fire / lift etc.)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Legal, completed building</h3><p>Occupancy certificate issued; property can be used, let, mortgaged and sold cleanly.</p></div>`
+    },
+    'deviation': {
+      label: 'Deviation', labelClass: 'no',
+      html: `
+        <div class="path-label no">Construction deviates / is unauthorised</div>
+        <div class="box danger">
+          <h3>Unauthorised construction</h3>
+          <p>Building without sanction, or beyond the sanctioned plan, is unauthorised and can attract a stop-work notice, compounding, sealing or demolition.</p>
+          <span class="info-link" onclick="openModal('compounding')">What is compounding? →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the deviation compoundable within permissible limits?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('compound')">YES – Within compoundable limit</button>
+            <button class="btn-no"  onclick="choose('non-compoundable')">NO – Beyond limit</button>
+          </div>
+        </div>`
+    },
+    'compound': {
+      label: 'Compounding', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Compounding of minor deviation</div>
+        <div class="box process">
+          <h3>Apply for compounding</h3>
+          <p>Pay compounding charges as per the notified schedule; the deviation within permissible percentage is regularised.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for compounding</h3>
+          <ul>
+            <li>Compounding application with revised / as-built plan</li>
+            <li>Original sanctioned plan</li>
+            <li>Computation of deviated area</li>
+            <li>Proof of payment of compounding fee</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Deviation regularised</h3><p>Revised sanction / compounding order issued; apply for completion certificate.</p></div>`
+    },
+    'non-compoundable': {
+      label: 'Non-compoundable', labelClass: 'no',
+      html: `
+        <div class="path-label no">Deviation beyond compoundable limit</div>
+        <div class="box danger">
+          <h3>Enforcement action</h3>
+          <p>Show-cause / demolition or sealing notice under the 1973 Act (s.27 type powers) or municipal building provisions. You must reply and may be heard.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Reply / remedy the illegality?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('remove-excess')">Demolish excess voluntarily</button>
+            <button class="btn-no"  onclick="choose('demolition')">Contest → authority acts</button>
+          </div>
+        </div>`
+    },
+    'remove-excess': {
+      label: 'Remove excess', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Voluntary removal of excess</div>
+        <div class="box process"><h3>Bring building within sanction</h3><p>Demolish the unauthorised portion and file revised as-built plan.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Regularised after removal</h3><p>Completion certificate can then be pursued for the compliant structure.</p></div>`
+    },
+    'demolition': {
+      label: 'Demolition / sealing', labelClass: 'no',
+      html: `
+        <div class="path-label no">Authority proceeds with demolition / sealing</div>
+        <div class="box danger">
+          <h3>Demolition / sealing order</h3>
+          <p>After notice and hearing, the authority may seal or demolish the unauthorised construction and recover costs. Appeal lies to the prescribed appellate authority / Tribunal.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Enforcement / appeal</h3><p>Either the illegal portion is removed, or you pursue the statutory appeal against the order.</p></div>`
+    }
+  },
+  modals: {
+    authority: `<h2>Sanctioning Authority</h2>
+      <ul>
+        <li><strong>Development Authority</strong> (e.g. Vikas Pradhikaran) – plots inside a notified development area, under the UP Urban Planning & Development Act, 1973.</li>
+        <li><strong>Nagar Nigam</strong> – city municipal area under the 1959 Act.</li>
+        <li><strong>Nagar Palika / Panchayat</strong> – smaller towns under the 1916 Act.</li>
+      </ul>`,
+    byelaws: `<h2>Key Bye-law Parameters</h2>
+      <ul>
+        <li>Front / side / rear setbacks.</li>
+        <li>FAR (floor area ratio) and ground coverage.</li>
+        <li>Maximum height & number of floors.</li>
+        <li>Permitted land use per master plan / zoning.</li>
+        <li>Parking, light & ventilation norms.</li>
+      </ul>`,
+    compounding: `<h2>Compounding of Deviations</h2>
+      <ul>
+        <li>Minor deviations within a notified percentage of setbacks / FAR can be regularised on payment of compounding charges.</li>
+        <li>It does not legalise deviations beyond the permissible limit or in violation of use/master plan.</li>
+        <li>Public-safety, encroachment on roads and green/park land are generally non-compoundable.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

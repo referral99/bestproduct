@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheque Dishonour – Summary Suit (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Cheque Dishonour – Summary Suit (Order 37 CPC) [UP]",
+  subtitle: "Civil recovery of a bounced cheque amount by summary suit<br>Negotiable Instruments Act 1881 + CPC 1908 (Order 37) + Limitation Act 1963",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Civil", href:"index.html"},
+    {label:"Cheque Dishonour – Summary Suit"}
+  ],
+  acts: [
+    {name:"Negotiable Instruments Act, 1881", href:"../Criminal/Negotiable_Instruments_Act_1881.pdf"},
+    {name:"Code of Civil Procedure, 1908", href:"Code_of_Civil_Procedure_1908.pdf"},
+    {name:"Limitation Act, 1963", href:"Limitation_Act_1963.pdf"},
+    {name:"Court Fees Act, 1870", href:"Court_Fees_Act_1870.pdf"}
+  ],
+  related: [
+    {label:"Criminal complaint – Cheque Bounce s.138 NI Act", href:"../Criminal/cheque-bounce-138.html"},
+    {label:"Recovery of Money / Debt", href:"recovery-of-money.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A cheque issued to the holder has been dishonoured by the bank</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Two parallel tracks</h3>
+          <p>A dishonoured cheque gives both a <strong>criminal</strong> remedy (s.138 NI Act complaint) and a <strong>civil</strong> remedy (summary suit for the amount). This flow covers the civil summary suit; both can run together.</p>
+          <span class="info-link" onclick="openModal('tracks')">Criminal vs. civil track →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Was the cheque issued to discharge a legally enforceable debt/liability?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('debt')">YES – For a debt</button>
+            <button class="btn-no"  onclick="choose('nodebt')">NO – Gift / security only</button>
+          </div>
+        </div>`
+    },
+    nodebt: {
+      label: 'No underlying debt', labelClass: 'no',
+      html: `
+        <div class="path-label no">No enforceable liability</div>
+        <div class="box danger"><h3>Weak basis for recovery</h3><p>A cheque not issued for a debt (e.g. pure gift) is difficult to enforce; the presumption under s.139 can be rebutted.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Reconsider</h3></div>`
+    },
+    debt: {
+      label: 'For a debt', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Cheque for a legally enforceable debt</div>
+        <div class="box info">
+          <h3>Presumption in holder's favour</h3>
+          <p>s.118 & s.139 NI Act presume the cheque was for consideration; the burden shifts to the drawer to rebut.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is the civil claim within limitation (3 years from cause of action)?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('notice')">YES – In time</button>
+            <button class="btn-no"  onclick="choose('timebar')">NO – Time-barred</button>
+          </div>
+        </div>`
+    },
+    timebar: {
+      label: 'Time-barred', labelClass: 'no',
+      html: `
+        <div class="path-label no">Civil suit beyond 3 years</div>
+        <div class="box danger"><h3>Barred by limitation</h3><p>The civil summary suit must be brought within three years; a fresh written acknowledgement can revive it.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Civil remedy lost</h3></div>`
+    },
+    notice: {
+      label: 'Send demand notice', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Within limitation</div>
+        <div class="box process">
+          <h3>3. Issue a demand notice</h3>
+          <p>For the s.138 criminal track the notice must go <strong>within 30 days</strong> of receiving the bank's dishonour memo, giving the drawer 15 days to pay. For the civil suit a demand notice is advisable but not mandatory.</p>
+          <span class="info-link" onclick="openModal('s138')">s.138 timeline →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Did the drawer pay within the notice period?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('paid')">YES – Paid</button>
+            <button class="btn-no"  onclick="choose('suit')">NO – File summary suit</button>
+          </div>
+        </div>`
+    },
+    paid: {
+      label: 'Paid after notice', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Drawer pays</div>
+        <div class="box success"><h3>Amount recovered</h3><p>Obtain a receipt; no s.138 offence is made out once payment is within the 15-day window.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Resolved</h3></div>`
+    },
+    suit: {
+      label: 'File summary suit', labelClass: 'no',
+      html: `
+        <div class="path-label no">File Order 37 Summary Suit</div>
+        <div class="box process">
+          <h3>Forum & procedure</h3>
+          <p>File in the Civil Court with pecuniary jurisdiction where the cheque was presented/payable or the defendant resides. Marked as a summary suit under Order 37 CPC.</p>
+          <span class="info-link" onclick="openModal('o37')">Order 37 steps →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to file</h3>
+          <ul>
+            <li>Plaint under Order 37 for the cheque amount + interest</li>
+            <li>Original dishonoured cheque</li>
+            <li>Bank's cheque return / dishonour memo</li>
+            <li>Demand notice + postal/courier proof of service</li>
+            <li>Proof of the underlying debt (invoice, loan papers, ledger)</li>
+            <li>Court fee (ad valorem) under Court Fees Act</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the defendant get leave to defend?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('decree')">NO – Leave refused</button>
+            <button class="btn-alt" onclick="choose('trial')">YES – Leave granted</button>
+          </div>
+        </div>`
+    },
+    decree: {
+      label: 'Leave refused → decree', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Leave to defend refused</div>
+        <div class="box success"><h3>Decree passed</h3><p>Where the defendant fails to seek/obtain leave or meet conditions, the court decrees the suit for the cheque amount with interest.</p></div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Execution</h3><p>Recover under Order 21 CPC – attachment/sale of property or garnishee of bank accounts.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Amount recovered</h3></div>`
+    },
+    trial: {
+      label: 'Leave granted → trial', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Conditional / unconditional leave</div>
+        <div class="box process"><h3>Matter goes to trial</h3><p>Leave may be conditional (e.g. deposit of the amount). The s.139 presumption still aids the holder; the drawer must rebut it.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Decree if debt proved</h3></div>`
+    }
+  },
+  modals: {
+    tracks: `<h2>Criminal vs. Civil Track</h2>
+      <ul>
+        <li><strong>Criminal (s.138 NI Act):</strong> complaint before a Magistrate within 1 month after the 15-day notice period lapses; punishment up to 2 years and/or fine up to twice the cheque amount.</li>
+        <li><strong>Civil (Order 37 summary suit):</strong> faster recovery of the money itself with interest.</li>
+        <li>Both remedies may be pursued simultaneously.</li>
+      </ul>`,
+    s138: `<h2>Section 138 NI Act Timeline</h2>
+      <ol>
+        <li>Cheque presented within its validity (3 months).</li>
+        <li>Bank returns it unpaid (insufficient funds / exceeds arrangement).</li>
+        <li>Payee sends written demand within 30 days of the return memo.</li>
+        <li>Drawer has 15 days to pay.</li>
+        <li>If unpaid, complaint filed within 1 month of the 15-day period.</li>
+      </ol>`,
+    o37: `<h2>Order 37 CPC – Summary Suit</h2>
+      <ol>
+        <li>Plaintiff files on the cheque (a negotiable instrument).</li>
+        <li>Special summons; defendant appears within 10 days.</li>
+        <li>Defendant applies for leave to defend within 10 days of appearance.</li>
+        <li>Leave is unconditional, conditional, or refused.</li>
+        <li>If refused/conditions unmet, the court decrees the suit.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

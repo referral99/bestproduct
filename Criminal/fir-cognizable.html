@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FIR & Cognizable Offence – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "FIR & Cognizable Offence – Complete Flow (Uttar Pradesh)",
+  subtitle: "Registration → Investigation → Charge-sheet → Trial → Judgment<br>New law (from 1 July 2024): BNS 2023 + BNSS 2023 + BSA 2023 replace IPC / CrPC / Evidence Act",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Criminal", href:"index.html"},
+    {label:"FIR & Cognizable Offence"}
+  ],
+  acts: [
+    {name:"Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS – new)", href:"BNSS_2023_Bharatiya_Nagarik_Suraksha_Sanhita.pdf"},
+    {name:"Bharatiya Nyaya Sanhita, 2023 (BNS – new)", href:"BNS_2023_Bharatiya_Nyaya_Sanhita_Gazette.pdf"},
+    {name:"Bharatiya Sakshya Adhiniyam, 2023 (BSA – new)", href:"BSA_2023_Bharatiya_Sakshya_Adhiniyam_Gazette.pdf"},
+    {name:"Code of Criminal Procedure, 1973 (old – pre-1 July 2024)", href:"Code_of_Criminal_Procedure_1973.pdf"},
+    {name:"Indian Penal Code, 1860 (old – pre-1 July 2024)", href:"Indian_Penal_Code_1860.pdf"},
+    {name:"Indian Evidence Act, 1872 (old – pre-1 July 2024)", href:"Indian_Evidence_Act_1872.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A crime is reported at a Police Station in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Which law applies?</h3>
+          <p>Offence <strong>on/after 1 July 2024</strong> → BNS + BNSS + BSA.<br>
+          Offence <strong>before 1 July 2024</strong> → IPC + CrPC + Evidence Act.</p>
+          <span class="info-link" onclick="openModal('newlaw')">New codes vs old codes →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Is the offence Cognizable or Non-Cognizable?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('cognizable')">Cognizable (serious)</button>
+            <button class="btn-no"  onclick="choose('noncog')">Non-Cognizable (minor)</button>
+          </div>
+        </div>`
+    },
+    'cognizable': {
+      label: 'Cognizable offence', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Cognizable offence</div>
+        <div class="box process">
+          <h3>2. Register FIR</h3>
+          <p>Police must register an FIR (BNSS s.173 / old CrPC s.154). Registration is mandatory for a cognizable offence; police may arrest without warrant.</p>
+          <span class="info-link" onclick="openModal('fir')">What an FIR must contain →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents / particulars at FIR stage</h3>
+          <ul>
+            <li>Written or oral complaint of the informant</li>
+            <li>Date, time and place of occurrence</li>
+            <li>Names / description of accused (if known)</li>
+            <li>Copy of FIR given free to informant</li>
+            <li>Zero-FIR if beyond jurisdiction → transferred to proper PS</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. Did the police refuse to register the FIR?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('refusal')">YES – Refused</button>
+            <button class="btn-yes" onclick="choose('investigation')">NO – FIR registered</button>
+          </div>
+        </div>`
+    },
+    'refusal': {
+      label: 'FIR refused', labelClass: 'no',
+      html: `
+        <div class="path-label no">Police refused to register FIR</div>
+        <div class="box danger">
+          <h3>Remedies on refusal</h3>
+          <p>1. Written complaint to Superintendent of Police (BNSS s.173(4) / CrPC s.154(3)).<br>
+          2. Complaint to Magistrate under BNSS s.175(3) / CrPC s.156(3) directing investigation.<br>
+          3. Private complaint to Magistrate under BNSS s.223 / CrPC s.200.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Magistrate orders registration / investigation</h3><p>Police then proceed to investigate</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to investigation?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('investigation')">Continue</button>
+          </div>
+        </div>`
+    },
+    'noncog': {
+      label: 'Non-cognizable', labelClass: 'no',
+      html: `
+        <div class="path-label no">Non-Cognizable offence</div>
+        <div class="box info">
+          <h3>No FIR without Magistrate's order</h3>
+          <p>Police record the information in the NCR register but cannot investigate or arrest without the Magistrate's permission (BNSS s.174 / old CrPC s.155).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Seek Magistrate's order to investigate</h3><p>Or file a private complaint before the Magistrate</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Proceeds as a Magistrate-led complaint case</h3><p>No police investigation as of right in a purely non-cognizable matter</p></div>`
+    },
+    'investigation': {
+      label: 'Investigation', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">FIR registered → Investigation</div>
+        <div class="box process">
+          <h3>4. Investigation by police</h3>
+          <p>Visit scene, record statements (BNSS s.180 / CrPC s.161), collect evidence, arrest if needed, forensic & medical examination. BNSS now mandates videography of search/seizure and forensic visit for offences ≥ 7 years.</p>
+          <span class="info-link" onclick="openModal('evidence')">Evidence checklist →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Material collected</h3>
+          <ul>
+            <li>Statements of witnesses & informant</li>
+            <li>Seizure memos / recovery panchnama</li>
+            <li>Medical / post-mortem report</li>
+            <li>Forensic (FSL) reports</li>
+            <li>Confessions / disclosures (BSA s.23 / old Evidence Act s.27)</li>
+            <li>Case diary maintained throughout</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Did investigation find enough evidence?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('chargesheet')">YES – Prima facie case</button>
+            <button class="btn-no"  onclick="choose('closure')">NO – Closure / Final Report</button>
+          </div>
+        </div>`
+    },
+    'closure': {
+      label: 'Closure report', labelClass: 'no',
+      html: `
+        <div class="path-label no">No sufficient evidence</div>
+        <div class="box danger"><h3>Final (Closure) Report filed</h3><p>Police file a closure report under BNSS s.193 / CrPC s.173</p></div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Magistrate's options</h3><p>Accept closure • Reject and order further investigation • Take cognizance despite closure • Informant may file protest petition</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Case closed (unless protest succeeds)</h3><p>If protest accepted, matter proceeds to trial</p></div>`
+    },
+    'chargesheet': {
+      label: 'Charge-sheet filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Prima facie case made out</div>
+        <div class="box process">
+          <h3>6. Charge-sheet filed</h3>
+          <p>Police file charge-sheet (BNSS s.193 / CrPC s.173) within 60 or 90 days. Magistrate takes cognizance and supplies copies to the accused (BNSS s.230 / CrPC s.207).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>7. Is the offence triable by Sessions Court or Magistrate?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('sessions')">Sessions (serious, > 7 yrs / life / death)</button>
+            <button class="btn-alt" onclick="choose('magistrate')">Magistrate (lesser offences)</button>
+          </div>
+        </div>`
+    },
+    'sessions': {
+      label: 'Sessions trial', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Committed to Court of Session</div>
+        <div class="box process">
+          <h3>8. Committal & framing of charge</h3>
+          <p>Magistrate commits case to Sessions (BNSS s.232 / CrPC s.209). Sessions Court frames charge or discharges (BNSS s.251 / CrPC s.228).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Charge framed or discharged?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('trial')">Charge framed → Trial</button>
+            <button class="btn-no"  onclick="choose('discharge')">Discharged</button>
+          </div>
+        </div>`
+    },
+    'magistrate': {
+      label: 'Magistrate trial', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Trial before Magistrate</div>
+        <div class="box process">
+          <h3>8. Framing of charge / notice</h3>
+          <p>Warrant case → charge framed (BNSS s.263 / CrPC s.240). Summons case → substance of accusation stated.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Charge framed or discharged?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('trial')">Charge framed → Trial</button>
+            <button class="btn-no"  onclick="choose('discharge')">Discharged</button>
+          </div>
+        </div>`
+    },
+    'discharge': {
+      label: 'Discharged', labelClass: 'no',
+      html: `
+        <div class="path-label no">Accused discharged</div>
+        <div class="box success"><h3>END – Accused discharged</h3><p>No prima facie case; no charge framed</p></div>`
+    },
+    'trial': {
+      label: 'Trial', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Trial stage</div>
+        <div class="box process">
+          <h3>9. Trial</h3>
+          <p>Prosecution evidence & cross-examination → statement of accused (BNSS s.351 / CrPC s.313) → defence evidence → final arguments.</p>
+          <span class="info-link" onclick="openModal('trial')">Trial sequence →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Proof required</h3>
+          <ul>
+            <li>Prosecution must prove guilt beyond reasonable doubt</li>
+            <li>Documentary + oral + electronic evidence (BSA / old Evidence Act)</li>
+            <li>Chain of custody of exhibits intact</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>10. Verdict?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('conviction')">Guilty → Conviction</button>
+            <button class="btn-no"  onclick="choose('acquittal')">Not Guilty → Acquittal</button>
+          </div>
+        </div>`
+    },
+    'conviction': {
+      label: 'Conviction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Conviction</div>
+        <div class="box success">
+          <h3>END – Convicted & sentenced</h3>
+          <p>Court hears on sentence (BNSS s.393 / CrPC s.235) and passes sentence. Appeal lies to Sessions / High Court.</p>
+        </div>`
+    },
+    'acquittal': {
+      label: 'Acquittal', labelClass: 'no',
+      html: `
+        <div class="path-label no">Acquittal</div>
+        <div class="box success">
+          <h3>END – Acquitted</h3>
+          <p>Prosecution failed to prove guilt beyond reasonable doubt. State may appeal against acquittal with leave.</p>
+        </div>`
+    }
+  },
+  modals: {
+    newlaw: `<h2>New Codes replacing the old (from 1 July 2024)</h2>
+      <ul>
+        <li><strong>BNS 2023</strong> replaces the Indian Penal Code, 1860 (defines offences).</li>
+        <li><strong>BNSS 2023</strong> replaces the Code of Criminal Procedure, 1973 (procedure, FIR, bail, trial).</li>
+        <li><strong>BSA 2023</strong> replaces the Indian Evidence Act, 1872 (rules of evidence).</li>
+        <li>Offences committed <strong>before 1 July 2024</strong> continue to be tried under IPC / CrPC / Evidence Act.</li>
+        <li>Pending investigations and trials continue under the old codes.</li>
+      </ul>`,
+    fir: `<h2>First Information Report (FIR)</h2>
+      <ul>
+        <li>First information about a cognizable offence recorded under BNSS s.173 (old CrPC s.154).</li>
+        <li>Must be reduced to writing, read over to informant and signed.</li>
+        <li>Copy given free of cost to the informant.</li>
+        <li>Zero-FIR can be lodged at any police station and transferred to the one with jurisdiction.</li>
+        <li>BNSS allows electronic registration (e-FIR) of information.</li>
+      </ul>`,
+    evidence: `<h2>Investigation & Evidence Checklist</h2>
+      <ul>
+        <li>Scene of crime inspection & photographs / videography.</li>
+        <li>Witness statements (BNSS s.180 / CrPC s.161); s.183 statements before Magistrate.</li>
+        <li>Seizure / recovery memos with independent witnesses.</li>
+        <li>Medical, post-mortem and forensic (FSL) reports.</li>
+        <li>Electronic evidence with certificate (BSA s.63 / old Evidence Act s.65B).</li>
+        <li>Forensic team visit mandatory for offences punishable with 7+ years under BNSS.</li>
+      </ul>`,
+    trial: `<h2>Sequence of a Criminal Trial</h2>
+      <ol>
+        <li>Framing of charge / discharge.</li>
+        <li>Plea of accused.</li>
+        <li>Prosecution evidence + cross-examination.</li>
+        <li>Examination of accused (BNSS s.351 / CrPC s.313).</li>
+        <li>Defence evidence (if any).</li>
+        <li>Final arguments.</li>
+        <li>Judgment – conviction or acquittal.</li>
+        <li>On conviction, hearing on sentence.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

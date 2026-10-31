@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bail – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Bail – Complete Flow (Uttar Pradesh)",
+  subtitle: "Bailable • Non-bailable • Anticipatory • Default bail<br>New law (from 1 July 2024): BNSS 2023 replaces CrPC 1973; offences before that date → CrPC",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Criminal", href:"index.html"},
+    {label:"Bail"}
+  ],
+  acts: [
+    {name:"Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS – new)", href:"BNSS_2023_Bharatiya_Nagarik_Suraksha_Sanhita.pdf"},
+    {name:"Code of Criminal Procedure, 1973 (old – pre-1 July 2024)", href:"Code_of_Criminal_Procedure_1973.pdf"},
+    {name:"Indian Penal Code, 1860 (classification of offences)", href:"Indian_Penal_Code_1860.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A person is arrested / apprehends arrest in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Which code applies?</h3>
+          <p>Bail is governed by BNSS 2023 for offences on/after 1 July 2024; by CrPC 1973 for earlier offences. The scheme of bailable vs non-bailable is substantially the same.</p>
+          <span class="info-link" onclick="openModal('law')">Bail provisions map →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Is the person already arrested, or anticipating arrest?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('arrested')">Already arrested</button>
+            <button class="btn-alt" onclick="choose('anticipatory')">Anticipating arrest</button>
+          </div>
+        </div>`
+    },
+    'arrested': {
+      label: 'Already arrested', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Person already in custody</div>
+        <div class="box decision">
+          <h3>2. Is the offence Bailable or Non-Bailable?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('bailable')">Bailable</button>
+            <button class="btn-no"  onclick="choose('nonbailable')">Non-Bailable</button>
+          </div>
+        </div>`
+    },
+    'bailable': {
+      label: 'Bailable offence', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Bailable offence</div>
+        <div class="box success">
+          <h3>Bail is a matter of RIGHT</h3>
+          <p>Under BNSS s.478 (old CrPC s.436) the accused must be released on bail on furnishing bail bond. Police or court cannot refuse.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents / requirements</h3>
+          <ul>
+            <li>Personal bond + surety (or release on own bond if indigent)</li>
+            <li>Identity & address proof of accused and surety</li>
+            <li>Surety's solvency / property proof</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Released on bail as of right</h3></div>`
+    },
+    'nonbailable': {
+      label: 'Non-bailable offence', labelClass: 'no',
+      html: `
+        <div class="path-label no">Non-Bailable offence</div>
+        <div class="box danger">
+          <h3>Bail is DISCRETIONARY</h3>
+          <p>Court weighs gravity of offence, flight risk, tampering with evidence, criminal antecedents (BNSS s.480 / old CrPC s.437 before Magistrate; s.483 / s.439 before Sessions/High Court).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. Has the charge-sheet been filed within the statutory period?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('defaultbail')">NO – Time expired (60/90 days)</button>
+            <button class="btn-yes" onclick="choose('regular')">YES / still within time</button>
+          </div>
+        </div>`
+    },
+    'defaultbail': {
+      label: 'Default bail', labelClass: 'no',
+      html: `
+        <div class="path-label no">Investigation not completed in time</div>
+        <div class="box success">
+          <h3>Default (statutory) bail</h3>
+          <p>If charge-sheet is not filed within 60 days (offences up to 10 yrs) or 90 days (offences 10 yrs+ / life / death), the accused is entitled to default bail under BNSS s.187(3) / old CrPC s.167(2).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>To claim default bail</h3>
+          <ul>
+            <li>Application showing the period has expired with no charge-sheet</li>
+            <li>Willingness to furnish bail bond</li>
+            <li>Right must be availed before charge-sheet is actually filed</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Released on default bail</h3></div>`
+    },
+    'regular': {
+      label: 'Regular bail hearing', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Regular bail application</div>
+        <div class="box process">
+          <h3>4. File bail application</h3>
+          <p>Before Magistrate (BNSS s.480) or Sessions / High Court (BNSS s.483). Prosecution heard; serious offences may need public prosecutor's opportunity.</p>
+          <span class="info-link" onclick="openModal('factors')">Factors the court weighs →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Does any special statutory bar apply (NDPS s.37, UAPA, etc.)?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('bar')">YES – Special bar</button>
+            <button class="btn-yes" onclick="choose('grant')">NO – Ordinary discretion</button>
+          </div>
+        </div>`
+    },
+    'bar': {
+      label: 'Special statutory bar', labelClass: 'no',
+      html: `
+        <div class="path-label no">Twin-condition bar applies</div>
+        <div class="box danger">
+          <h3>Stringent bail test</h3>
+          <p>In NDPS (s.37), UAPA, PMLA etc. the court must additionally be satisfied the accused is not guilty and unlikely to reoffend. Bail rarely granted.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Can the twin conditions be satisfied?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('grant')">YES – Satisfied</button>
+            <button class="btn-no"  onclick="choose('reject')">NO – Not satisfied</button>
+          </div>
+        </div>`
+    },
+    'grant': {
+      label: 'Bail granted', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Bail granted</div>
+        <div class="box success">
+          <h3>END – Released on conditional bail</h3>
+          <p>Conditions may include: surrender passport, report to PS, not contact witnesses, not leave jurisdiction. Breach → cancellation under BNSS s.483(3) / old CrPC s.439(2).</p>
+        </div>`
+    },
+    'reject': {
+      label: 'Bail rejected', labelClass: 'no',
+      html: `
+        <div class="path-label no">Bail rejected</div>
+        <div class="box danger"><h3>END – Remains in judicial custody</h3><p>Accused may move the higher court or file fresh application on changed circumstances</p></div>`
+    },
+    'anticipatory': {
+      label: 'Anticipatory bail', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Apprehension of arrest</div>
+        <div class="box process">
+          <h3>Anticipatory bail</h3>
+          <p>Application under BNSS s.482 (old CrPC s.438) to Sessions Court or High Court by a person who fears arrest in a non-bailable offence.</p>
+          <span class="info-link" onclick="openModal('anticip')">Anticipatory bail notes →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents</h3>
+          <ul>
+            <li>Copy of FIR / grounds of apprehension</li>
+            <li>Grounds showing false implication / no flight risk</li>
+            <li>Undertaking to cooperate with investigation</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is anticipatory bail barred for this offence (e.g. SC/ST Act, certain UP offences)?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('reject')">YES – Barred</button>
+            <button class="btn-yes" onclick="choose('grant')">NO – Court may grant</button>
+          </div>
+        </div>`
+    }
+  },
+  modals: {
+    law: `<h2>Bail provisions – new vs old</h2>
+      <ul>
+        <li>Bailable offence as of right: BNSS s.478 (old CrPC s.436).</li>
+        <li>Non-bailable, before Magistrate: BNSS s.480 (old CrPC s.437).</li>
+        <li>Sessions / High Court powers: BNSS s.483 (old CrPC s.439).</li>
+        <li>Anticipatory bail: BNSS s.482 (old CrPC s.438).</li>
+        <li>Default bail: BNSS s.187(3) (old CrPC s.167(2)).</li>
+        <li>Whether an offence is bailable is fixed by the schedule / definition of the offence.</li>
+      </ul>`,
+    factors: `<h2>Factors in granting discretionary bail</h2>
+      <ul>
+        <li>Nature and gravity of the accusation.</li>
+        <li>Severity of the possible punishment.</li>
+        <li>Risk of the accused absconding.</li>
+        <li>Likelihood of tampering with evidence / influencing witnesses.</li>
+        <li>Character, antecedents and standing of the accused.</li>
+        <li>Health, age and sex (special leniency possible for women, minors, sick).</li>
+      </ul>`,
+    anticip: `<h2>Anticipatory Bail</h2>
+      <ul>
+        <li>Granted before arrest; operates when and if arrest is made.</li>
+        <li>Court may impose conditions – cooperate with investigation, not leave country, available for interrogation.</li>
+        <li>Not available where a special statute bars it (e.g. SC/ST Prevention of Atrocities Act).</li>
+        <li>Can be limited in time or made till filing of charge-sheet.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

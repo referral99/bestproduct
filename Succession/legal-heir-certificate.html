@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Legal Heir / Varasat Certificate – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Legal Heir / Varasat Certificate – Complete Flow (UP)",
+  subtitle: "Tehsildar / SDM • For pension, mutation & service benefits • How it differs from a succession certificate<br>UP Revenue Code practice + personal succession law",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Succession", href:"index.html"},
+    {label:"Legal Heir Certificate"}
+  ],
+  acts: [
+    {name:"UP Revenue Code, 2006", href:"../Revenue/UP_Revenue_Code_2006.pdf"},
+    {name:"Hindu Succession Act, 1956 (principal)", href:"Hindu_Succession_Act_1956_principal.pdf"},
+    {name:"Indian Succession Act, 1925", href:"Indian_Succession_Act_1925.pdf"}
+  ],
+  related: [
+    {label:"Succession Certificate (for debts & securities)", href:"succession-certificate.html"},
+    {label:"Hindu Succession – Full Flow", href:"hindu-succession.html"},
+    {label:"Mutation on Inheritance (Varasat) – Revenue", href:"../Revenue/mutation-varasat.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A family member has died and the heirs need official proof of who the heirs are</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Legal-heir certificate vs succession certificate</h3>
+          <p>Legal-heir (Varasat) certificate → identifies the heirs for pension, mutation, service dues.<br>Succession certificate (Civil Court) → to collect debts & securities.</p>
+          <span class="info-link" onclick="openModal('compare')">Key differences →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. What is the purpose of the certificate?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('heir-route')">Pension / mutation / service benefits → Legal-heir</button>
+            <button class="btn-no"  onclick="choose('succ-route')">Collect bank balances / shares → Succession certificate</button>
+          </div>
+        </div>`
+    },
+    'succ-route': {
+      label: 'Needs succession cert', labelClass: 'no',
+      html: `
+        <div class="path-label no">Debts & securities involved</div>
+        <div class="box danger">
+          <h3>A legal-heir certificate is not enough</h3>
+          <p>To realise bank deposits, shares or bonds you need a <strong>Succession Certificate</strong> from the Civil Court (ss.370–390 Indian Succession Act), not a Tehsildar's legal-heir certificate.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Redirect</h3><p>See the Succession Certificate flow for that purpose.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Use the Succession Certificate route</h3></div>`
+    },
+    'heir-route': {
+      label: 'Legal-heir route', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Legal-heir / Varasat certificate</div>
+        <div class="box process">
+          <h3>Identify the forum</h3>
+          <p>Apply to the <strong>Tehsildar / SDM</strong> of the area where the deceased resided. Many districts allow online application on the e-District / Jan Seva Kendra portal.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to attach</h3>
+          <ul>
+            <li>Application in the prescribed form</li>
+            <li>Death Certificate of the deceased</li>
+            <li>Affidavit of the applicant on stamp paper</li>
+            <li>Identity & address proof (Aadhaar / ration card) of the deceased and all heirs</li>
+            <li>Relationship proof of each heir</li>
+            <li>Self-declaration / family-tree listing every legal heir</li>
+          </ul>
+          <span class="info-link" onclick="openModal('docs')">Document notes →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>Verification by revenue staff</h3>
+          <p>The Lekhpal / Kanungo verifies the family details and reports to the Tehsildar. A local enquiry and notice may be made.</p>
+          <span class="info-link" onclick="openModal('procedure')">Issue procedure →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any dispute about who the heirs are?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dispute')">YES – Dispute / rival claim</button>
+            <button class="btn-no"  onclick="choose('issued')">NO – Clear & undisputed</button>
+          </div>
+        </div>`
+    },
+    'dispute': {
+      label: 'Dispute on heirs', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Dispute about heirship</div>
+        <div class="box danger">
+          <h3>Revenue authority cannot decide contested title</h3>
+          <p>Where heirship is seriously disputed, the Tehsildar may decline to certify and relegate the parties to the Civil Court for a declaration of heirship / title.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Civil Court declaration</h3><p>Obtain a decree declaring the legal heirs; then re-apply with the certified decree.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Certificate issued after court declaration</h3></div>`
+    },
+    'issued': {
+      label: 'Certificate issued', labelClass: 'no',
+      html: `
+        <div class="path-label no">No dispute</div>
+        <div class="box success">
+          <h3>Legal-heir / Varasat certificate issued</h3>
+          <p>The certificate names all legal heirs and their relationship to the deceased.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>What will the certificate be used for next?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('use-mutation')">Mutation of inherited property</button>
+            <button class="btn-alt" onclick="choose('use-benefits')">Pension / service benefits</button>
+          </div>
+        </div>`
+    },
+    'use-mutation': {
+      label: 'Use for mutation', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Mutation of inherited property</div>
+        <div class="box process">
+          <h3>Apply for Varasat mutation</h3>
+          <p>Submit the legal-heir certificate with the mutation application to the Tehsildar. For agricultural land the UP Revenue Code procedure (Lekhpal report + public notice) applies.</p>
+          <span class="info-link" onclick="openModal('mutation')">UP mutation steps →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Mutation papers</h3>
+          <ul>
+            <li>Legal-heir certificate</li>
+            <li>Death Certificate</li>
+            <li>NOC / consent of co-heirs</li>
+            <li>Latest Khata / Khatauni extract</li>
+            <li>Identity proofs & photos</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Heirs recorded in revenue records</h3></div>`
+    },
+    'use-benefits': {
+      label: 'Use for benefits', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Pension / service benefits</div>
+        <div class="box process">
+          <h3>Claim with the employer / department</h3>
+          <p>Submit the legal-heir certificate to the pension sanctioning authority, PF / GPF office, insurer or utility for name change and release of dues.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Typical requirements</h3>
+          <ul>
+            <li>Legal-heir certificate</li>
+            <li>Death Certificate</li>
+            <li>Service / pension records of the deceased</li>
+            <li>Bank account details of the claimant(s)</li>
+            <li>NOC of other heirs where a single nominee is paid</li>
+          </ul>
+          <p class="note">For large bank balances / shares the authority may still insist on a Succession Certificate.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Benefits released to the heirs</h3></div>`
+    }
+  },
+  modals: {
+    compare: `<h2>Legal-heir Certificate vs Succession Certificate</h2>
+      <ul>
+        <li><strong>Issuing authority:</strong> Tehsildar / SDM (legal-heir) vs District Judge / Civil Court (succession).</li>
+        <li><strong>Purpose:</strong> identify heirs for pension, mutation and service dues vs collect debts and securities.</li>
+        <li><strong>Effect:</strong> administrative proof of heirship vs statutory authority to realise debts/securities.</li>
+        <li>Neither finally decides title to immovable property; a contested title goes to the Civil Court.</li>
+      </ul>`,
+    docs: `<h2>Document Notes</h2>
+      <ul>
+        <li>A sworn affidavit of the applicant is usually mandatory.</li>
+        <li>All heirs' identity documents help avoid later objections.</li>
+        <li>A complete family tree reduces the chance of a rival claim.</li>
+      </ul>`,
+    procedure: `<h2>Issue Procedure (Tehsil level)</h2>
+      <ol>
+        <li>Application submitted to the Tehsildar / SDM (or via e-District portal).</li>
+        <li>Lekhpal / Kanungo verifies the family particulars.</li>
+        <li>Local enquiry / notice where needed.</li>
+        <li>Undisputed → certificate issued naming all heirs.</li>
+        <li>Disputed → parties referred to the Civil Court.</li>
+      </ol>`,
+    mutation: `<h2>UP Varasat Mutation</h2>
+      <ol>
+        <li>Mutation application to the Tehsildar with the legal-heir certificate.</li>
+        <li>Lekhpal inspects and reports.</li>
+        <li>Public notice period for objections.</li>
+        <li>No objection → mutation ordered; entry made in Khatauni.</li>
+        <li>Objection → enquiry / hearing; appeal to SDM / Collector.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

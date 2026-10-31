@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Succession Certificate – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Succession Certificate – Complete Flow (UP)",
+  subtitle: "For debts & securities • ss.370–390 Indian Succession Act • District Judge • Court fee<br>How to realise bank balances, shares, bonds and other debts of a deceased",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Succession", href:"index.html"},
+    {label:"Succession Certificate"}
+  ],
+  acts: [
+    {name:"Indian Succession Act, 1925 (Part X, ss.370–390)", href:"Indian_Succession_Act_1925.pdf"},
+    {name:"Court Fees Act, 1870", href:"../Civil/Court_Fees_Act_1870.pdf"}
+  ],
+  related: [
+    {label:"Legal Heir / Varasat Certificate", href:"legal-heir-certificate.html"},
+    {label:"Will & Probate / Letters of Administration", href:"will-probate.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A person has died leaving debts and / or securities in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. What is a Succession Certificate for?</h3>
+          <p>It authorises the holder to collect <strong>debts and securities</strong> (bank deposits, shares, bonds, provident fund dues) of the deceased. It does <strong>not</strong> decide title to immovable property.</p>
+          <span class="info-link" onclick="openModal('purpose')">Scope of a succession certificate →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is there a valid Will?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('has-will')">YES – Will exists</button>
+            <button class="btn-no"  onclick="choose('no-will')">NO – Intestate</button>
+          </div>
+        </div>`
+    },
+    'has-will': {
+      label: 'Will exists', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Will exists</div>
+        <div class="box danger">
+          <h3>Succession certificate is not the correct remedy</h3>
+          <p>Where there is a Will, the executor should obtain <strong>Probate</strong> or the beneficiary should seek <strong>Letters of Administration</strong> with the Will annexed, which is the proper route to realise the assets.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Redirect</h3><p>See the Will &amp; Probate flow for testate estates.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Use Probate / Letters of Administration instead</h3></div>`
+    },
+    'no-will': {
+      label: 'Intestate', labelClass: 'no',
+      html: `
+        <div class="path-label no">Intestate estate</div>
+        <div class="box process">
+          <h3>Identify the entitled heir(s)</h3>
+          <p>Determine who is entitled to the debts / securities under the personal law of the deceased.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Which court has jurisdiction?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('forum')">District Judge where the deceased ordinarily resided</button>
+          </div>
+        </div>`
+    },
+    'forum': {
+      label: 'Forum & petition', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">District Judge – territorial jurisdiction</div>
+        <div class="box process">
+          <h3>Petition under s.372</h3>
+          <p>File before the District Judge within whose jurisdiction the deceased ordinarily resided, or where any part of the property is situated.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Contents / documents of the petition</h3>
+          <ul>
+            <li>Death Certificate of the deceased</li>
+            <li>Time and place of death</li>
+            <li>Family-tree / details of all legal heirs</li>
+            <li>Right in which the petitioner claims</li>
+            <li>Full list of debts & securities with amounts / particulars</li>
+            <li>Identity & address proof of the petitioner</li>
+            <li>Court fee (ad valorem on the value of the debts / securities)</li>
+          </ul>
+          <span class="info-link" onclick="openModal('fee')">Court fee notes →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>Court process</h3>
+          <p>The court admits the petition, publishes notice in a newspaper and fixes a date for objections (usually ~45 days).</p>
+          <span class="info-link" onclick="openModal('procedure')">Step-by-step court procedure →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any objection filed within the notice period?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection')">YES – Objection</button>
+            <button class="btn-no"  onclick="choose('granted')">NO – No objection</button>
+          </div>
+        </div>`
+    },
+    'objection': {
+      label: 'Objection filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Objection received</div>
+        <div class="box danger">
+          <h3>Contested hearing</h3>
+          <p>Where more than one person claims, or entitlement is disputed, the court decides who has the preferential right after hearing evidence. It may require security.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Court decides entitlement</h3><p>Certificate is granted to the person found entitled; others may appeal.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the petitioner found entitled?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('granted')">YES – Entitled</button>
+            <button class="btn-no"  onclick="choose('rejected')">NO – Rejected</button>
+          </div>
+        </div>`
+    },
+    'rejected': {
+      label: 'Petition rejected', labelClass: 'no',
+      html: `
+        <div class="path-label no">Petition rejected / granted to another</div>
+        <div class="box danger">
+          <h3>Certificate refused to this petitioner</h3>
+          <p>An aggrieved party may appeal to the High Court. The certificate, if any, issues to the person found entitled.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – No certificate to this petitioner</h3></div>`
+    },
+    'granted': {
+      label: 'Certificate granted', labelClass: 'no',
+      html: `
+        <div class="path-label no">Certificate granted</div>
+        <div class="box process">
+          <h3>Furnish security / bond if directed</h3>
+          <p>The court may require a bond with sureties (s.375) before issuing the certificate to protect persons who may be affected.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success">
+          <h3>Succession Certificate issued (s.381)</h3>
+          <p>The holder may now lawfully collect the specified debts and transfer / receive the listed securities. Payments made to the holder discharge the debtor.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Use the certificate to realise assets</h3>
+          <ul>
+            <li>Submit a certified copy to banks / companies / registrars</li>
+            <li>Collect bank balances, fixed deposits, PF and insurance dues</li>
+            <li>Transfer or encash shares, bonds and debentures</li>
+          </ul>
+          <p class="note">For immovable property, use mutation + a legal-heir certificate; a succession certificate does not transfer land.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Debts & securities realised</h3></div>`
+    }
+  },
+  modals: {
+    purpose: `<h2>Scope of a Succession Certificate</h2>
+      <ul>
+        <li>Granted under ss.370–390 of the Indian Succession Act, 1925.</li>
+        <li>Empowers the holder to collect debts and securities of the deceased and to give valid discharges.</li>
+        <li>It does not finally determine ownership; it protects debtors who pay the holder in good faith.</li>
+        <li>Not a substitute for probate or a legal-heir certificate for immovable property.</li>
+      </ul>`,
+    procedure: `<h2>Court Procedure (ss.372–381)</h2>
+      <ol>
+        <li>Petition filed before the District Judge (s.372).</li>
+        <li>Court admits and issues notice in a newspaper inviting objections.</li>
+        <li>Objection period (commonly about 45 days) runs.</li>
+        <li>If uncontested, the court proceeds to grant; if contested, it hears the claims.</li>
+        <li>Security / bond may be required (s.375).</li>
+        <li>Certificate is issued specifying the debts and securities (s.381).</li>
+      </ol>`,
+    fee: `<h2>Court Fee</h2>
+      <ul>
+        <li>Court fee is charged ad valorem on the value of the debts and securities, under the Court Fees Act.</li>
+        <li>The valuation stated in the petition must be accurate.</li>
+        <li>Extension of the certificate to further securities attracts additional fee (s.376).</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

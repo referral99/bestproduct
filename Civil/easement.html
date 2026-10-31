@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Easement / Right of Way – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Easement / Right of Way – Complete Flow (UP)",
+  subtitle: "Claiming or defending a right of way, light, air or water<br>Indian Easements Act 1882 + Specific Relief Act 1963 + CPC 1908",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Civil", href:"index.html"},
+    {label:"Easement / Right of Way"}
+  ],
+  acts: [
+    {name:"Indian Easements Act, 1882", href:"Indian_Easements_Act_1882.pdf"},
+    {name:"Specific Relief Act, 1963", href:"Specific_Relief_Act_1963.pdf"},
+    {name:"Code of Civil Procedure, 1908", href:"Code_of_Civil_Procedure_1908.pdf"},
+    {name:"Limitation Act, 1963", href:"Limitation_Act_1963.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A dispute over a right of way, light, air or water drainage between neighbours</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Identify dominant & servient heritage</h3>
+          <p>An easement is a right the owner of the <strong>dominant</strong> land enjoys over the <strong>servient</strong> land of another (Easements Act s.4).</p>
+          <span class="info-link" onclick="openModal('basics')">Easement basics →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. On what basis is the easement claimed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('prescription')">Prescription (long use)</button>
+            <button class="btn-alt" onclick="choose('grant')">Express / implied grant</button>
+            <button class="btn-alt" onclick="choose('necessity')">Necessity / quasi-easement</button>
+          </div>
+        </div>`
+    },
+    prescription: {
+      label: 'Prescriptive easement', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Easement by prescription (s.15)</div>
+        <div class="box process">
+          <h3>Requirements</h3>
+          <p>Peaceable, open enjoyment <strong>as of right, as an easement, without interruption for 20 years</strong> (30 years against Government), ending within 2 years before the suit.</p>
+          <span class="info-link" onclick="openModal('prescription')">Prescription conditions →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the 20-year continuous user satisfied?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('established')">YES – Established</button>
+            <button class="btn-no"  onclick="choose('notestab')">NO – Short / interrupted</button>
+          </div>
+        </div>`
+    },
+    notestab: {
+      label: 'Not established', labelClass: 'no',
+      html: `
+        <div class="path-label no">Prescription not made out</div>
+        <div class="box danger"><h3>No easement by prescription</h3><p>An interruption acquiesced in for one year, or use that is permissive, defeats the claim.</p></div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Consider</h3><p>Try a claim by grant/necessity, or negotiate a registered right of way with the neighbour.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Reconsider basis</h3></div>`
+    },
+    grant: {
+      label: 'By grant', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Easement by grant</div>
+        <div class="box process"><h3>Express or implied grant</h3><p>A continuous and apparent easement necessary for enjoyment may pass on transfer/partition (s.13). An express grant of a permanent right of way should be in a registered deed.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is there documentary proof of the grant?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('established')">YES</button>
+            <button class="btn-no"  onclick="choose('necessity')">NO – Rely on necessity</button>
+          </div>
+        </div>`
+    },
+    necessity: {
+      label: 'By necessity', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Easement of necessity (s.13)</div>
+        <div class="box process"><h3>Necessity / quasi-easement</h3><p>Where land is transferred/partitioned and one part cannot be used at all without a right over the other, an easement of necessity arises (e.g. a landlocked plot's only access).</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is access truly impossible without the way?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('established')">YES – Absolute necessity</button>
+            <button class="btn-no"  onclick="choose('notestab')">NO – Mere convenience</button>
+          </div>
+        </div>`
+    },
+    established: {
+      label: 'Right established', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Easement right established</div>
+        <div class="box decision">
+          <h3>3. What has the servient owner done?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('disturbance')">Obstructed / disturbed the right</button>
+            <button class="btn-alt" onclick="choose('threat')">Threatening to obstruct</button>
+          </div>
+        </div>`
+    },
+    disturbance: {
+      label: 'Disturbance', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Existing obstruction</div>
+        <div class="box process">
+          <h3>File suit for mandatory injunction + removal</h3>
+          <p>Seek a mandatory injunction (Specific Relief Act s.39) to remove the obstruction, a permanent injunction (s.38) and damages for disturbance (Easements Act s.33).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents & evidence</h3>
+          <ul>
+            <li>Plaint with site plan / Amin (surveyor) map</li>
+            <li>Khasra/Khatauni & title of dominant and servient land</li>
+            <li>Proof of 20-year user: old revenue maps, photographs, witnesses</li>
+            <li>Any grant deed / partition deed</li>
+            <li>Court fee under Court Fees Act; local commissioner application</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Limitation</h3><p>Suit for disturbance of easement: 3 years from the date of obstruction (Limitation Act).</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Injunction & damages, right protected</h3></div>`
+    },
+    threat: {
+      label: 'Threatened obstruction', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Apprehended obstruction</div>
+        <div class="box process"><h3>Seek preventive relief</h3><p>File for a permanent injunction (s.38) and apply for a temporary injunction (O.39 r.1-2 CPC) restraining the threatened obstruction.</p></div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents</h3>
+          <ul>
+            <li>Plaint + application for temporary injunction with affidavit</li>
+            <li>Site plan and proof of the existing right of way</li>
+            <li>Revenue records and any grant/partition documents</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Right of way preserved by injunction</h3></div>`
+    }
+  },
+  modals: {
+    basics: `<h2>Easement Basics (s.4)</h2>
+      <ul>
+        <li>A right enjoyed by the owner of the dominant heritage over the servient heritage.</li>
+        <li>Common types: right of way, right to light & air, right to water/drainage, right to support.</li>
+        <li>An easement cannot exist in gross – it must be attached to land.</li>
+        <li>It can be acquired by grant, by prescription, or by necessity.</li>
+      </ul>`,
+    prescription: `<h2>Prescription Conditions (s.15)</h2>
+      <ul>
+        <li>Enjoyment as an easement and as of right (not by permission).</li>
+        <li>Peaceable, open and without interruption.</li>
+        <li>For 20 years (30 against the Government).</li>
+        <li>The period must end within two years before the suit is filed.</li>
+        <li>An interruption submitted to or acquiesced in for one year defeats the claim.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

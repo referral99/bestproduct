@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Development Authority Dispute – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Development Authority Dispute – Layout & Compounding (Uttar Pradesh)",
+  subtitle: "Allotment / layout • Unauthorised development • Compounding • Sealing • Appeal<br>UP Urban Planning & Development Act 1973 (Vikas Pradhikaran) + UP Municipal Corporation Act 1959",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Nagar Palika", href:"index.html"},
+    {label:"Development Dispute"}
+  ],
+  acts: [
+    {name:"UP Urban Planning & Development Act, 1973", href:"UP_Urban_Planning_Development_Act_1973.pdf"},
+    {name:"UP Municipal Corporation Act, 1959", href:"UP_Municipal_Corporation_Act_1959.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A dispute has arisen with the Development Authority over a plot, layout or construction in a notified development area</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Role of the Development Authority</h3>
+          <p>Under the 1973 Act the authority prepares the master plan & zonal plans, allots plots, sanctions layouts and controls development in its area.</p>
+          <span class="info-link" onclick="openModal('da')">Powers of the authority →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. What is the nature of the dispute?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('allotment')">Allotment / lease / dues dispute</button>
+            <button class="btn-alt" onclick="choose('layout')">Layout / land-use / sub-division</button>
+            <button class="btn-no"  onclick="choose('unauth-dev')">Unauthorised development</button>
+          </div>
+        </div>`
+    },
+    'allotment': {
+      label: 'Allotment dispute', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Allotment / lease / dues dispute</div>
+        <div class="box process">
+          <h3>Representation to the authority</h3>
+          <p>Issues over allotment, instalments, lease deed, possession or cancellation are first raised before the authority (Vice-Chairman / Secretary level).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents</h3>
+          <ul>
+            <li>Allotment / registration letter and lease deed</li>
+            <li>Payment receipts & demand letters</li>
+            <li>Possession letter / correspondence</li>
+            <li>Representation stating grievance & relief sought</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the grievance resolved by the authority?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('resolved')">YES – Resolved</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Escalate</button>
+          </div>
+        </div>`
+    },
+    'layout': {
+      label: 'Layout / use', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Layout / land-use / sub-division</div>
+        <div class="box process">
+          <h3>Apply for layout / change of use approval</h3>
+          <p>Sub-division, amalgamation or change of land use must conform to the master plan and be sanctioned by the authority.</p>
+          <span class="info-link" onclick="openModal('landuse')">Land use & master plan →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents</h3>
+          <ul>
+            <li>Title / allotment proof of the land</li>
+            <li>Proposed layout / sub-division plan by licensed professional</li>
+            <li>Master-plan / zoning extract for the area</li>
+            <li>Development & betterment charges proof</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the proposal conform to the master plan?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('resolved')">YES – Conforms, approved</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Rejected / conditional</button>
+          </div>
+        </div>`
+    },
+    'unauth-dev': {
+      label: 'Unauthorised development', labelClass: 'no',
+      html: `
+        <div class="path-label no">Unauthorised development</div>
+        <div class="box danger">
+          <h3>Development without / beyond sanction</h3>
+          <p>Development carried out without the authority's permission, or against the sanctioned layout, invites notice under the 1973 Act for removal / demolition (s.27) and possible sealing.</p>
+          <span class="info-link" onclick="openModal('enforce')">Enforcement under 1973 Act →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Show-cause notice served</h3><p>You are called to explain and may be heard before any coercive step.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the deviation compoundable?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('compound')">YES – Compoundable</button>
+            <button class="btn-no"  onclick="choose('sealing')">NO – Non-compoundable</button>
+          </div>
+        </div>`
+    },
+    'compound': {
+      label: 'Compounding', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Compounding of the deviation</div>
+        <div class="box process">
+          <h3>Apply for compounding</h3>
+          <p>Minor deviations within notified limits are regularised on payment of compounding charges and submission of as-built plans.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for compounding</h3>
+          <ul>
+            <li>Compounding application with as-built & sanctioned plans</li>
+            <li>Computation of deviated / excess area</li>
+            <li>Proof of payment of compounding & development charges</li>
+            <li>Structural safety certificate</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the authority accept compounding?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('resolved')">YES – Regularised</button>
+            <button class="btn-no"  onclick="choose('sealing')">NO – Refused</button>
+          </div>
+        </div>`
+    },
+    'sealing': {
+      label: 'Sealing / demolition', labelClass: 'no',
+      html: `
+        <div class="path-label no">Non-compoundable → coercive action</div>
+        <div class="box danger">
+          <h3>Sealing / demolition order</h3>
+          <p>The authority may seal or demolish the unauthorised development and recover costs. The order must follow notice and hearing.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Challenge the order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('appeal')">YES – Appeal</button>
+            <button class="btn-no"  onclick="choose('comply')">NO – Remove deviation</button>
+          </div>
+        </div>`
+    },
+    'comply': {
+      label: 'Comply', labelClass: 'no',
+      html: `
+        <div class="path-label no">Voluntary compliance</div>
+        <div class="box process"><h3>Remove unauthorised portion</h3><p>Bring development within the sanctioned layout and submit revised as-built plans.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Development regularised</h3><p>Compliant development certified; proceed to completion / occupancy.</p></div>`
+    },
+    'appeal': {
+      label: 'Appeal / Tribunal', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Statutory appeal</div>
+        <div class="box process">
+          <h3>Appeal under the 1973 Act</h3>
+          <p>Appeal lies against the authority's order to the prescribed appellate authority / State Government (and, on questions of law, to the High Court).</p>
+          <span class="info-link" onclick="openModal('appealforum')">Appeal forum & limitation →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for appeal</h3>
+          <ul>
+            <li>Certified copy of the impugned order</li>
+            <li>Grounds of appeal</li>
+            <li>All documents filed before the authority</li>
+            <li>Proof of any pre-deposit / fee</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Appellate order</h3><p>Order of the authority is confirmed, modified or set aside / remanded.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Dispute decided on appeal</h3><p>Relief granted or the authority's action upheld; further writ remedy available on legal grounds.</p></div>`
+    },
+    'resolved': {
+      label: 'Resolved', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Grievance resolved / approval granted</div>
+        <div class="box success">
+          <h3>END – Matter settled with the authority</h3>
+          <p>Allotment / layout regularised, dues adjusted or approval issued; obtain the written order and updated lease / plan.</p>
+          <p class="note">Keep the sanctioned layout and payment records for future transfer and completion.</p>
+        </div>`
+    }
+  },
+  modals: {
+    da: `<h2>Development Authority (1973 Act)</h2>
+      <ul>
+        <li>Prepares master plan & zonal development plans.</li>
+        <li>Acquires / develops land and allots plots & houses.</li>
+        <li>Sanctions layouts and building operations in the development area.</li>
+        <li>Enforces against unauthorised development (removal / sealing / demolition).</li>
+      </ul>`,
+    landuse: `<h2>Land Use & Master Plan</h2>
+      <ul>
+        <li>Each area is zoned (residential, commercial, industrial, green, etc.).</li>
+        <li>Development must match the designated use.</li>
+        <li>Change of land use needs the authority's / government's approval and charges.</li>
+      </ul>`,
+    enforce: `<h2>Enforcement under the 1973 Act</h2>
+      <ul>
+        <li>Notice to show cause against unauthorised development.</li>
+        <li>Order to remove / demolish after hearing.</li>
+        <li>Sealing of premises in appropriate cases.</li>
+        <li>Recovery of demolition costs; compounding of minor deviations.</li>
+      </ul>`,
+    appealforum: `<h2>Appeal Forum & Limitation</h2>
+      <ul>
+        <li>Appeal against the authority's order to the prescribed appellate authority / State Government.</li>
+        <li>Filed within the statutory period from the order.</li>
+        <li>Questions of law and procedural illegality can be taken to the High Court by writ.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

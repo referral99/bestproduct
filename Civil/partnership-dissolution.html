@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partnership Dissolution & Accounts – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Partnership Dissolution & Accounts – Complete Flow (UP)",
+  subtitle: "Dissolving a firm and settling accounts between partners<br>Indian Partnership Act 1932 + Contract Act 1872 + CPC 1908 + Limitation Act 1963",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Civil", href:"index.html"},
+    {label:"Partnership Dissolution & Accounts"}
+  ],
+  acts: [
+    {name:"Indian Partnership Act, 1932", href:"Indian_Partnership_Act_1932.pdf"},
+    {name:"Indian Contract Act, 1872", href:"Indian_Contract_Act_1872.pdf"},
+    {name:"Code of Civil Procedure, 1908", href:"Code_of_Civil_Procedure_1908.pdf"},
+    {name:"Limitation Act, 1963", href:"Limitation_Act_1963.pdf"},
+    {name:"Societies Registration Act, 1860", href:"Societies_Registration_Act_1860.pdf"},
+    {name:"Indian Trusts Act, 1882", href:"Indian_Trusts_Act_1882.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>Partners of a firm wish to dissolve it and settle accounts</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Is this really a partnership?</h3>
+          <p>A partnership is the relation between persons who agreed to share the profits of a business carried on by all or any of them acting for all (s.4). A society or trust is governed by other Acts – confirm the correct form first.</p>
+          <span class="info-link" onclick="openModal('entity')">Partnership vs. society/trust →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. How is dissolution sought?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('consent')">By agreement / mutual consent</button>
+            <button class="btn-alt" onclick="choose('operation')">By operation of law / contingency</button>
+            <button class="btn-no"  onclick="choose('court')">Through court (disputed)</button>
+          </div>
+        </div>`
+    },
+    consent: {
+      label: 'By agreement', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Dissolution by consent (s.40)</div>
+        <div class="box process"><h3>All partners agree</h3><p>The firm can be dissolved by agreement, or per the deed. A partnership at will can be dissolved by any partner's written notice (s.43).</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to settle accounts?</h3>
+          <div class="choice-btns"><button class="btn-yes" onclick="choose('settlement')">YES</button></div>
+        </div>`
+    },
+    operation: {
+      label: 'By operation of law', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Compulsory / contingent dissolution</div>
+        <div class="box process">
+          <h3>Automatic events</h3>
+          <p>s.41 – insolvency of all but one partner, or the business becoming unlawful. s.42 – expiry of term, completion of venture, death or insolvency of a partner (subject to the deed).</p>
+          <span class="info-link" onclick="openModal('modes')">Modes of dissolution →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to settle accounts?</h3>
+          <div class="choice-btns"><button class="btn-yes" onclick="choose('settlement')">YES</button></div>
+        </div>`
+    },
+    court: {
+      label: 'Through court', labelClass: 'no',
+      html: `
+        <div class="path-label no">Dissolution by court (s.44)</div>
+        <div class="box process">
+          <h3>Grounds for a suit</h3>
+          <p>Partner of unsound mind, permanent incapacity, misconduct prejudicial to business, persistent breach of the agreement, transfer of interest, continuous losses, or any just & equitable ground.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box danger">
+          <h3>Registration bar (s.69)</h3>
+          <p>An unregistered firm cannot sue partners/third parties to enforce contractual rights — but a suit for <strong>dissolution and accounts of a dissolved firm</strong> is expressly saved.</p>
+          <span class="info-link" onclick="openModal('s69')">Effect of non-registration →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for a suit</h3>
+          <ul>
+            <li>Plaint for dissolution + rendition of accounts</li>
+            <li>Partnership deed and any amendments</li>
+            <li>Firm's books of account, bank statements, balance sheets</li>
+            <li>Asset & liability schedule; details of goodwill</li>
+            <li>Court fee; application for appointment of a receiver if needed</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to settlement of accounts?</h3>
+          <div class="choice-btns"><button class="btn-yes" onclick="choose('settlement')">YES</button></div>
+        </div>`
+    },
+    settlement: {
+      label: 'Settle accounts', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Settlement of accounts (s.48)</div>
+        <div class="box process">
+          <h3>2. Apply the s.48 order of application</h3>
+          <p>Losses, including capital deficiencies, are paid first out of profits, then capital, then by partners in their profit-sharing ratio. Assets are applied: (a) pay third-party debts; (b) advances by partners; (c) capital; (d) residue divided in profit ratio.</p>
+          <span class="info-link" onclick="openModal('s48')">Order of settlement →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Continuing authority & notice</h3><p>Partners' authority continues to wind up (s.47). Give public notice of dissolution to end liability for future acts (s.45) and notify the Registrar of Firms.</p></div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Limitation</h3><p>Suit for accounts of a dissolved partnership: 3 years from the date of dissolution (Limitation Act, Art. 5).</p></div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Winding-up documents</h3>
+          <ul>
+            <li>Dissolution deed / court decree</li>
+            <li>Final statement of accounts and balance sheet</li>
+            <li>Public notice of dissolution + intimation to Registrar</li>
+            <li>Release/settlement of each partner's share</li>
+            <li>Closure of GST/PAN/bank accounts of the firm</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Firm dissolved, accounts settled</h3><p>Assets distributed and liabilities discharged in the statutory order.</p></div>`
+    }
+  },
+  modals: {
+    entity: `<h2>Partnership vs. Society / Trust</h2>
+      <ul>
+        <li>A partnership runs a business for profit (Partnership Act, 1932).</li>
+        <li>A society (Societies Registration Act, 1860) is for non-profit literary, charitable or similar objects.</li>
+        <li>A trust (Indian Trusts Act, 1882) holds property for beneficiaries.</li>
+        <li>Pick the right Act before dissolving – the procedure differs.</li>
+      </ul>`,
+    modes: `<h2>Modes of Dissolution</h2>
+      <ol>
+        <li>By agreement (s.40).</li>
+        <li>Compulsory – insolvency of all but one / business unlawful (s.41).</li>
+        <li>On contingencies – expiry of term, end of venture, death/insolvency of a partner (s.42).</li>
+        <li>By notice in a partnership at will (s.43).</li>
+        <li>By the court on specified grounds (s.44).</li>
+      </ol>`,
+    s69: `<h2>Effect of Non-Registration (s.69)</h2>
+      <ul>
+        <li>An unregistered firm cannot sue to enforce a contract against partners or third parties.</li>
+        <li>A partner cannot sue co-partners to enforce the deed if the firm is unregistered.</li>
+        <li>Exception: a suit to dissolve the firm and for accounts of a dissolved firm is allowed even if unregistered.</li>
+      </ul>`,
+    s48: `<h2>Settlement of Accounts (s.48)</h2>
+      <ol>
+        <li>Losses, including capital deficiencies, paid first from profits, then capital, then by partners in profit ratio.</li>
+        <li>Assets applied in order: (a) debts to third parties; (b) partners' advances/loans; (c) partners' capital; (d) residue divided in profit-sharing ratio.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

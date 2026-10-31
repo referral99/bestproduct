@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Breach of Contract / Damages – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Breach of Contract / Damages – Complete Flow (UP)",
+  subtitle: "Remedies when the other side fails to perform<br>Contract Act 1872 + Sale of Goods Act 1930 + Specific Relief Act 1963 + Limitation Act 1963",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Civil", href:"index.html"},
+    {label:"Breach of Contract / Damages"}
+  ],
+  acts: [
+    {name:"Indian Contract Act, 1872", href:"Indian_Contract_Act_1872.pdf"},
+    {name:"Sale of Goods Act, 1930", href:"Sale_of_Goods_Act_1930.pdf"},
+    {name:"Specific Relief Act, 1963", href:"Specific_Relief_Act_1963.pdf"},
+    {name:"Limitation Act, 1963", href:"Limitation_Act_1963.pdf"}
+  ],
+  related: [
+    {label:"Specific Performance of Contract", href:"specific-performance.html"},
+    {label:"Recovery of Money / Debt", href:"recovery-of-money.html"},
+    {label:"Consumer Dispute", href:"consumer-dispute.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>One party has failed to perform a binding contract</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Is there a valid contract (offer, acceptance, consideration, capacity, lawful object)?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('valid')">YES – Valid</button>
+            <button class="btn-no"  onclick="choose('void')">NO – Void / unenforceable</button>
+          </div>
+        </div>`
+    },
+    void: {
+      label: 'Void / unenforceable', labelClass: 'no',
+      html: `
+        <div class="path-label no">No enforceable contract</div>
+        <div class="box danger"><h3>No breach to sue upon</h3><p>If an agreement is void (s.2(g)), one may still claim restitution of benefit received under s.65.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Only restitution possible</h3></div>`
+    },
+    valid: {
+      label: 'Valid contract', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Valid, binding contract</div>
+        <div class="box decision">
+          <h3>2. What type of breach?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('actual')">Actual breach (failed to perform)</button>
+            <button class="btn-alt" onclick="choose('anticipatory')">Anticipatory (refused before due date)</button>
+          </div>
+        </div>`
+    },
+    anticipatory: {
+      label: 'Anticipatory breach', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Anticipatory breach (s.39)</div>
+        <div class="box process"><h3>Options</h3><p>The innocent party may either treat the contract as discharged and sue at once, or keep it alive and wait till the date of performance, then sue.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to claim?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('remedy')">YES – Choose remedy</button>
+          </div>
+        </div>`
+    },
+    actual: {
+      label: 'Actual breach', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Actual breach</div>
+        <div class="box process"><h3>Contract broken on/after the due date</h3><p>The aggrieved party is discharged from further performance and may pursue a remedy.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the contract for the sale of goods?</h3>
+          <div class="choice-btns">
+            <button class="btn-alt" onclick="choose('goods')">YES – Sale of goods</button>
+            <button class="btn-yes" onclick="choose('remedy')">NO – General contract</button>
+          </div>
+        </div>`
+    },
+    goods: {
+      label: 'Sale of goods', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Sale of Goods Act remedies</div>
+        <div class="box process">
+          <h3>Seller & buyer remedies</h3>
+          <p>Seller: suit for price (s.55) or damages for non-acceptance (s.56). Buyer: damages for non-delivery (s.57), or for breach of warranty (s.59); specific performance in limited cases (s.58).</p>
+          <span class="info-link" onclick="openModal('goods')">Sale of Goods remedies →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to compute & claim?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('remedy')">YES</button>
+          </div>
+        </div>`
+    },
+    remedy: {
+      label: 'Choose remedy', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Select the remedy</div>
+        <div class="box decision">
+          <h3>3. What does the injured party want?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('damages')">Damages (compensation)</button>
+            <button class="btn-alt" onclick="choose('performance')">Enforce the contract</button>
+            <button class="btn-no"  onclick="choose('rescind')">Rescind + restitution</button>
+          </div>
+        </div>`
+    },
+    damages: {
+      label: 'Damages', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Claim damages (ss.73–74)</div>
+        <div class="box process">
+          <h3>Measure of damages</h3>
+          <p>s.73 – loss naturally arising, or in parties' contemplation; remote loss not recoverable; duty to mitigate. s.74 – where a sum is named / penalty, reasonable compensation not exceeding that sum.</p>
+          <span class="info-link" onclick="openModal('damages')">Damages principles →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Limitation</h3><p>Suit for compensation for breach of contract: 3 years from the date of breach (Limitation Act, Art. 55).</p></div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to file</h3>
+          <ul>
+            <li>Plaint quantifying loss with calculation</li>
+            <li>The contract and correspondence proving breach</li>
+            <li>Proof of actual loss and mitigation efforts</li>
+            <li>Legal notice; court fee on amount claimed</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Decree for compensation</h3></div>`
+    },
+    performance: {
+      label: 'Enforce', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Specific performance / injunction</div>
+        <div class="box process"><h3>Specific Relief Act</h3><p>Where damages are inadequate (often immovable property), seek specific performance (s.10) or an injunction to restrain breach of a negative covenant (s.42).</p></div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>See also</h3><p>Use the dedicated Specific Performance flow for the detailed procedure.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Contract enforced</h3></div>`
+    },
+    rescind: {
+      label: 'Rescind', labelClass: 'no',
+      html: `
+        <div class="path-label no">Rescission & restitution</div>
+        <div class="box process"><h3>Cancel the contract</h3><p>Rescind the contract (Specific Relief Act s.27) and, under Contract Act s.64/65, restore benefits received and recover what was paid.</p></div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents</h3>
+          <ul>
+            <li>Plaint for rescission + refund with interest</li>
+            <li>Contract and proof of payment/benefits exchanged</li>
+            <li>Grounds for rescission (fraud, failure of consideration, etc.)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Contract set aside, parties restored</h3></div>`
+    }
+  },
+  modals: {
+    goods: `<h2>Sale of Goods Act Remedies</h2>
+      <ul>
+        <li>Seller's suit for price where property has passed (s.55).</li>
+        <li>Seller's damages for non-acceptance (s.56) – usually difference between contract and market price.</li>
+        <li>Buyer's damages for non-delivery (s.57).</li>
+        <li>Buyer's claim for breach of warranty (s.59) – diminution/extinction of price.</li>
+        <li>Unpaid seller's rights: lien, stoppage in transit, resale (ss.47–54).</li>
+      </ul>`,
+    damages: `<h2>Damages – Key Principles</h2>
+      <ul>
+        <li>Compensation, not punishment: put the injured party where performance would have.</li>
+        <li>Only losses naturally arising or in the parties' contemplation (s.73).</li>
+        <li>Remote and indirect loss is not recoverable.</li>
+        <li>Duty to take reasonable steps to mitigate the loss.</li>
+        <li>Liquidated damages/penalty (s.74): reasonable compensation up to the named sum.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

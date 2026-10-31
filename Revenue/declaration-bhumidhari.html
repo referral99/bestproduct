@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Declaration of Bhumidhari Rights – Full Flow (UP Revenue)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Declaration of Bhumidhari Rights / Title Suit – Complete Flow (Uttar Pradesh)",
+  subtitle: "Establishing bhumidhari title over agricultural land • Revenue suit for declaration • Appeal<br>UP Revenue Code, 2006 + legacy UP ZALR Act, 1950",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Revenue", href:"index.html"},
+    {label:"Declaration of Bhumidhari Rights"}
+  ],
+  acts: [
+    {name:"UP Revenue Code, 2006", href:"UP_Revenue_Code_2006.pdf"},
+    {name:"UP Zamindari Abolition & Land Reforms Act, 1950", href:"UP_Zamindari_Abolition_Land_Reforms_Act_1950.pdf"}
+  ],
+  related: [
+    {label:"Partition of Agricultural Holding", href:"land-partition.html"},
+    {label:"Correction of Revenue Record", href:"record-correction.html"},
+    {label:"Boundary Demarcation (Paimaish)", href:"boundary-demarcation.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A person claims bhumidhari rights over agricultural land that the record does not reflect, or whose title is denied</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Study the record & nature of claim</h3>
+          <p>Obtain the <strong>khatauni</strong> / <strong>khasra</strong>. Identify who is recorded and the basis of your claim — inheritance, long possession, old settlement, or an earlier ZALR-era right.</p>
+          <span class="info-link" onclick="openModal('bhumidhari')">Bhumidhari rights explained →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is the land recorded in your name already?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('recorded')">YES – But being denied</button>
+            <button class="btn-no"  onclick="choose('not-recorded')">NO – Record shows someone else</button>
+          </div>
+        </div>`
+    },
+    'recorded': {
+      label: 'Recorded but denied', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Recorded in your name but challenged</div>
+        <div class="box info">
+          <h3>Defend / confirm title</h3>
+          <p>A declaratory suit can confirm your subsisting bhumidhari status and restrain interference, even where you are recorded.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to file the declaration suit?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('suit')">YES – File suit</button>
+          </div>
+        </div>`
+    },
+    'not-recorded': {
+      label: 'Record shows another', labelClass: 'no',
+      html: `
+        <div class="path-label no">Someone else is recorded</div>
+        <div class="box danger">
+          <h3>Declaration needed</h3>
+          <p>Where the record names another person (or the gram sabha / state), mutation alone will not help — a suit for declaration of bhumidhari rights is required.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to file the declaration suit?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('suit')">YES – File suit</button>
+          </div>
+        </div>`
+    },
+    'suit': {
+      label: 'File declaration suit', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Suit for declaration of bhumidhari rights</div>
+        <div class="box process">
+          <h3>3. Institute the suit before the SDM</h3>
+          <p>A declaratory suit regarding agricultural land lies in the revenue court (<strong>SDM / Assistant Collector</strong>), not the civil court.</p>
+          <span class="info-link" onclick="openModal('forum')">Which forum & why →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Declaration Suit</h3>
+          <ul>
+            <li>Plaint stating the basis of bhumidhari claim</li>
+            <li>Khatauni / khasra & old settlement records</li>
+            <li>Proof of possession (receipts, crop records, witnesses)</li>
+            <li>Inheritance / transfer documents relied upon</li>
+            <li>Court fee on the value of the relief</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>4. Notice, written statement & issues</h3>
+          <p>The recorded holder / gram sabha is served; pleadings are exchanged and issues framed.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Does the defendant contest?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('contested')">YES – Contested</button>
+            <button class="btn-no"  onclick="choose('uncontested')">NO – Uncontested</button>
+          </div>
+        </div>`
+    },
+    'contested': {
+      label: 'Contested suit', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Defendant contests</div>
+        <div class="box process">
+          <h3>6. Evidence & trial</h3>
+          <p>Both sides lead oral and documentary evidence; the Lekhpal / Revenue Inspector may be examined on the record and possession.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>7. What does the court find?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('granted')">Claim proved</button>
+            <button class="btn-no"  onclick="choose('dismissed')">Claim not proved</button>
+          </div>
+        </div>`
+    },
+    'uncontested': {
+      label: 'Uncontested', labelClass: 'no',
+      html: `
+        <div class="path-label no">No contest / ex-parte</div>
+        <div class="box process"><h3>6. Proof of claim</h3><p>Even uncontested, the claimant must prove title and possession before a declaration is granted.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the claim established?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('granted')">YES – Established</button>
+            <button class="btn-no"  onclick="choose('dismissed')">NO – Not established</button>
+          </div>
+        </div>`
+    },
+    'dismissed': {
+      label: 'Suit dismissed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Claim not proved</div>
+        <div class="box danger"><h3>Suit dismissed</h3><p>The record stands as it is. The claimant may appeal.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>File an appeal?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('appeal')">YES – Appeal</button>
+            <button class="btn-no"  onclick="choose('end-dismiss')">NO – Accept</button>
+          </div>
+        </div>`
+    },
+    'end-dismiss': {
+      label: 'Accept dismissal', labelClass: 'no',
+      html: `
+        <div class="path-label no">Dismissal accepted</div>
+        <div class="box danger"><h3>END – Record unchanged</h3><p>No declaration of bhumidhari rights granted.</p></div>`
+    },
+    'appeal': {
+      label: 'Appeal', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Appeal / revision</div>
+        <div class="box process">
+          <h3>Appeal ladder</h3>
+          <p>SDM → <strong>Collector / Commissioner</strong> → <strong>Board of Revenue</strong> within limitation.</p>
+          <span class="info-link" onclick="openModal('forum')">Revenue forums →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Appellate decision</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Result of appeal?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('granted')">Allowed – rights declared</button>
+            <button class="btn-no"  onclick="choose('end-dismiss')">Dismissed</button>
+          </div>
+        </div>`
+    },
+    'granted': {
+      label: 'Rights declared', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Declaration granted</div>
+        <div class="box success">
+          <h3>8. Bhumidhari rights declared</h3>
+          <p>The court declares the claimant a bhumidhar; the record is directed to be corrected / mutated accordingly.</p>
+          <p class="note">The decree is the source of title; mutation merely records it.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Give effect to the decree</h3>
+          <ul>
+            <li>Certified copy of the judgment & decree</li>
+            <li>Apply for correction / mutation of khatauni</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Bhumidhari title confirmed & recorded</h3></div>`
+    }
+  },
+  modals: {
+    bhumidhari: `<h2>Bhumidhari Rights</h2>
+      <p>Under the UP Revenue Code (carrying forward the ZALR Act tenure scheme), a <strong>bhumidhar</strong> is the main class of tenure-holder of agricultural land. Rights may be transferable or non-transferable, and are heritable. A declaration suit establishes or confirms this status.</p>`,
+    forum: `<h2>Forum for Title Disputes over Agricultural Land</h2>
+      <ul>
+        <li><strong>SDM / Assistant Collector</strong> – hears declaration & title suits over agricultural land.</li>
+        <li><strong>Collector / Commissioner</strong> – appeal.</li>
+        <li><strong>Board of Revenue</strong> – revision / second appeal.</li>
+      </ul>
+      <p>Civil courts are generally barred from deciding bhumidhari title; the revenue court has jurisdiction.</p>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

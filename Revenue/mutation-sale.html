@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mutation on Sale / Gift (Namantaran) – Full Flow (UP Revenue)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Mutation on Sale / Gift (Namantaran) – Complete Flow (Uttar Pradesh)",
+  subtitle: "Entering a buyer / donee in khatauni after a registered deed • Eligibility • Objection & appeal<br>UP Revenue Code, 2006 – transfer & mutation of agricultural land",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Revenue", href:"index.html"},
+    {label:"Mutation on Sale / Gift"}
+  ],
+  acts: [
+    {name:"UP Revenue Code, 2006", href:"UP_Revenue_Code_2006.pdf"},
+    {name:"UP Revenue Code, 2006 (amended & consolidated)", href:"UP_Revenue_Code_2006_amended_consolidated.pdf"}
+  ],
+  related: [
+    {label:"Property Transfer (Sale / Gift) – Civil", href:"../Civil/property-transfer.html"},
+    {label:"Correction of Revenue Record", href:"record-correction.html"},
+    {label:"Boundary Demarcation (Paimaish)", href:"boundary-demarcation.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A bhumidhar wants to transfer agricultural land by sale or gift in UP</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Confirm the seller's record</h3>
+          <p>Check latest <strong>khatauni</strong> / <strong>khasra</strong> so the seller is recorded as bhumidhar <em>with transferable rights</em>. Land held with non-transferable rights cannot be sold.</p>
+          <span class="info-link" onclick="openModal('rights')">Transferable vs non-transferable →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is the purchaser / donee legally eligible?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('eligible-yes')">YES – Eligible</button>
+            <button class="btn-no"  onclick="choose('eligible-no')">NO – Restricted / needs permission</button>
+          </div>
+        </div>`
+    },
+    'eligible-no': {
+      label: 'Restricted buyer', labelClass: 'no',
+      html: `
+        <div class="path-label no">Transfer attracts a restriction</div>
+        <div class="box danger">
+          <h3>Permission / ceiling check</h3>
+          <p>Transfers that breach the land-ceiling, reduce a holding below the minimum, or are in favour of a restricted class need prior permission (SDM / Collector) or are void.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Permission obtained?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('eligible-yes')">YES – Permission granted</button>
+            <button class="btn-no"  onclick="choose('abort')">NO – Cannot proceed</button>
+          </div>
+        </div>`
+    },
+    'abort': {
+      label: 'Transfer barred', labelClass: 'no',
+      html: `
+        <div class="path-label no">Transfer not permitted</div>
+        <div class="box danger"><h3>END – Transfer cannot be registered / mutated</h3><p>Without eligibility or permission the deed would be void and mutation refused.</p></div>`
+    },
+    'eligible-yes': {
+      label: 'Eligible transfer', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Transfer is permissible</div>
+        <div class="box process">
+          <h3>3. Execute & register the deed</h3>
+          <p>Prepare Sale Deed / Gift Deed, pay stamp duty on circle rate, and register before the Sub-Registrar (compulsory for immovable property).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for Registration</h3>
+          <ul>
+            <li>Draft Sale / Gift Deed</li>
+            <li>Latest khatauni & khasra of the plots</li>
+            <li>Stamp duty + registration fee (circle rate)</li>
+            <li>ID + photos of seller, buyer & two witnesses</li>
+            <li>PAN / Form 60 for high-value transfers</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>4. Apply for namantaran (mutation)</h3>
+          <p>Submit the registered deed to the <strong>Tehsildar</strong> through the Lekhpal (or online) to enter the new holder's name.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for Mutation</h3>
+          <ul>
+            <li>Mutation application (prescribed form / online)</li>
+            <li>Certified copy of the registered Sale / Gift Deed</li>
+            <li>Latest khatauni extract</li>
+            <li>ID + address proof + photos of the transferee</li>
+            <li>Permission order (if a restricted transfer)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>5. Lekhpal report + public notice</h3>
+          <p>Lekhpal verifies the deed, possession and record; a public notice invites objections.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>6. Any objection during the notice period?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection-yes')">YES – Objection filed</button>
+            <button class="btn-no"  onclick="choose('objection-no')">NO – No objection</button>
+          </div>
+        </div>`
+    },
+    'objection-yes': {
+      label: 'Objection filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Objection received</div>
+        <div class="box danger">
+          <h3>Contested mutation</h3>
+          <p>Tehsildar hears the parties — common grounds are forged deed, prior agreement, or co-sharer's right. Evidence is recorded.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Accept the Tehsildar's order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection-no')">YES – Accept</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Appeal</button>
+          </div>
+        </div>`
+    },
+    'appeal': {
+      label: 'Appeal', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Appeal / revision</div>
+        <div class="box process">
+          <h3>Appeal ladder</h3>
+          <p>Tehsildar → <strong>SDM</strong> → <strong>Collector</strong> → <strong>Board of Revenue</strong>, with a certified copy of the order within limitation.</p>
+          <span class="info-link" onclick="openModal('forums')">Revenue forums →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Appellate order passed</h3><p>Binds the revenue staff for the mutation entry.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Record the final entry?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection-no')">YES – Record</button>
+          </div>
+        </div>`
+    },
+    'objection-no': {
+      label: 'No objection / settled', labelClass: 'no',
+      html: `
+        <div class="path-label no">Uncontested / settled</div>
+        <div class="box success">
+          <h3>7. Mutation ordered</h3>
+          <p>The buyer / donee is entered as bhumidhar in the khatauni; the transferor's share is reduced or deleted.</p>
+          <p class="note">Mutation records the transfer for revenue purposes; the registered deed is the source of title.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Collect after mutation</h3>
+          <ul>
+            <li>Updated khatauni in the new holder's name</li>
+            <li>Certified copy of the mutation order</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Clean recorded & registered title</h3><p>New owner is both registered and mutated.</p></div>`
+    }
+  },
+  modals: {
+    rights: `<h2>Transferable vs Non-transferable Rights</h2>
+      <ul>
+        <li><strong>Bhumidhar with transferable rights</strong> – can sell, gift and mortgage, subject to ceiling and other statutory limits.</li>
+        <li><strong>Bhumidhar with non-transferable rights</strong> – generally cannot transfer except by limited modes; land may revert in default.</li>
+        <li><strong>Asami</strong> – holds under a lease-like tenure with the most limited rights.</li>
+      </ul>`,
+    forums: `<h2>Revenue Forums & Appeal Ladder</h2>
+      <ul>
+        <li><strong>Lekhpal</strong> – field record-keeper; reports on mutation.</li>
+        <li><strong>Tehsildar</strong> – orders routine & contested mutation.</li>
+        <li><strong>SDM</strong> – first appeal / original suits.</li>
+        <li><strong>Collector</strong> – higher appeal.</li>
+        <li><strong>Board of Revenue</strong> – apex revisional authority.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partition of Agricultural Holding – Full Flow (UP Revenue)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Partition of Agricultural Holding – Complete Flow (Uttar Pradesh)",
+  subtitle: "Dividing a joint bhumidhari holding among co-sharers • Division of the Collector/SDM • Appeal<br>UP Revenue Code, 2006 (s.116 division of holding) + legacy UP ZALR Act, 1950",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Revenue", href:"index.html"},
+    {label:"Partition of Agricultural Holding"}
+  ],
+  acts: [
+    {name:"UP Revenue Code, 2006", href:"UP_Revenue_Code_2006.pdf"},
+    {name:"UP Zamindari Abolition & Land Reforms Act, 1950", href:"UP_Zamindari_Abolition_Land_Reforms_Act_1950.pdf"}
+  ],
+  related: [
+    {label:"Partition of Inherited Estate – Succession", href:"../Succession/partition-of-estate.html"},
+    {label:"Mutation on Inheritance (Varasat)", href:"mutation-varasat.html"},
+    {label:"Boundary Demarcation (Paimaish)", href:"boundary-demarcation.html"},
+    {label:"Declaration of Bhumidhari Rights", href:"declaration-bhumidhari.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A holding is recorded jointly in several co-bhumidhars' names; one or more want their share separated</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Confirm the joint holding</h3>
+          <p>Check the <strong>khatauni</strong> — all co-sharers should appear in one khata with defined share fractions. Partition divides the land by metes and bounds.</p>
+          <span class="info-link" onclick="openModal('khata')">Khata & shares →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Do all co-sharers agree to divide?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('mutual')">YES – Amicable</button>
+            <button class="btn-no"  onclick="choose('contested')">NO – Contested</button>
+          </div>
+        </div>`
+    },
+    'mutual': {
+      label: 'Amicable partition', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Co-sharers agree</div>
+        <div class="box decision">
+          <h3>3. Register a partition deed or go through revenue court?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('deed')">Registered Partition Deed</button>
+            <button class="btn-alt" onclick="choose('division')">Division of holding (revenue court)</button>
+          </div>
+        </div>`
+    },
+    'deed': {
+      label: 'Partition deed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Family / mutual partition deed</div>
+        <div class="box process">
+          <h3>Execute & register the deed</h3>
+          <p>A partition deed carving out each sharer's plots is stamped and registered before the Sub-Registrar.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Partition Deed</h3>
+          <ul>
+            <li>Draft partition deed with plot-wise allotment</li>
+            <li>Khatauni & khasra of all plots</li>
+            <li>Stamp duty + registration fee</li>
+            <li>ID + photos of all co-sharers & witnesses</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Apply for mutation on the deed</h3><p>Each sharer is entered against their allotted plots in the khatauni.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Separate khatas created by deed</h3></div>`
+    },
+    'division': {
+      label: 'Division of holding', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Division of holding (s.116 Revenue Code)</div>
+        <div class="box process">
+          <h3>4. File a division application</h3>
+          <p>A co-bhumidhar applies to the <strong>SDM / Collector</strong> for division of the holding under the UP Revenue Code.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Division of Holding</h3>
+          <ul>
+            <li>Application naming all co-sharers & shares</li>
+            <li>Khatauni, khasra & village map (shajra)</li>
+            <li>Proof of each sharer's recorded share</li>
+            <li>Addresses of all co-sharers for notice</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>5. Notice to all co-sharers</h3>
+          <p>The court issues notice; the Lekhpal prepares a proposed scheme (naksha) of division with reference to share, quality and access of the plots.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>6. Any objection to the proposed division?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection')">YES – Objection</button>
+            <button class="btn-no"  onclick="choose('final')">NO – No objection</button>
+          </div>
+        </div>`
+    },
+    'contested': {
+      label: 'Contested partition', labelClass: 'no',
+      html: `
+        <div class="path-label no">Co-sharers disagree</div>
+        <div class="box danger">
+          <h3>Compulsory division before revenue court</h3>
+          <p>Where there is no agreement, any co-sharer may seek division of the holding before the SDM / Collector, who will decide shares and mode of division.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the share itself disputed (title / heirship)?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('title-dispute')">YES – Share disputed</button>
+            <button class="btn-no"  onclick="choose('division')">NO – Only mode of division</button>
+          </div>
+        </div>`
+    },
+    'title-dispute': {
+      label: 'Share disputed', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Title / share in dispute</div>
+        <div class="box danger">
+          <h3>Decide share first</h3>
+          <p>The court must first determine each person's share (and may relegate a genuine title dispute to a declaration suit) before any physical division.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Shares fixed on evidence</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to physical division?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('division')">YES – Divide holding</button>
+          </div>
+        </div>`
+    },
+    'objection': {
+      label: 'Objection', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Objection to the scheme</div>
+        <div class="box danger">
+          <h3>Hearing on objections</h3>
+          <p>Objections (unfair allotment, access, well/tree, soil quality) are heard; the Lekhpal may revise the naksha.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Accept the revised scheme?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('final')">YES – Accept</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Appeal</button>
+          </div>
+        </div>`
+    },
+    'appeal': {
+      label: 'Appeal', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Appeal / revision</div>
+        <div class="box process">
+          <h3>Appeal ladder</h3>
+          <p>SDM → <strong>Collector</strong> → <strong>Board of Revenue</strong> within the limitation period with a certified copy.</p>
+          <span class="info-link" onclick="openModal('forums')">Revenue forums →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Appellate order passed</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Finalise the division?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('final')">YES – Finalise</button>
+          </div>
+        </div>`
+    },
+    'final': {
+      label: 'Division finalised', labelClass: 'no',
+      html: `
+        <div class="path-label no">Division confirmed</div>
+        <div class="box success">
+          <h3>7. Final order of partition</h3>
+          <p>The court confirms the allotment; each sharer gets a separate <strong>khata</strong> for their divided plots and the joint khata is split.</p>
+          <span class="info-link" onclick="openModal('demarcate')">Demarcation after partition →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Collect after partition</h3>
+          <ul>
+            <li>Certified copy of the partition order & naksha</li>
+            <li>New separate khatauni for each sharer</li>
+            <li>Demarcation (nishandehi) of the new boundaries</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Separate holdings created</h3><p>Each co-sharer now holds an independent khata.</p></div>`
+    }
+  },
+  modals: {
+    khata: `<h2>Khata & Shares</h2>
+      <p>A joint holding is one <strong>khata</strong> held by several co-bhumidhars, each with an undivided fractional share. Partition converts undivided shares into separate, physically demarcated holdings.</p>`,
+    demarcate: `<h2>Demarcation after Partition</h2>
+      <p>After the order, the Lekhpal / Revenue Inspector marks the new boundaries on the ground (nishandehi / paimaish) so each sharer can identify their divided plot.</p>`,
+    forums: `<h2>Revenue Forums & Appeal Ladder</h2>
+      <ul>
+        <li><strong>Lekhpal</strong> – prepares the division scheme (naksha).</li>
+        <li><strong>SDM / Collector</strong> – orders division of holding.</li>
+        <li><strong>Board of Revenue</strong> – revision.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

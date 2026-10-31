@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gram Sabha Land / Eviction of Illegal Occupation – Full Flow (UP Revenue)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Gram Sabha Land / Eviction of Illegal Occupation – Complete Flow (Uttar Pradesh)",
+  subtitle: "Protecting gram sabha land, removing encroachers & regularisation • Lekhpal → SDM → Collector<br>UP Revenue Code, 2006 + UP Panchayat Raj Act, 1947 + legacy UP ZALR Act, 1950",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Revenue", href:"index.html"},
+    {label:"Gram Sabha Land / Eviction"}
+  ],
+  acts: [
+    {name:"UP Revenue Code, 2006", href:"UP_Revenue_Code_2006.pdf"},
+    {name:"UP Panchayat Raj Act, 1947", href:"UP_Panchayat_Raj_Act_1947.pdf"},
+    {name:"UP Zamindari Abolition & Land Reforms Act, 1950", href:"UP_Zamindari_Abolition_Land_Reforms_Act_1950.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>Land recorded as gram sabha / public utility land is illegally occupied, or someone seeks its use</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Confirm the land is gram sabha land</h3>
+          <p>Check the <strong>khatauni</strong> — gram sabha / public land (pasture, pond, path, abadi) usually vests in the gram sabha and is managed by the <strong>Gram Panchayat</strong> under the Land Management Committee.</p>
+          <span class="info-link" onclick="openModal('gramsabha')">Gram sabha land & management →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. What is the issue?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('encroach')">Illegal occupation / encroachment</button>
+            <button class="btn-alt" onclick="choose('allotment')">Seeking lawful allotment / lease</button>
+          </div>
+        </div>`
+    },
+    'allotment': {
+      label: 'Lawful allotment', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Seeking lawful use / allotment</div>
+        <div class="box process">
+          <h3>Allotment through the Land Management Committee</h3>
+          <p>Eligible landless persons may be allotted gram sabha land (e.g. for agriculture or a house site) by the LMC with the SDM's approval, in the statutory order of preference.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Allotment</h3>
+          <ul>
+            <li>Application to the Gram Panchayat / LMC</li>
+            <li>Proof of eligibility (landless / category)</li>
+            <li>Residence & identity proof</li>
+            <li>Khatauni of the proposed plot</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>LMC proposal → SDM approval</h3><p>Allotment recorded and possession given; it cannot defeat reserved public uses.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Lawful allotment recorded</h3></div>`
+    },
+    'encroach': {
+      label: 'Encroachment', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Illegal occupation of gram sabha land</div>
+        <div class="box process">
+          <h3>3. Report & verification</h3>
+          <p>The Gram Panchayat / villager reports the encroachment; the <strong>Lekhpal</strong> inspects and files a report identifying the khasra and the occupier.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Eviction Complaint</h3>
+          <ul>
+            <li>Complaint / Panchayat resolution</li>
+            <li>Khatauni showing the land as gram sabha</li>
+            <li>Lekhpal report & site map (shajra)</li>
+            <li>Photographs of the encroachment</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>4. Proceedings before the SDM / Collector</h3>
+          <p>Eviction of unauthorised occupants of gram sabha land is initiated before the <strong>SDM</strong> (Assistant Collector), with notice to the occupier.</p>
+          <span class="info-link" onclick="openModal('forums')">Forums & roles →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Does the occupier claim a lawful right?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('claim')">YES – Claims allotment / old right</button>
+            <button class="btn-no"  onclick="choose('no-claim')">NO – Bare encroacher</button>
+          </div>
+        </div>`
+    },
+    'claim': {
+      label: 'Occupier claims right', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Occupier claims a lawful right</div>
+        <div class="box danger">
+          <h3>6. Enquiry into the claim</h3>
+          <p>The SDM examines any allotment order, old ZALR-era entry or regularisation. A false claim leads to eviction plus damages.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>7. Is the claim valid?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('regularise')">YES – Valid right</button>
+            <button class="btn-no"  onclick="choose('no-claim')">NO – Claim rejected</button>
+          </div>
+        </div>`
+    },
+    'regularise': {
+      label: 'Right upheld', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Lawful right / regularisation upheld</div>
+        <div class="box success">
+          <h3>Possession protected / regularised</h3>
+          <p>Where a valid allotment or regularisation exists, the occupier is recorded accordingly instead of being evicted.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Collect</h3>
+          <ul>
+            <li>Order confirming the right / regularisation</li>
+            <li>Updated khatauni entry</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Occupier's lawful status recorded</h3></div>`
+    },
+    'no-claim': {
+      label: 'No valid right', labelClass: 'no',
+      html: `
+        <div class="path-label no">No lawful right</div>
+        <div class="box danger">
+          <h3>8. Eviction order + damages</h3>
+          <p>The SDM orders eviction of the unauthorised occupant, imposes damages for wrongful use, and directs restoration of the land to the gram sabha.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the occupier appeal?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('appeal')">YES – Appeal</button>
+            <button class="btn-no"  onclick="choose('evicted')">NO – Order executed</button>
+          </div>
+        </div>`
+    },
+    'appeal': {
+      label: 'Appeal', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Appeal / revision</div>
+        <div class="box process">
+          <h3>Appeal ladder</h3>
+          <p>SDM → <strong>Collector</strong> → <strong>Board of Revenue</strong> within the limitation period.</p>
+          <span class="info-link" onclick="openModal('forums')">Revenue forums →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Appellate order passed</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Result?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('regularise')">Right upheld</button>
+            <button class="btn-no"  onclick="choose('evicted')">Eviction confirmed</button>
+          </div>
+        </div>`
+    },
+    'evicted': {
+      label: 'Land restored', labelClass: 'no',
+      html: `
+        <div class="path-label no">Encroachment removed</div>
+        <div class="box success">
+          <h3>9. Land restored to the gram sabha</h3>
+          <p>Possession is taken back, the record is corrected, and the land returns to gram sabha management under the Panchayat / LMC.</p>
+          <p class="note">The Gram Panchayat (Land Management Committee) is duty-bound to protect gram sabha land from re-encroachment.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Collect after eviction</h3>
+          <ul>
+            <li>Certified eviction order & damages assessment</li>
+            <li>Restored khatauni entry in the gram sabha's name</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Public land protected</h3></div>`
+    }
+  },
+  modals: {
+    gramsabha: `<h2>Gram Sabha Land & Management</h2>
+      <p>Common village land — grazing land (charagah), ponds, paths, abadi and vacant land — vests in the gram sabha. It is managed by the Gram Panchayat through its <strong>Land Management Committee (Bhumi Prabandhak Samiti)</strong> under the UP Revenue Code, read with the UP Panchayat Raj Act, 1947, and historically the UP ZALR Act, 1950.</p>`,
+    forums: `<h2>Forums & Roles</h2>
+      <ul>
+        <li><strong>Gram Panchayat / LMC</strong> – manages gram sabha land; reports encroachment; proposes allotment.</li>
+        <li><strong>Lekhpal</strong> – inspects and reports.</li>
+        <li><strong>SDM (Assistant Collector)</strong> – orders eviction & damages, approves allotment.</li>
+        <li><strong>Collector → Board of Revenue</strong> – appeal / revision.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

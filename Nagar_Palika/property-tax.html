@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Tax Assessment & Appeal – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Property Tax Assessment & Appeal (Uttar Pradesh Urban Local Bodies)",
+  subtitle: "Self-assessment • Assessment notice • Objection • Appeal • Recovery<br>UP Municipalities Act 1916 (Nagar Palika Parishad / Nagar Panchayat) + UP Municipal Corporation Act 1959 (Nagar Nigam)",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Nagar Palika", href:"index.html"},
+    {label:"Property Tax"}
+  ],
+  acts: [
+    {name:"UP Municipalities Act, 1916", href:"UP_Municipalities_Act_1916.pdf"},
+    {name:"UP Municipal Corporation Act, 1959", href:"UP_Municipal_Corporation_Act_1959.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>You own or occupy a building / land in an urban local body (ULB) area in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Identify the taxing body</h3>
+          <p>Property tax is levied by the ULB in whose limits the property falls.</p>
+          <span class="info-link" onclick="openModal('bodies')">Which body taxes you? →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Which urban local body covers the property?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('body-nagarpalika')">Nagar Palika Parishad / Nagar Panchayat (1916 Act)</button>
+            <button class="btn-alt" onclick="choose('body-nigam')">Nagar Nigam (1959 Act)</button>
+          </div>
+        </div>`
+    },
+    'body-nagarpalika': {
+      label: 'Nagar Palika / Panchayat', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Nagar Palika Parishad / Nagar Panchayat</div>
+        <div class="box info">
+          <h3>Governed by UP Municipalities Act, 1916</h3>
+          <p>Tax on buildings & lands is imposed and assessed under the 1916 Act and its assessment rules.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. How is the annual value / tax being fixed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('self-assess')">Self-assessment by owner</button>
+            <button class="btn-no"  onclick="choose('body-assess')">Assessment by the ULB</button>
+          </div>
+        </div>`
+    },
+    'body-nigam': {
+      label: 'Nagar Nigam', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Nagar Nigam (Municipal Corporation)</div>
+        <div class="box info">
+          <h3>Governed by UP Municipal Corporation Act, 1959</h3>
+          <p>Property tax on the annual value / carpet-area basis is assessed under the 1959 Act and corporation bye-laws.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. How is the tax being fixed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('self-assess')">Self-assessment by owner</button>
+            <button class="btn-no"  onclick="choose('body-assess')">Assessment by the Nigam</button>
+          </div>
+        </div>`
+    },
+    'self-assess': {
+      label: 'Self-assessment', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Self-assessment route</div>
+        <div class="box process">
+          <h3>File the self-assessment return</h3>
+          <p>Declare covered area, use (residential / commercial), age of building and locality factor; compute tax on the prescribed rate.</p>
+          <span class="info-link" onclick="openModal('annualvalue')">How annual value is computed →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for self-assessment</h3>
+          <ul>
+            <li>Property registration / sale deed or allotment letter</li>
+            <li>Building plan / covered-area measurement</li>
+            <li>Previous tax receipt (if any) / house number</li>
+            <li>Owner ID & address proof</li>
+            <li>Use / occupancy details (self-occupied / let out)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the ULB accept the self-assessed value?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('demand-raised')">YES – Demand issued on your figure</button>
+            <button class="btn-no"  onclick="choose('body-assess')">NO – ULB re-assesses</button>
+          </div>
+        </div>`
+    },
+    'body-assess': {
+      label: 'ULB assessment', labelClass: 'no',
+      html: `
+        <div class="path-label no">Assessment by the ULB</div>
+        <div class="box process">
+          <h3>Assessment list prepared</h3>
+          <p>The ULB values the property and enters it in the assessment list, then serves a special notice of the proposed annual value / tax.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Do you agree with the proposed assessment?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('demand-raised')">YES – Agree</button>
+            <button class="btn-no"  onclick="choose('objection')">NO – File objection</button>
+          </div>
+        </div>`
+    },
+    'objection': {
+      label: 'Objection filed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Objection against assessment</div>
+        <div class="box process">
+          <h3>File written objection within the notice period</h3>
+          <p>Objection is filed before the Executive Officer / assessing authority within the time stated in the special notice.</p>
+          <span class="info-link" onclick="openModal('grounds')">Common grounds of objection →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents with the objection</h3>
+          <ul>
+            <li>Copy of the special / assessment notice</li>
+            <li>Proof of actual covered area & use</li>
+            <li>Comparable assessments in the locality (if arguing over-valuation)</li>
+            <li>Photographs / occupancy proof (vacant, part-demolished, etc.)</li>
+            <li>Earlier tax receipts</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Hearing before the assessing authority</h3><p>You are heard and a reasoned order is passed revising or confirming the value.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the objection order acceptable?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('demand-raised')">YES – Accept revised tax</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Go in appeal</button>
+          </div>
+        </div>`
+    },
+    'appeal': {
+      label: 'Appeal', labelClass: 'no',
+      html: `
+        <div class="path-label no">Statutory appeal</div>
+        <div class="box danger">
+          <h3>File appeal against assessment</h3>
+          <p>Appeal lies to the prescribed appellate authority (District Judge / designated officer under the 1916 Act; Municipal / appellate authority under the 1959 Act). Tax usually must be deposited before the appeal is heard.</p>
+          <span class="info-link" onclick="openModal('appealforum')">Appeal forum & limitation →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for appeal</h3>
+          <ul>
+            <li>Memo of appeal with grounds</li>
+            <li>Certified copy of the objection order</li>
+            <li>Proof of deposit of admitted / disputed tax</li>
+            <li>All documents filed with the objection</li>
+            <li>Appeal fee as prescribed</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Appellate order</h3><p>Assessment is confirmed, reduced or set aside and remanded.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Assessment finalised on appeal</h3><p>Final annual value / tax is entered in the assessment list and demand revised accordingly.</p></div>`
+    },
+    'demand-raised': {
+      label: 'Demand issued', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Tax demand / bill issued</div>
+        <div class="box process">
+          <h3>Pay the tax bill</h3>
+          <p>Pay the annual / half-yearly demand at the ULB counter or online portal; rebate may be available for prompt payment.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the tax paid within time?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('paid')">YES – Paid</button>
+            <button class="btn-no"  onclick="choose('recovery')">NO – Default</button>
+          </div>
+        </div>`
+    },
+    'paid': {
+      label: 'Tax paid', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Tax paid</div>
+        <div class="box success">
+          <h3>END – Property tax cleared</h3>
+          <p>Receipt issued; No-Dues can be obtained for sale / mutation / loan purposes.</p>
+          <p class="note">Keep the receipt – it is proof for municipal mutation (namantaran) and building compliance.</p>
+        </div>`
+    },
+    'recovery': {
+      label: 'Default → Recovery', labelClass: 'no',
+      html: `
+        <div class="path-label no">Default in payment</div>
+        <div class="box danger">
+          <h3>Recovery proceedings</h3>
+          <p>Interest / penalty is added; the ULB may issue a bill of demand, then a warrant of distress and recover arrears as if they were arrears of land revenue.</p>
+          <span class="info-link" onclick="openModal('recovery')">Recovery steps →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Clear the arrears now?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('paid')">YES – Pay with penalty</button>
+            <button class="btn-no"  onclick="choose('attach')">NO – Continue default</button>
+          </div>
+        </div>`
+    },
+    'attach': {
+      label: 'Attachment', labelClass: 'no',
+      html: `
+        <div class="path-label no">Continued default</div>
+        <div class="box danger">
+          <h3>Distress / attachment</h3>
+          <p>Movable property may be attached and sold; property transactions may be blocked until dues are cleared.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Settle to stop recovery</h3><p>Arrears, interest and recovery costs must be paid to release the property from attachment.</p></div>`
+    }
+  },
+  modals: {
+    bodies: `<h2>UP Urban Local Bodies</h2>
+      <ul>
+        <li><strong>Nagar Panchayat</strong> – smaller towns (UP Municipalities Act, 1916).</li>
+        <li><strong>Nagar Palika Parishad</strong> – medium towns (UP Municipalities Act, 1916).</li>
+        <li><strong>Nagar Nigam</strong> – large cities (UP Municipal Corporation Act, 1959).</li>
+      </ul>
+      <p>Each levies tax on buildings and lands within its limits.</p>`,
+    annualvalue: `<h2>Annual Value / Tax Basis</h2>
+      <ul>
+        <li>Annual value is broadly the reasonable yearly rent the property would fetch.</li>
+        <li>Modern practice uses covered (carpet) area × locality unit rate × use & age factors.</li>
+        <li>Residential self-occupied property is usually taxed lower than let-out or commercial use.</li>
+        <li>Rebates for timely / lump-sum payment are commonly notified.</li>
+      </ul>`,
+    grounds: `<h2>Common Grounds of Objection</h2>
+      <ul>
+        <li>Covered area over-stated.</li>
+        <li>Wrong use category (residential shown as commercial).</li>
+        <li>Property partly vacant / under construction / demolished.</li>
+        <li>Wrong locality / unit rate applied.</li>
+        <li>Double assessment or ownership error.</li>
+      </ul>`,
+    appealforum: `<h2>Appeal Forum & Limitation</h2>
+      <ul>
+        <li>Appeal is filed within the period fixed by the statute / notice (often 30 days of the order).</li>
+        <li>Pre-deposit of the tax is generally required before the appeal is entertained.</li>
+        <li>1916 Act – appeal to the designated authority / District Judge; 1959 Act – to the appellate authority prescribed by the corporation.</li>
+      </ul>`,
+    recovery: `<h2>Recovery of Municipal Tax</h2>
+      <ol>
+        <li>Bill of demand served on default.</li>
+        <li>Notice of demand with penalty / interest.</li>
+        <li>Warrant of distress – attachment of movables.</li>
+        <li>Sale of attached property / recovery as arrears of land revenue.</li>
+        <li>Transactions may be withheld until No-Dues is issued.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demolition / Sealing Notice & Reply – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Demolition / Sealing Notice & Reply (Uttar Pradesh)",
+  subtitle: "Show-cause • Reply • Hearing • Compounding • Demolition / sealing • Appeal<br>UP Urban Planning & Development Act 1973 + UP Municipal Corporation Act 1959 + UP Municipalities Act 1916",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Nagar Palika", href:"index.html"},
+    {label:"Demolition Notice"}
+  ],
+  acts: [
+    {name:"UP Urban Planning & Development Act, 1973", href:"UP_Urban_Planning_Development_Act_1973.pdf"},
+    {name:"UP Municipal Corporation Act, 1959", href:"UP_Municipal_Corporation_Act_1959.pdf"},
+    {name:"UP Municipalities Act, 1916", href:"UP_Municipalities_Act_1916.pdf"}
+  ],
+  related: [
+    {label:"Building / Map Sanction", href:"building-permission.html"},
+    {label:"Development Authority Dispute", href:"development-dispute.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>You have received a demolition / sealing / show-cause notice for a building in an urban area of UP</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Read the notice carefully</h3>
+          <p>Identify the issuing authority, the Act & section, the alleged violation, the deadline to reply and the date of hearing.</p>
+          <span class="info-link" onclick="openModal('readnotice')">What to check in the notice →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Who issued the notice?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('by-da')">Development Authority (1973 Act)</button>
+            <button class="btn-alt" onclick="choose('by-ulb')">Nagar Nigam / Palika (1959 / 1916)</button>
+          </div>
+        </div>`
+    },
+    'by-da': {
+      label: 'By Development Authority', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Notice by Development Authority</div>
+        <div class="box info">
+          <h3>Action under the 1973 Act</h3>
+          <p>Usually for development without / beyond sanction in a development area; powers include removal, sealing and demolition after notice and hearing.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Continue to respond?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('reply')">Prepare reply</button>
+          </div>
+        </div>`
+    },
+    'by-ulb': {
+      label: 'By ULB', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Notice by Nagar Nigam / Palika</div>
+        <div class="box info">
+          <h3>Action under 1959 / 1916 Act</h3>
+          <p>Usually for construction contrary to municipal building provisions, dangerous structures or encroachment-linked construction.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Continue to respond?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('reply')">Prepare reply</button>
+          </div>
+        </div>`
+    },
+    'reply': {
+      label: 'Reply filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">File a written reply within time</div>
+        <div class="box process">
+          <h3>3. Submit reply / show-cause</h3>
+          <p>Reply before the deadline, attend the hearing, and preserve the right of appeal. Do not ignore the notice.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents with the reply</h3>
+          <ul>
+            <li>Copy of the notice</li>
+            <li>Sanctioned building plan / map & completion certificate (if any)</li>
+            <li>Ownership / title documents</li>
+            <li>Photographs & as-built measurements</li>
+            <li>Any compounding / revised-plan application already filed</li>
+            <li>Structural safety certificate (for "dangerous structure" notices)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>4. Hearing</h3><p>Authority hears you and passes a reasoned order.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the construction authorised / curable?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('authorised')">Authorised – notice dropped</button>
+            <button class="btn-alt" onclick="choose('compoundable')">Deviation compoundable</button>
+            <button class="btn-no"  onclick="choose('order-passed')">Unauthorised & non-compoundable</button>
+          </div>
+        </div>`
+    },
+    'authorised': {
+      label: 'Authorised', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Construction found authorised</div>
+        <div class="box success"><h3>Notice withdrawn / dropped</h3><p>Sanctioned plan and completion papers establish legality; proceedings are closed.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – No demolition</h3><p>Retain the order dropping the notice with your title & sanction records.</p></div>`
+    },
+    'compoundable': {
+      label: 'Compoundable', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Deviation is compoundable</div>
+        <div class="box process">
+          <h3>Compound the deviation</h3>
+          <p>Pay compounding charges and submit revised / as-built plans to regularise the minor deviation within permissible limits.</p>
+          <span class="info-link" onclick="openModal('compounding')">Compounding limits →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for compounding</h3>
+          <ul>
+            <li>Compounding application & as-built plan</li>
+            <li>Deviated-area computation</li>
+            <li>Proof of payment of compounding fee</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Regularised, notice closed</h3><p>Compounding order issued; proceed to completion / occupancy.</p></div>`
+    },
+    'order-passed': {
+      label: 'Demolition / sealing ordered', labelClass: 'no',
+      html: `
+        <div class="path-label no">Demolition / sealing order passed</div>
+        <div class="box danger">
+          <h3>Coercive order</h3>
+          <p>The authority orders demolition or sealing of the unauthorised construction and fixes a date; recovery of costs follows.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. How do you proceed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('appeal')">File appeal / seek stay</button>
+            <button class="btn-no"  onclick="choose('self-demolish')">Self-demolish the illegal part</button>
+          </div>
+        </div>`
+    },
+    'self-demolish': {
+      label: 'Self-demolition', labelClass: 'no',
+      html: `
+        <div class="path-label no">Voluntary demolition</div>
+        <div class="box process"><h3>Remove the unauthorised portion</h3><p>Demolishing voluntarily avoids forced-demolition costs and penalty; submit revised as-built plan for the compliant structure.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Structure brought into compliance</h3><p>Only the legal, sanctioned portion remains; completion certificate can be pursued.</p></div>`
+    },
+    'appeal': {
+      label: 'Appeal / stay', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Appeal against the order</div>
+        <div class="box process">
+          <h3>Statutory appeal & stay</h3>
+          <p>Appeal to the prescribed appellate authority under the relevant Act (1973 appellate authority / Chairman; municipal appellate authority). Seek stay of demolition pending appeal.</p>
+          <span class="info-link" onclick="openModal('appealforum')">Forum, limitation & stay →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for appeal</h3>
+          <ul>
+            <li>Certified copy of the demolition / sealing order</li>
+            <li>Grounds of appeal & stay application</li>
+            <li>Sanctioned plan, title & compounding papers</li>
+            <li>Proof of any pre-deposit / fee</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Outcome of the appeal?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('appeal-allowed')">Allowed / remanded</button>
+            <button class="btn-no"  onclick="choose('appeal-dismissed')">Dismissed</button>
+          </div>
+        </div>`
+    },
+    'appeal-allowed': {
+      label: 'Appeal allowed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Appeal allowed</div>
+        <div class="box success"><h3>Order set aside / remanded</h3><p>Demolition is stopped; matter may go back for fresh consideration or compounding.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Relief on appeal</h3><p>Comply with any conditions imposed by the appellate authority.</p></div>`
+    },
+    'appeal-dismissed': {
+      label: 'Appeal dismissed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Appeal dismissed</div>
+        <div class="box danger">
+          <h3>Demolition / sealing confirmed</h3>
+          <p>The unauthorised construction is removed or the premises sealed; costs recovered as arrears. A writ to the High Court is possible on questions of law.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Order enforced</h3><p>Illegal portion demolished / sealed; only the legal structure survives.</p></div>`
+    }
+  },
+  modals: {
+    readnotice: `<h2>Check in the Notice</h2>
+      <ul>
+        <li>Issuing authority and the Act / section invoked.</li>
+        <li>Exact description of the alleged violation.</li>
+        <li>Deadline to reply and date / place of hearing.</li>
+        <li>Whether it is a show-cause, sealing or final demolition notice.</li>
+        <li>Property identification and signatory's designation.</li>
+      </ul>`,
+    compounding: `<h2>Compounding Limits</h2>
+      <ul>
+        <li>Only minor deviations within notified percentages of setbacks / FAR are compoundable.</li>
+        <li>Charges are as per the notified schedule.</li>
+        <li>Encroachment on public land, master-plan / use violations and safety hazards are not compoundable.</li>
+      </ul>`,
+    appealforum: `<h2>Appeal Forum, Limitation & Stay</h2>
+      <ul>
+        <li>Appeal within the statutory period from the order (commonly 30 days).</li>
+        <li>1973 Act – prescribed appellate authority / Chairman; municipal Acts – designated appellate authority.</li>
+        <li>Pre-deposit may be required; seek interim stay of demolition.</li>
+        <li>High Court writ available for jurisdictional / legal errors.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

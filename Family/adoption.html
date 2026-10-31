@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hindu Adoption – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Hindu Adoption – Complete Flow (Uttar Pradesh)",
+  subtitle: "Valid adoption requisites (s.6–11) • Effect of adoption • Registration<br>Hindu Adoptions and Maintenance Act 1956 + HMGA 1956 + GWA 1890",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Family", href:"index.html"},
+    {label:"Hindu Adoption"}
+  ],
+  acts: [
+    {name:"Hindu Adoptions & Maintenance Act, 1956", href:"Hindu_Adoptions_and_Maintenance_Act_1956.pdf"},
+    {name:"Hindu Minority & Guardianship Act, 1956", href:"Hindu_Minority_and_Guardianship_Act_1956.pdf"},
+    {name:"Guardians and Wards Act, 1890", href:"Guardians_and_Wards_Act_1890.pdf"}
+  ],
+  related: [
+    {label:"Guardianship & Child Custody", href:"guardianship-custody.html"},
+    {label:"Hindu Succession – Full Flow (adopted child's rights)", href:"../Succession/hindu-succession.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A Hindu wishes to adopt a child under the Hindu Adoptions and Maintenance Act 1956</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Confirm the Act applies</h3>
+          <p>Both the adoptive parent and the child are Hindu (includes Buddhist, Jain, Sikh). For others, the Juvenile Justice Act 2015 adoption route (CARA) applies.</p>
+          <span class="info-link" onclick="openModal('scope')">Who this covers →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is the person taking in adoption capable? (s.7 / s.8)</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('capacity-ok')">YES – capable & consent in order</button>
+            <button class="btn-no"  onclick="choose('capacity-no')">NO – a capacity condition fails</button>
+          </div>
+        </div>`
+    },
+    'capacity-no': {
+      label: 'Capacity fails', labelClass: 'no',
+      html: `
+        <div class="path-label no">Capacity / consent defect</div>
+        <div class="box danger">
+          <h3>Adoption cannot proceed</h3>
+          <p>e.g. a married man adopting without the wife's consent, or unsound mind, bars a valid adoption until cured.</p>
+          <span class="info-link" onclick="openModal('capacity')">Capacity rules s.7–9 →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Resolve the defect first</h3></div>`
+    },
+    'capacity-ok': {
+      label: 'Capacity OK', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Adoptive parent capable; spouse's consent obtained</div>
+        <div class="box process">
+          <h3>3. Check capacity of the giver (s.9)</h3>
+          <p>Only the father, mother or guardian can give a child in adoption, following the rules on consent. A guardian needs court permission.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the child eligible to be adopted? (s.10)</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('child-ok')">YES – Hindu, unmarried, under 15, not already adopted</button>
+            <button class="btn-no"  onclick="choose('child-no')">NO – a condition fails</button>
+          </div>
+        </div>`
+    },
+    'child-no': {
+      label: 'Child ineligible', labelClass: 'no',
+      html: `
+        <div class="path-label no">Child does not meet s.10</div>
+        <div class="box danger"><h3>Not adoptable under HAMA</h3><p>The child must be Hindu, not already adopted, unmarried, and under 15 (unless a custom permits otherwise).</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – HAMA adoption not available</h3></div>`
+    },
+    'child-ok': {
+      label: 'Child eligible', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Child eligible for adoption</div>
+        <div class="box process">
+          <h3>4. Satisfy the s.11 conditions</h3>
+          <p>Key rule: if adopting a son, the adopter must not already have a living Hindu son/grandson; if adopting a daughter, no living Hindu daughter/son's daughter; and for opposite-sex adoption there must be a 21-year age gap.</p>
+          <span class="info-link" onclick="openModal('s11')">Section 11 conditions →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Are all s.11 conditions met?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('giving-taking')">YES – conditions met</button>
+            <button class="btn-no"  onclick="choose('s11-fail')">NO – a condition fails</button>
+          </div>
+        </div>`
+    },
+    's11-fail': {
+      label: 's.11 fails', labelClass: 'no',
+      html: `
+        <div class="path-label no">Section 11 condition not satisfied</div>
+        <div class="box danger"><h3>Adoption would be void</h3><p>Any adoption contrary to s.11 is invalid and transfers no rights.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Cannot complete this adoption</h3></div>`
+    },
+    'giving-taking': {
+      label: 'Giving & taking', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">All requisites satisfied</div>
+        <div class="box process">
+          <h3>5. The act of giving and taking</h3>
+          <p>A valid adoption requires the actual giving and taking of the child with intent to transfer the child from the birth family to the adoptive family. (The datta homam ceremony is not legally essential.)</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Adoption record</h3>
+          <ul>
+            <li>Adoption Deed recording the giving and taking</li>
+            <li>Consents (spouse's consent; birth parents' / guardian's consent)</li>
+            <li>Age proof of the child and of the adoptive parent(s)</li>
+            <li>Proof that s.11 conditions are met (no disqualifying existing child)</li>
+            <li>Identity and address proofs</li>
+            <li>Photographs of the ceremony / parties</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>6. Register the Adoption Deed</h3>
+          <p>A registered deed (Registration Act) raises a presumption of a valid adoption under s.16. Registration is strongly recommended though adoption can be proved otherwise.</p>
+          <span class="info-link" onclick="openModal('register')">Registration & presumption →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success">
+          <h3>7. Effect of a valid adoption (s.12)</h3>
+          <p>From the date of adoption the child is deemed the child of the adoptive parents for all purposes; ties with the birth family are severed (except prohibited-degree marriage bars). Vested property rights of others are not divested.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Irrevocable</h3><p>A valid adoption cannot be cancelled by the parties, and the adopted child cannot renounce the adoptive status and return to the birth family.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Valid adoption complete</h3></div>`
+    }
+  },
+  modals: {
+    scope: `<h2>Who the Act Covers</h2>
+      <ul>
+        <li>Applies where both the person adopting and the child are Hindus (including Buddhist, Jain, Sikh).</li>
+        <li>Adoption by/of persons of other faiths generally proceeds under the Juvenile Justice Act 2015 through CARA.</li>
+        <li>A valid HAMA adoption is permanent and creates full parent-child legal relations.</li>
+      </ul>`,
+    capacity: `<h2>Capacity to Adopt (s.7–9)</h2>
+      <ul>
+        <li><strong>Male (s.7):</strong> a Hindu male of sound mind and major; if married, needs the wife's consent (unless she is incapable of consenting).</li>
+        <li><strong>Female (s.8):</strong> a Hindu female of sound mind and major may adopt in her own right.</li>
+        <li><strong>Giving in adoption (s.9):</strong> only father, mother or a guardian; a guardian needs the court's prior permission and the court looks to the child's welfare.</li>
+      </ul>`,
+    s11: `<h2>Other Conditions – s.11</h2>
+      <ul>
+        <li>Adopting a son: the adopter must not have a living Hindu son, son's son or son's son's son at adoption.</li>
+        <li>Adopting a daughter: no living Hindu daughter or son's daughter at adoption.</li>
+        <li>Opposite-sex adoption: at least a 21-year age difference between adopter and child.</li>
+        <li>The same child cannot be adopted by two persons simultaneously.</li>
+        <li>The child must actually be given and taken in adoption.</li>
+      </ul>`,
+    register: `<h2>Registration & Presumption (s.16)</h2>
+      <ul>
+        <li>A document recording an adoption, signed by the person giving and taking and registered, raises a presumption that the adoption was validly made.</li>
+        <li>Registration is done at the Sub-Registrar's office under the Registration Act 1908.</li>
+        <li>Even without a deed, a valid adoption can be proved by evidence of the giving and taking.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

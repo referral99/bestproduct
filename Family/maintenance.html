@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Maintenance of Wife / Child / Parent – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Maintenance of Wife / Child / Parent – Complete Flow (Uttar Pradesh)",
+  subtitle: "BNSS 2023 s.144 (formerly CrPC s.125) • HAMA s.18 • Interim maintenance<br>Hindu Adoptions & Maintenance Act 1956 + Hindu Marriage Act 1955 + Family Courts Act 1984",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Family", href:"index.html"},
+    {label:"Maintenance"}
+  ],
+  acts: [
+    {name:"Hindu Adoptions & Maintenance Act, 1956", href:"Hindu_Adoptions_and_Maintenance_Act_1956.pdf"},
+    {name:"Family Courts Act, 1984", href:"Family_Courts_Act_1984.pdf"},
+    {name:"Hindu Marriage Act, 1955", href:"Hindu_Marriage_Act_1955.pdf"}
+  ],
+  related: [
+    {label:"Domestic Violence – Civil Reliefs", href:"domestic-violence-relief.html"},
+    {label:"Senior Citizen Maintenance", href:"senior-citizen-maintenance.html"},
+    {label:"Hindu Divorce", href:"hindu-divorce.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A dependant (wife, child or parent) is not being maintained by the person liable</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Note the law change</h3>
+          <p>The secular maintenance remedy formerly under CrPC s.125 is now <strong>BNSS 2023 s.144</strong>, effective 1 July 2024. Cases filed earlier continue under CrPC s.125.</p>
+          <span class="info-link" onclick="openModal('lawchange')">CrPC 125 → BNSS 144 →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Who is claiming maintenance?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('wife')">Wife</button>
+            <button class="btn-alt" onclick="choose('child')">Child</button>
+            <button class="btn-no"  onclick="choose('parent')">Parent</button>
+          </div>
+        </div>`
+    },
+    'wife': {
+      label: 'Wife claims', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Maintenance claim by a wife</div>
+        <div class="box process">
+          <h3>3. Choose the remedy</h3>
+          <p>A wife can claim under the secular BNSS s.144 (quick, in Magistrate's court) and/or under personal law — HAMA s.18 (separate residence & maintenance) or HMA s.24/25 if a matrimonial case is pending.</p>
+          <span class="info-link" onclick="openModal('wiferoutes')">Wife's maintenance routes →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is she able to maintain herself / did she leave with cause?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('wife-eligible')">Cannot maintain self & left for valid reason</button>
+            <button class="btn-no"  onclick="choose('wife-bar')">Living in adultery / left without cause / mutual separation</button>
+          </div>
+        </div>`
+    },
+    'wife-bar': {
+      label: 'Maintenance barred', labelClass: 'no',
+      html: `
+        <div class="path-label no">Statutory bar may apply</div>
+        <div class="box danger"><h3>Claim may be refused</h3><p>A wife living in adultery, refusing to live with the husband without sufficient reason, or separated by mutual consent is generally not entitled under s.144.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Reassess grounds before filing</h3></div>`
+    },
+    'wife-eligible': {
+      label: 'Eligible', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Entitled to claim</div>
+        <div class="box process">
+          <h3>4. File the petition</h3>
+          <p>BNSS s.144 petition before the Judicial Magistrate; or HAMA s.18 suit / HMA s.24 application before the Family Court where established.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Wife's claim</h3>
+          <ul>
+            <li>Petition stating the provision relied on</li>
+            <li>Marriage proof</li>
+            <li>Evidence husband neglected/refused maintenance</li>
+            <li>Income and assets of the husband (salary slips, ITR, property)</li>
+            <li>Wife's own income / lack of it</li>
+            <li>Address proof and photographs</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>5. Interim maintenance</h3>
+          <p>Courts routinely grant interim maintenance and litigation expenses early, following Supreme Court guidelines on disclosure of assets and income.</p>
+          <span class="info-link" onclick="openModal('interim')">Interim maintenance →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is neglect / refusal proved?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('order')">YES – maintenance ordered</button>
+            <button class="btn-no"  onclick="choose('rejected')">NO – claim rejected</button>
+          </div>
+        </div>`
+    },
+    'child': {
+      label: 'Child claims', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Maintenance for a child</div>
+        <div class="box process">
+          <h3>3. Entitlement</h3>
+          <p>A minor child (and a major child unable to maintain itself due to physical/mental abnormality) can claim under BNSS s.144 and under HAMA s.20 against the parents.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Child's claim</h3>
+          <ul>
+            <li>Petition (filed by the child's guardian)</li>
+            <li>Birth certificate / proof of parentage</li>
+            <li>Proof of the parent's neglect to maintain</li>
+            <li>Income of the liable parent</li>
+            <li>Education / medical expenses of the child</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is neglect proved?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('order')">YES – maintenance ordered</button>
+            <button class="btn-no"  onclick="choose('rejected')">NO – rejected</button>
+          </div>
+        </div>`
+    },
+    'parent': {
+      label: 'Parent claims', labelClass: 'no',
+      html: `
+        <div class="path-label no">Maintenance for a parent</div>
+        <div class="box process">
+          <h3>3. Entitlement</h3>
+          <p>A father or mother unable to maintain themselves can claim under BNSS s.144 from children having sufficient means. Senior citizens have an additional, faster Tribunal route under the 2007 Act.</p>
+          <span class="info-link" onclick="openModal('seniorlink')">Senior-citizen Tribunal option →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Parent's claim</h3>
+          <ul>
+            <li>Petition identifying the children having means</li>
+            <li>Proof of relationship</li>
+            <li>Proof the parent cannot maintain themselves</li>
+            <li>Income / assets of the children</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is inability + children's means proved?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('order')">YES – maintenance ordered</button>
+            <button class="btn-no"  onclick="choose('rejected')">NO – rejected</button>
+          </div>
+        </div>`
+    },
+    'rejected': {
+      label: 'Claim rejected', labelClass: 'no',
+      html: `
+        <div class="path-label no">Claim not made out</div>
+        <div class="box danger"><h3>Petition dismissed</h3><p>The applicant may appeal / revise, or re-file under a different provision with better evidence.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – No maintenance ordered</h3></div>`
+    },
+    'order': {
+      label: 'Maintenance ordered', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Maintenance granted</div>
+        <div class="box success">
+          <h3>Order for monthly maintenance</h3>
+          <p>Amount fixed on the liable person's income and the dependant's needs; payable from the date ordered (often from the date of application).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the payer default?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('enforce')">YES – default</button>
+            <button class="btn-no"  onclick="choose('complied-m')">NO – pays regularly</button>
+          </div>
+        </div>`
+    },
+    'complied-m': {
+      label: 'Paid regularly', labelClass: 'no',
+      html: `
+        <div class="path-label no">Order complied with</div>
+        <div class="box success"><h3>END – Maintenance being paid</h3></div>`
+    },
+    'enforce': {
+      label: 'Enforcement', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Enforcing the order</div>
+        <div class="box process">
+          <h3>Recovery of arrears</h3>
+          <p>The court can issue a warrant for levy of the amount as fines and, on continued default, order imprisonment until payment. Arrears can also be recovered as arrears of land revenue.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Execution</h3>
+          <ul>
+            <li>Certified copy of the maintenance order</li>
+            <li>Statement of arrears with dates</li>
+            <li>Details of the payer's income / assets for attachment</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Arrears recovered / order enforced</h3></div>`
+    }
+  },
+  modals: {
+    lawchange: `<h2>CrPC s.125 → BNSS 2023 s.144</h2>
+      <ul>
+        <li>The secular, religion-neutral maintenance remedy for wife, children and parents moved from CrPC s.125 to BNSS 2023 s.144.</li>
+        <li>BNSS came into force on 1 July 2024; proceedings started before that date continue under the old CrPC provisions.</li>
+        <li>The substance (who can claim, bars, enforcement) is carried forward with the new section numbering.</li>
+      </ul>`,
+    wiferoutes: `<h2>A Wife's Maintenance Routes</h2>
+      <ul>
+        <li><strong>BNSS s.144</strong> – quick summary remedy before the Magistrate (formerly CrPC s.125).</li>
+        <li><strong>HAMA s.18</strong> – a Hindu wife's right to separate residence and maintenance in specified situations.</li>
+        <li><strong>HMA s.24 / s.25</strong> – interim and permanent maintenance within a matrimonial case.</li>
+        <li>These remedies can overlap; amounts already received are adjusted.</li>
+      </ul>`,
+    interim: `<h2>Interim Maintenance</h2>
+      <ul>
+        <li>Can be granted pending final decision to prevent destitution.</li>
+        <li>The Supreme Court requires both parties to file an affidavit of assets and income for a fair assessment.</li>
+        <li>Delay in deciding is discouraged; interim relief is usually from the date of application.</li>
+      </ul>`,
+    seniorlink: `<h2>Senior Citizens – Faster Route</h2>
+      <ul>
+        <li>Parents who are senior citizens may use the Maintenance and Welfare of Parents and Senior Citizens Act 2007.</li>
+        <li>A Maintenance Tribunal decides quickly, with a cap and time-bound disposal, and can order recovery.</li>
+        <li>See the dedicated Senior Citizen Maintenance flow.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

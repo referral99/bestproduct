@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recovery of Money / Debt – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Recovery of Money / Debt – Complete Flow (UP)",
+  subtitle: "Recovering a loan, unpaid dues or outstanding amount<br>Contract Act 1872 + CPC 1908 + Limitation Act 1963 + Court Fees Act 1870",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Civil", href:"index.html"},
+    {label:"Recovery of Money / Debt"}
+  ],
+  acts: [
+    {name:"Indian Contract Act, 1872", href:"Indian_Contract_Act_1872.pdf"},
+    {name:"Limitation Act, 1963", href:"Limitation_Act_1963.pdf"},
+    {name:"Code of Civil Procedure, 1908", href:"Code_of_Civil_Procedure_1908.pdf"},
+    {name:"Court Fees Act, 1870", href:"Court_Fees_Act_1870.pdf"}
+  ],
+  related: [
+    {label:"Cheque Dishonour – Summary Suit (O.37)", href:"cheque-recovery.html"},
+    {label:"Cheque Bounce s.138 (Criminal)", href:"../Criminal/cheque-bounce-138.html"},
+    {label:"Breach of Contract / Damages", href:"breach-of-contract.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>Money is due and the debtor has not paid</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Is there proof of the debt / liability?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('proof')">YES – Documents exist</button>
+            <button class="btn-no"  onclick="choose('noproof')">NO – Only oral</button>
+          </div>
+        </div>`
+    },
+    noproof: {
+      label: 'No documentary proof', labelClass: 'no',
+      html: `
+        <div class="path-label no">Only oral evidence</div>
+        <div class="box danger"><h3>Recovery is harder</h3><p>Gather corroboration – bank transfer entries, messages, witnesses, part-payment receipts. A pure oral loan is provable but weaker.</p></div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Build the record</h3><p>Send a written demand and obtain any written acknowledgement before suing.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Able to collect some written evidence?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('proof')">YES – Proceed</button>
+            <button class="btn-no"  onclick="choose('drop')">NO – Reconsider</button>
+          </div>
+        </div>`
+    },
+    drop: {
+      label: 'Reconsider', labelClass: 'no',
+      html: `
+        <div class="path-label no">Insufficient evidence</div>
+        <div class="box info"><h3>Weigh cost vs. recovery</h3><p>Without any provable record, litigation risk is high. Consider mediation or writing off.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END</h3></div>`
+    },
+    proof: {
+      label: 'Debt provable', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Debt is provable</div>
+        <div class="box info">
+          <h3>2. Check limitation</h3>
+          <p>Suit for a simple money debt / loan: <strong>3 years</strong> from when the amount became due (Articles 19–22). On a promissory note, from its date/demand. A written acknowledgement (s.18) or part-payment (s.19) restarts the clock.</p>
+          <span class="info-link" onclick="openModal('limit')">Limitation table →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the claim within 3 years?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('notice')">YES – In time</button>
+            <button class="btn-no"  onclick="choose('timebar')">NO – Time-barred</button>
+          </div>
+        </div>`
+    },
+    timebar: {
+      label: 'Time-barred', labelClass: 'no',
+      html: `
+        <div class="path-label no">Beyond limitation</div>
+        <div class="box danger"><h3>Barred under s.3</h3><p>Unless saved by a fresh written acknowledgement or part-payment, a time-barred money suit must be dismissed.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Remedy lost</h3></div>`
+    },
+    notice: {
+      label: 'In time', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Within limitation</div>
+        <div class="box process"><h3>3. Send a legal demand notice</h3><p>Formal notice demanding payment within a stated period (e.g. 15 days). Often prompts settlement and strengthens the suit.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Did the debtor pay or settle?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('settled')">YES – Paid / settled</button>
+            <button class="btn-no"  onclick="choose('suittype')">NO – Must sue</button>
+          </div>
+        </div>`
+    },
+    settled: {
+      label: 'Settled', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Paid after notice</div>
+        <div class="box success"><h3>Recovery achieved without suit</h3><p>Obtain a signed receipt / settlement and discharge the liability.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Resolved</h3></div>`
+    },
+    suittype: {
+      label: 'File suit', labelClass: 'no',
+      html: `
+        <div class="path-label no">File a recovery suit</div>
+        <div class="box decision">
+          <h3>4. Is the claim on a written contract / bill / cheque (liquidated debt)?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('summary')">YES – Summary Suit (O.37)</button>
+            <button class="btn-no"  onclick="choose('ordinary')">NO – Ordinary suit</button>
+          </div>
+        </div>`
+    },
+    summary: {
+      label: 'Summary suit (O.37)', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Order 37 CPC – Summary Suit</div>
+        <div class="box process">
+          <h3>Faster recovery</h3>
+          <p>For debts on bills of exchange, promissory notes, cheques or a written contract for a liquidated sum. The defendant must seek leave to defend; no automatic right to contest.</p>
+          <span class="info-link" onclick="openModal('o37')">How Order 37 works →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to file</h3>
+          <ul>
+            <li>Plaint marked as an Order 37 summary suit</li>
+            <li>Original promissory note / cheque / written contract / invoices</li>
+            <li>Statement of account showing principal + interest</li>
+            <li>Legal notice and proof of service</li>
+            <li>Court fee (ad valorem) under Court Fees Act</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Decree & execution</h3><p>If leave to defend is refused, decree follows; recover through execution (O.21 CPC) by attachment/sale of property or garnishee of bank accounts.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Amount recovered</h3></div>`
+    },
+    ordinary: {
+      label: 'Ordinary suit', labelClass: 'no',
+      html: `
+        <div class="path-label no">Ordinary money suit</div>
+        <div class="box process"><h3>Regular civil suit</h3><p>File in the Civil Court with pecuniary & territorial jurisdiction; full trial with evidence on both sides.</p></div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to file</h3>
+          <ul>
+            <li>Plaint with cause of action and calculation of sum due</li>
+            <li>Loan papers / acknowledgements / ledger entries / bank statements</li>
+            <li>Legal notice and reply, if any</li>
+            <li>Court fee (ad valorem) + interest claim (s.34 CPC)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Decree & execution</h3><p>On a decree, execute by attachment and sale of property or arrest, as permitted.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Decree & recovery</h3></div>`
+    }
+  },
+  modals: {
+    limit: `<h2>Limitation for Money Claims</h2>
+      <ul>
+        <li>Simple money debt / price of goods / services: 3 years from when due.</li>
+        <li>Promissory note or bond payable on demand: 3 years from the date.</li>
+        <li>Money lent: 3 years from the date of the loan.</li>
+        <li>A written, signed acknowledgement before expiry (s.18) or a part-payment (s.19) starts a fresh 3-year period.</li>
+      </ul>`,
+    o37: `<h2>Order 37 CPC – Summary Suit</h2>
+      <ol>
+        <li>Plaintiff files on a negotiable instrument or written liquidated claim.</li>
+        <li>Summons for the defendant to appear within 10 days.</li>
+        <li>Defendant must apply for leave to defend within 10 days of appearance.</li>
+        <li>Leave may be unconditional, conditional (e.g. deposit), or refused.</li>
+        <li>If leave is refused or conditions unmet, the court decrees the suit.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

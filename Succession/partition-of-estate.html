@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partition of Inherited Estate – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Partition of Inherited Estate – Complete Flow (UP)",
+  subtitle: "By registered partition deed or partition suit • Division by metes & bounds<br>Hindu Succession Act 1956 + Transfer of Property, Registration & CPC",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Succession", href:"index.html"},
+    {label:"Partition of Estate"}
+  ],
+  acts: [
+    {name:"Hindu Succession Act, 1956 (principal)", href:"Hindu_Succession_Act_1956_principal.pdf"},
+    {name:"Transfer of Property Act, 1882", href:"../Civil/Transfer_of_Property_Act_1882.pdf"},
+    {name:"Registration Act, 1908", href:"../Civil/Registration_Act_1908.pdf"},
+    {name:"Code of Civil Procedure, 1908", href:"../Civil/Code_of_Civil_Procedure_1908.pdf"}
+  ],
+  related: [
+    {label:"Partition of Agricultural Holding – Revenue", href:"../Revenue/land-partition.html"},
+    {label:"Property Transfer (Partition Deed) – Civil", href:"../Civil/property-transfer.html"},
+    {label:"Injunction / Stay (to protect possession)", href:"../Civil/injunction.html"},
+    {label:"Hindu Succession – Full Flow", href:"hindu-succession.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>Co-heirs jointly hold property inherited from a deceased in Uttar Pradesh and wish to divide it</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Confirm the starting position</h3>
+          <p>Succession has already vested the estate in the co-owners as tenants-in-common. Partition converts undivided shares into separate, defined holdings.</p>
+          <span class="info-link" onclick="openModal('basics')">What partition does →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Are all the shares already settled & undisputed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('agreed')">YES – Shares agreed</button>
+            <button class="btn-no"  onclick="choose('disputed')">NO – Shares / title disputed</button>
+          </div>
+        </div>`
+    },
+    'agreed': {
+      label: 'Shares agreed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">All co-heirs agree on shares</div>
+        <div class="box process">
+          <h3>Choose the amicable route</h3>
+          <p>Where everyone agrees, partition can be completed by a <strong>registered partition deed</strong> (or a family settlement / release deeds) without litigation.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Can the property be physically divided by metes & bounds?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('deed')">YES – Divisible → Partition Deed</button>
+            <button class="btn-no"  onclick="choose('indivisible')">NO – Indivisible single unit</button>
+          </div>
+        </div>`
+    },
+    'indivisible': {
+      label: 'Indivisible property', labelClass: 'no',
+      html: `
+        <div class="path-label no">Property cannot be split physically</div>
+        <div class="box info">
+          <h3>Adjust by value, not by metes & bounds</h3>
+          <p>A single flat / shop may be allotted to one co-heir who pays the others <strong>owelty</strong> (money for equalisation), or the co-heirs may sell and divide the proceeds.</p>
+          <span class="info-link" onclick="openModal('indivisible')">Options for indivisible property →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>How will the co-heirs proceed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('deed')">Allot to one + owelty via Partition/Release Deed</button>
+            <button class="btn-alt" onclick="choose('sell')">Sell jointly & divide proceeds</button>
+          </div>
+        </div>`
+    },
+    'sell': {
+      label: 'Sell & divide', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Joint sale & division of proceeds</div>
+        <div class="box process">
+          <h3>Execute a joint registered Sale Deed</h3>
+          <p>All co-owners sell together (TPA s.54) and distribute the net sale proceeds in their shares.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents & costs</h3>
+          <ul>
+            <li>Draft sale deed signed by all co-owners</li>
+            <li>Title / mutation records showing each share</li>
+            <li>Stamp duty on circle rate / consideration; registration fee</li>
+            <li>Identity proofs & photos of all parties and the buyer</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Property sold, proceeds divided by share</h3></div>`
+    },
+    'deed': {
+      label: 'Partition Deed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Registered Partition Deed</div>
+        <div class="box process">
+          <h3>Draft the partition deed</h3>
+          <p>The deed describes each co-sharer's allotment by metes & bounds, records any owelty, and is signed by all parties.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents & requirements</h3>
+          <ul>
+            <li>Title documents & latest Khata / Khatauni</li>
+            <li>Site plan showing the divided portions (metes & bounds)</li>
+            <li>Death Certificate & legal-heir details of the deceased owner</li>
+            <li>Identity proofs & photos of all co-sharers and witnesses</li>
+            <li>Stamp duty on the partition deed; registration fee</li>
+          </ul>
+          <span class="info-link" onclick="openModal('reg')">Registration & stamp notes →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>Register at the Sub-Registrar</h3>
+          <p>A partition deed of immovable property must be registered under s.17 of the Registration Act to be valid.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Apply for mutation on each divided share</h3><p>Each co-sharer gets a separate entry in the revenue / municipal record.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Estate partitioned by registered deed</h3><p>Each heir holds a separate, defined share.</p></div>`
+    },
+    'disputed': {
+      label: 'Dispute → suit', labelClass: 'no',
+      html: `
+        <div class="path-label no">Shares / title disputed</div>
+        <div class="box danger">
+          <h3>File a Partition Suit</h3>
+          <p>A co-owner may sue for partition in the Civil Court having jurisdiction (value & situs of property). The court determines shares and directs division.</p>
+          <span class="info-link" onclick="openModal('suit')">How a partition suit runs →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for the plaint</h3>
+          <ul>
+            <li>Plaint with full pedigree / family tree</li>
+            <li>Death Certificate of the deceased owner</li>
+            <li>Title documents & previous mutation entries</li>
+            <li>List of all co-owners with addresses</li>
+            <li>Valuation of the property & court fee on the share claimed</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>Preliminary decree (O.XX r.18 CPC)</h3>
+          <p>The court first declares the shares of each party by a preliminary decree.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Can the court divide by metes & bounds?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('final-decree')">YES – Commissioner divides</button>
+            <button class="btn-no"  onclick="choose('court-sale')">NO – Sale & distribution</button>
+          </div>
+        </div>`
+    },
+    'final-decree': {
+      label: 'Final decree', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Division by metes & bounds</div>
+        <div class="box process">
+          <h3>Commissioner & final decree</h3>
+          <p>The court appoints a commissioner to propose a division; after objections the court passes a <strong>final decree</strong> allotting defined portions.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Apply for mutation with the certified decree</h3><p>A partition by decree does not require separate registration; the decree itself is the title.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Estate partitioned by court decree</h3></div>`
+    },
+    'court-sale': {
+      label: 'Court-ordered sale', labelClass: 'no',
+      html: `
+        <div class="path-label no">Indivisible – court orders sale</div>
+        <div class="box info">
+          <h3>Sale in lieu of partition</h3>
+          <p>Where the property cannot be conveniently divided, the court may order a sale and distribute the proceeds among the co-owners in their shares.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Court sale & distribution</h3><p>Proceeds divided per the preliminary decree shares.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Property sold, proceeds divided by decree</h3></div>`
+    }
+  },
+  modals: {
+    basics: `<h2>What Partition Does</h2>
+      <ul>
+        <li>On inheritance, co-heirs hold the estate jointly as tenants-in-common in defined but undivided shares.</li>
+        <li>Partition separates those shares into distinct, exclusively owned portions.</li>
+        <li>It can be done amicably (registered deed / family settlement) or through a court suit.</li>
+        <li>Each co-owner has a right to demand partition of his share.</li>
+      </ul>`,
+    indivisible: `<h2>Indivisible Property</h2>
+      <ul>
+        <li>Some property (a single flat, shop or small plot) cannot be split without destroying its value.</li>
+        <li>It may be allotted to one co-owner who pays the others owelty (money to equalise shares).</li>
+        <li>Alternatively the co-owners sell and divide the proceeds.</li>
+      </ul>`,
+    reg: `<h2>Registration & Stamp (Partition Deed)</h2>
+      <ul>
+        <li>A partition deed of immovable property is compulsorily registrable under s.17 of the Registration Act.</li>
+        <li>Stamp duty is payable on the instrument as per the UP stamp schedule; concessional treatment often applies between family members.</li>
+        <li>An unregistered partition of immovable property does not confer valid title.</li>
+      </ul>`,
+    suit: `<h2>Partition Suit (CPC)</h2>
+      <ol>
+        <li>Plaint filed by a co-owner seeking division of his share.</li>
+        <li>Court passes a preliminary decree declaring each party's share (O.XX r.18).</li>
+        <li>A commissioner is appointed to suggest division by metes & bounds.</li>
+        <li>Final decree allots specific portions; if indivisible, a sale may be ordered.</li>
+        <li>The decree is the title document and can be taken for mutation.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

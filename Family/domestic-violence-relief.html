@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Domestic Violence – Civil Reliefs – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Domestic Violence – Civil Reliefs (Uttar Pradesh)",
+  subtitle: "Protection • Residence • Monetary relief • Custody before the Magistrate<br>PWDVA 2005 — civil reliefs; can run with Family Court / matrimonial proceedings",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Family", href:"index.html"},
+    {label:"Domestic Violence – Civil Reliefs"}
+  ],
+  acts: [
+    {name:"Protection of Women from Domestic Violence Act, 2005", href:"../Criminal/Protection_of_Women_from_Domestic_Violence_Act_2005.pdf"},
+    {name:"Family Courts Act, 1984", href:"Family_Courts_Act_1984.pdf"},
+    {name:"Hindu Marriage Act, 1955", href:"Hindu_Marriage_Act_1955.pdf"}
+  ],
+  related: [
+    {label:"Domestic Violence criminal track (PWDVA + s.498A)", href:"../Criminal/domestic-violence.html"},
+    {label:"Maintenance of Wife / Child / Parent", href:"maintenance.html"},
+    {label:"Hindu Divorce", href:"hindu-divorce.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A woman seeks civil protection and relief against domestic abuse in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>PWDVA gives civil reliefs</h3>
+          <p>The 2005 Act is primarily a civil remedy for protection, residence and money — distinct from a criminal prosecution. Reliefs can be sought alongside a divorce / maintenance case.</p>
+          <span class="info-link" onclick="openModal('scope')">What is domestic violence →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Is there a "domestic relationship" in a shared household?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('yes-rel')">YES</button>
+            <button class="btn-no"  onclick="choose('no-rel')">NO</button>
+          </div>
+        </div>`
+    },
+    'no-rel': {
+      label: 'No domestic relationship', labelClass: 'no',
+      html: `
+        <div class="path-label no">No domestic relationship</div>
+        <div class="box danger"><h3>END – PWDVA reliefs not available</h3><p>Ordinary civil / criminal remedies may still apply, but PWDVA needs a domestic relationship in a shared household</p></div>`
+    },
+    'yes-rel': {
+      label: 'Domestic relationship', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Domestic relationship established</div>
+        <div class="box process">
+          <h3>2. Approach Protection Officer / Magistrate</h3>
+          <p>File an application under PWDVA s.12 before the Judicial Magistrate (First Class), directly or through the Protection Officer. A Domestic Incident Report (DIR) is prepared.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to attach</h3>
+          <ul>
+            <li>Application under s.12 with list of reliefs</li>
+            <li>Domestic Incident Report (DIR)</li>
+            <li>Proof of the shared household (ration card, rent/utility bills)</li>
+            <li>Medical records / photographs of injuries, if any</li>
+            <li>Income details of respondent for monetary relief</li>
+            <li>Any earlier police complaints</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. Is urgent interim relief needed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('interim')">YES – Interim / ex-parte (s.23)</button>
+            <button class="btn-no"  onclick="choose('reliefs')">NO – Proceed to final reliefs</button>
+          </div>
+        </div>`
+    },
+    'interim': {
+      label: 'Interim relief', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Interim / ex-parte order (s.23)</div>
+        <div class="box info"><h3>Immediate protection</h3><p>The Magistrate may grant interim protection, residence or monetary orders even ex-parte on an affidavit.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to the menu of final reliefs?</h3>
+          <div class="choice-btns"><button class="btn-yes" onclick="choose('reliefs')">Continue</button></div>
+        </div>`
+    },
+    'reliefs': {
+      label: 'Reliefs', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Civil reliefs under PWDVA</div>
+        <div class="box info">
+          <h3>4. Reliefs the Magistrate can grant</h3>
+          <p>Protection order (s.18) • Residence order (s.19) • Monetary relief / maintenance (s.20) • Custody of children (s.21) • Compensation (s.22).</p>
+          <span class="info-link" onclick="openModal('reliefs')">Each relief explained →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Is domestic violence established on the material?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('granted')">YES – Reliefs granted</button>
+            <button class="btn-no"  onclick="choose('dismissed')">NO – Dismissed</button>
+          </div>
+        </div>`
+    },
+    'dismissed': {
+      label: 'Dismissed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Not established</div>
+        <div class="box danger"><h3>END – Application dismissed</h3><p>An appeal lies to the Court of Session under PWDVA s.29 within 30 days</p></div>`
+    },
+    'granted': {
+      label: 'Reliefs granted', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Reliefs granted</div>
+        <div class="box success"><h3>Protection / Residence / Monetary order passed</h3><p>Orders are enforceable; copies sent to the local police station and Protection Officer.</p></div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>On breach (s.31)</h3><p>Breach of a protection order is a cognizable, non-bailable offence punishable with imprisonment up to 1 year and/or fine.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Protection secured</h3><p>Orders may be altered later on changed circumstances (s.25)</p></div>`
+    }
+  },
+  modals: {
+    scope: `<h2>What is Domestic Violence?</h2>
+      <ul>
+        <li>Physical, sexual, verbal, emotional and economic abuse (PWDVA s.3).</li>
+        <li>Includes harassment for dowry and threats.</li>
+        <li>"Aggrieved person" is a woman in a domestic relationship; "respondent" is an adult in that relationship.</li>
+        <li>Protection extends to the shared household regardless of ownership.</li>
+      </ul>`,
+    reliefs: `<h2>Reliefs under PWDVA</h2>
+      <ul>
+        <li><strong>s.18 Protection order</strong> – restrains further violence / contact.</li>
+        <li><strong>s.19 Residence order</strong> – right to reside in the shared household.</li>
+        <li><strong>s.20 Monetary relief</strong> – maintenance, medical expenses, loss of earnings.</li>
+        <li><strong>s.21 Custody</strong> – temporary custody of children.</li>
+        <li><strong>s.22 Compensation</strong> – for injuries including mental torture.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

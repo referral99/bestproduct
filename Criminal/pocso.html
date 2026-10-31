@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POCSO Offence Against a Child – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "POCSO – Offence Against a Child (Uttar Pradesh)",
+  subtitle: "Mandatory reporting • Special Court • Child-friendly procedure<br>Offences also attract BNS 2023 (earlier IPC); procedure under BNSS 2023 (earlier CrPC)",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Criminal", href:"index.html"},
+    {label:"POCSO Offence"}
+  ],
+  acts: [
+    {name:"Protection of Children from Sexual Offences Act, 2012", href:"POCSO_Act_2012.pdf"},
+    {name:"Bharatiya Nyaya Sanhita, 2023 (BNS – offences, new)", href:"BNS_2023_Bharatiya_Nyaya_Sanhita_Gazette.pdf"},
+    {name:"Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS – procedure, new)", href:"BNSS_2023_Bharatiya_Nagarik_Suraksha_Sanhita.pdf"},
+    {name:"Juvenile Justice (Care & Protection of Children) Act, 2015", href:"Juvenile_Justice_Care_Protection_Act_2015.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A sexual offence against a child (under 18) is reported in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>POCSO is gender-neutral & child-specific</h3>
+          <p>POCSO applies to any victim below 18. The same act is also an offence under BNS 2023 (earlier IPC); POCSO prevails where it provides greater punishment.</p>
+          <span class="info-link" onclick="openModal('scope')">Scope & overlap →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Is the victim below 18 years?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('report')">YES – Child</button>
+            <button class="btn-no"  onclick="choose('notchild')">NO – Adult</button>
+          </div>
+        </div>`
+    },
+    'notchild': {
+      label: 'Victim is an adult', labelClass: 'no',
+      html: `
+        <div class="path-label no">Victim 18 or above</div>
+        <div class="box danger"><h3>END – POCSO does not apply</h3><p>Proceed under the ordinary law (BNS 2023 / earlier IPC) sexual offence provisions</p></div>`
+    },
+    'report': {
+      label: 'Mandatory reporting', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Victim is a child</div>
+        <div class="box process">
+          <h3>2. Mandatory reporting & FIR</h3>
+          <p>Any person with knowledge must report (POCSO s.19). Failure to report is itself an offence (s.21). Information recorded in simple language; FIR registered.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Immediate steps / documents</h3>
+          <ul>
+            <li>FIR / report to police or SJPU or Child Welfare Committee</li>
+            <li>Age proof of the child (birth / school certificate)</li>
+            <li>Medical examination of the child (BNSS s.184 / POCSO rules)</li>
+            <li>Statement of the child recorded by a woman police officer</li>
+            <li>Intimation to Child Welfare Committee within 24 hours</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. Does the child need interim care & protection?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('cwc')">YES – Produce before CWC</button>
+            <button class="btn-no"  onclick="choose('statement')">NO – Child safe at home</button>
+          </div>
+        </div>`
+    },
+    'cwc': {
+      label: 'CWC protection', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Child Welfare Committee</div>
+        <div class="box info">
+          <h3>Care & protection order</h3>
+          <p>CWC may place the child in a shelter / fit person, arrange support person, counselling and interim compensation (POCSO Rules).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to recording of statement?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('statement')">Continue</button>
+          </div>
+        </div>`
+    },
+    'statement': {
+      label: 'Child-friendly statement', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Recording the child's statement</div>
+        <div class="box process">
+          <h3>4. Child-friendly recording</h3>
+          <p>Statement recorded at the child's residence or a place of choice, by a woman officer, in presence of parent / trusted person. Magistrate may record under BNSS s.183. Audio-video recording encouraged.</p>
+          <span class="info-link" onclick="openModal('childfriendly')">Child-friendly safeguards →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Did investigation establish a prima facie case?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('chargesheet')">YES – Charge-sheet</button>
+            <button class="btn-no"  onclick="choose('closure')">NO – Closure</button>
+          </div>
+        </div>`
+    },
+    'closure': {
+      label: 'Closure', labelClass: 'no',
+      html: `
+        <div class="path-label no">No prima facie case</div>
+        <div class="box danger"><h3>END – Closure report</h3><p>Filed before the Special Court; the child / guardian may file a protest petition</p></div>`
+    },
+    'chargesheet': {
+      label: 'Charge-sheet', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Charge-sheet filed</div>
+        <div class="box process">
+          <h3>6. Trial before the Special Court</h3>
+          <p>POCSO offences are tried by a designated Special Court. Investigation to be completed and trial as expeditiously as possible (ideally within one year of cognizance).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Special features at trial</h3>
+          <p>In-camera trial; no aggressive cross-examination; child shielded from accused; support person & interpreter; presumption of guilt under POCSO ss.29–30 once foundational facts proved.</p>
+          <span class="info-link" onclick="openModal('presumption')">POCSO presumptions →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>7. Is the accused himself a child (below 18)?</h3>
+          <div class="choice-btns">
+            <button class="btn-alt" onclick="choose('juvenile')">YES – Juvenile accused</button>
+            <button class="btn-yes" onclick="choose('trial')">NO – Adult accused</button>
+          </div>
+        </div>`
+    },
+    'juvenile': {
+      label: 'Juvenile accused', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Accused is a child</div>
+        <div class="box info">
+          <h3>Juvenile Justice Act applies to the accused</h3>
+          <p>A child in conflict with law is dealt with by the Juvenile Justice Board; for a heinous POCSO offence a preliminary assessment may transfer a 16–18 year old to the Children's Court.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Routed to Juvenile Justice process</h3><p>See the Juvenile in conflict with law flow</p></div>`
+    },
+    'trial': {
+      label: 'Trial', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Trial of adult accused</div>
+        <div class="box docs">
+          <h3>Evidence relied on</h3>
+          <ul>
+            <li>Child victim's testimony (sole testimony can sustain conviction if reliable)</li>
+            <li>Medical & forensic (DNA) evidence</li>
+            <li>Age proof of the victim</li>
+            <li>Electronic evidence with certificate (BSA / old s.65B)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>8. Verdict?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('convict')">Guilty</button>
+            <button class="btn-no"  onclick="choose('acquit')">Not Guilty</button>
+          </div>
+        </div>`
+    },
+    'convict': {
+      label: 'Conviction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Conviction</div>
+        <div class="box success">
+          <h3>END – Convicted & sentenced</h3>
+          <p>Stringent, offence-specific minimum sentences under POCSO (penetrative/aggravated offences carry long to life imprisonment). Victim compensation ordered. Appeal to High Court.</p>
+        </div>`
+    },
+    'acquit': {
+      label: 'Acquittal', labelClass: 'no',
+      html: `
+        <div class="path-label no">Acquittal</div>
+        <div class="box success"><h3>END – Acquitted</h3><p>Prosecution could not displace the accused's defence / rebut on evidence; State may appeal</p></div>`
+    }
+  },
+  modals: {
+    scope: `<h2>POCSO – Scope</h2>
+      <ul>
+        <li>Covers penetrative & aggravated penetrative sexual assault, sexual assault, sexual harassment and use of a child for pornography.</li>
+        <li>Victim is any person below 18; the Act is gender-neutral as to the victim.</li>
+        <li>Where the same act is an offence under BNS 2023 (earlier IPC), the law giving greater punishment applies.</li>
+      </ul>`,
+    childfriendly: `<h2>Child-friendly Procedure</h2>
+      <ul>
+        <li>Statement recorded by a woman sub-inspector, at a place the child is comfortable.</li>
+        <li>Child never kept in a police station overnight; identity kept confidential.</li>
+        <li>Trial in-camera; the child is not confronted with the accused.</li>
+        <li>Support person, interpreter, special educator as needed.</li>
+        <li>Frequent breaks; no repeated or aggressive cross-examination.</li>
+      </ul>`,
+    presumption: `<h2>POCSO Presumptions (ss.29–30)</h2>
+      <ul>
+        <li><strong>s.29</strong> – presumption that the accused committed the offence once prosecution establishes foundational facts.</li>
+        <li><strong>s.30</strong> – presumption of culpable mental state.</li>
+        <li>The burden shifts to the accused to rebut, on preponderance of probabilities.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

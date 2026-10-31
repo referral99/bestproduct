@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Restitution of Conjugal Rights – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Restitution of Conjugal Rights – Complete Flow (Uttar Pradesh)",
+  subtitle: "Section 9 Hindu Marriage Act 1955 • Remedy to restore cohabitation<br>Hindu Marriage Act 1955 + Family Courts Act 1984 (SMA s.22 for civil marriages)",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Family", href:"index.html"},
+    {label:"Restitution of Conjugal Rights"}
+  ],
+  acts: [
+    {name:"Hindu Marriage Act, 1955", href:"Hindu_Marriage_Act_1955.pdf"},
+    {name:"Family Courts Act, 1984", href:"Family_Courts_Act_1984.pdf"},
+    {name:"Special Marriage Act, 1954", href:"Special_Marriage_Act_1954.pdf"}
+  ],
+  related: [
+    {label:"Hindu Divorce", href:"hindu-divorce.html"},
+    {label:"Maintenance of Wife / Child / Parent", href:"maintenance.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>One spouse has withdrawn from the society of the other without reasonable excuse</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Identify the remedy</h3>
+          <p>Restitution of Conjugal Rights (RCR) asks the court to direct the withdrawing spouse to return and resume cohabitation.</p>
+          <span class="info-link" onclick="openModal('about')">What s.9 means →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Under which law was the marriage solemnised?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('hma')">Hindu Marriage Act (s.9)</button>
+            <button class="btn-alt" onclick="choose('sma')">Special Marriage Act (s.22)</button>
+          </div>
+        </div>`
+    },
+    'sma': {
+      label: 'Civil marriage (SMA s.22)', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Marriage under Special Marriage Act 1954</div>
+        <div class="box info">
+          <h3>Section 22 SMA</h3>
+          <p>The remedy is identical in substance but is filed under s.22 of the Special Marriage Act. Procedure, documents and defences mirror the HMA route.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed with the common RCR steps?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('withdrawal')">YES – continue</button>
+          </div>
+        </div>`
+    },
+    'hma': {
+      label: 'Hindu marriage (s.9)', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Marriage under Hindu Marriage Act 1955</div>
+        <div class="box process">
+          <h3>Section 9 applies</h3>
+          <p>Filed in the Family Court by the aggrieved spouse seeking restoration of conjugal society.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to test the withdrawal?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('withdrawal')">YES – continue</button>
+          </div>
+        </div>`
+    },
+    'withdrawal': {
+      label: 'Test the withdrawal', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Essential conditions</div>
+        <div class="box process">
+          <h3>3. Three requirements</h3>
+          <p>(a) One spouse has withdrawn from the society of the other;<br>
+          (b) The withdrawal is without reasonable excuse;<br>
+          (c) The court is satisfied there is no legal ground to refuse the relief.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the withdrawing spouse have a reasonable excuse?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('excuse-yes')">YES – e.g. cruelty / unsafe</button>
+            <button class="btn-yes" onclick="choose('excuse-no')">NO – no justification</button>
+          </div>
+        </div>`
+    },
+    'excuse-yes': {
+      label: 'Reasonable excuse exists', labelClass: 'no',
+      html: `
+        <div class="path-label no">Reasonable excuse to stay away</div>
+        <div class="box danger">
+          <h3>RCR likely to fail</h3>
+          <p>If staying away is justified (cruelty, another spouse, demand for dowry, serious misconduct), the court will refuse restitution.</p>
+          <span class="info-link" onclick="openModal('defences')">Common defences →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the respondent want matrimonial relief instead?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('counter')">YES – seek divorce / separation</button>
+            <button class="btn-no"  onclick="choose('dismiss')">NO – just defend</button>
+          </div>
+        </div>`
+    },
+    'counter': {
+      label: 'Counter-claim', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Respondent counter-claims</div>
+        <div class="box info"><h3>Matrimonial counter-relief</h3><p>The respondent may plead cruelty/desertion and seek judicial separation or divorce in the same or a connected proceeding before the Family Court.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – RCR refused; matter proceeds on counter-claim</h3></div>`
+    },
+    'dismiss': {
+      label: 'Petition dismissed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Excuse accepted</div>
+        <div class="box danger"><h3>RCR petition dismissed</h3><p>Court finds the withdrawal justified; no decree is passed.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – No restitution decree</h3></div>`
+    },
+    'excuse-no': {
+      label: 'No excuse', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">No reasonable excuse</div>
+        <div class="box process">
+          <h3>4. File the RCR petition</h3>
+          <p>Petition before the Family Court having jurisdiction (place of marriage, last residence together, or respondent's residence).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – RCR Petition</h3>
+          <ul>
+            <li>Petition under s.9 HMA (or s.22 SMA)</li>
+            <li>Marriage proof (certificate / photos / invitation)</li>
+            <li>Address proof of both spouses</li>
+            <li>Details of when and how the respondent withdrew</li>
+            <li>Correspondence / messages showing efforts to reconcile</li>
+            <li>Photographs of the parties</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>5. Notice, reconciliation & evidence</h3>
+          <p>Court issues notice, attempts reconciliation/mediation, then records evidence on the three requirements.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the petitioner's case made out?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('decree')">YES – decree granted</button>
+            <button class="btn-no"  onclick="choose('dismiss')">NO – dismissed</button>
+          </div>
+        </div>`
+    },
+    'decree': {
+      label: 'Decree granted', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">RCR decree passed</div>
+        <div class="box success">
+          <h3>Decree for Restitution of Conjugal Rights</h3>
+          <p>The respondent is directed to resume cohabitation. The decree is enforced by attachment of property, not by force.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the decree complied with within one year?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('complied')">YES – parties reunite</button>
+            <button class="btn-yes" onclick="choose('non-compliance')">NO – not complied for 1 year</button>
+          </div>
+        </div>`
+    },
+    'complied': {
+      label: 'Parties reunite', labelClass: 'no',
+      html: `
+        <div class="path-label no">Decree complied with</div>
+        <div class="box success"><h3>Cohabitation resumed</h3><p>The marriage continues; purpose of the petition achieved.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Reunited</h3></div>`
+    },
+    'non-compliance': {
+      label: 'Ground for divorce', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">No resumption of cohabitation for 1 year</div>
+        <div class="box info">
+          <h3>6. Divorce under s.13(1A)(ii)</h3>
+          <p>Non-compliance with an RCR decree for one year or more becomes a ground for divorce for either party.</p>
+          <span class="info-link" onclick="openModal('autonomy')">RCR as a step to divorce →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Divorce on this ground</h3>
+          <ul>
+            <li>Certified copy of the RCR decree</li>
+            <li>Proof that one year has elapsed without resumption of cohabitation</li>
+            <li>Marriage proof</li>
+            <li>Income / custody details as applicable</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – May seek divorce decree under s.13(1A)</h3></div>`
+    }
+  },
+  modals: {
+    about: `<h2>Restitution of Conjugal Rights – s.9 HMA</h2>
+      <ul>
+        <li>A matrimonial remedy allowing an aggrieved spouse to seek the return of a spouse who has left without reasonable cause.</li>
+        <li>The burden to show reasonable excuse for withdrawal lies on the person who has withdrawn.</li>
+        <li>The decree cannot be enforced by physical compulsion; non-compliance leads to attachment of property and, after a year, a ground for divorce.</li>
+      </ul>`,
+    defences: `<h2>Common Defences to RCR</h2>
+      <ul>
+        <li>Cruelty, physical or mental, by the petitioner.</li>
+        <li>Demand for dowry or harassment.</li>
+        <li>Petitioner's adultery or another spouse.</li>
+        <li>Grave misconduct making cohabitation unsafe.</li>
+        <li>The marriage itself being void or voidable.</li>
+      </ul>`,
+    autonomy: `<h2>From RCR Decree to Divorce</h2>
+      <ul>
+        <li>If there is no resumption of cohabitation for one year after an RCR decree, s.13(1A)(ii) allows either spouse to seek divorce.</li>
+        <li>For a civil marriage, the parallel provision is found under the Special Marriage Act.</li>
+        <li>Family Court jurisdiction applies where established under the Family Courts Act 1984.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Motor Accident Claim / MACT – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Motor Accident Claim / MACT (Uttar Pradesh)",
+  subtitle: "Compensation before MACT + criminal case for rash / negligent driving<br>Driving offence under BNS 2023 (earlier IPC s.279 / s.304A); compensation under MV Act",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Criminal", href:"index.html"},
+    {label:"Motor Accident Claim / MACT"}
+  ],
+  acts: [
+    {name:"Motor Vehicles Act, 1988 (as amended 2019)", href:"Motor_Vehicles_Act_1988.pdf"},
+    {name:"Bharatiya Nyaya Sanhita, 2023 (BNS – rash/negligent driving, new)", href:"BNS_2023_Bharatiya_Nyaya_Sanhita_Gazette.pdf"},
+    {name:"Indian Penal Code, 1860 (old – s.279 / s.304A, pre-1 July 2024)", href:"Indian_Penal_Code_1860.pdf"}
+  ],
+  related: [
+    {label:"Bail (for the driver)", href:"bail.html"},
+    {label:"FIR & Cognizable Offence", href:"fir-cognizable.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A road accident involving a motor vehicle occurs in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Two parallel proceedings</h3>
+          <p>1. A <strong>criminal case</strong> for rash / negligent driving (BNS 2023 for offences on/after 1 July 2024; earlier IPC s.279 / s.304A).<br>
+          2. A <strong>compensation claim</strong> before the Motor Accidents Claims Tribunal (MACT) under the MV Act.</p>
+          <span class="info-link" onclick="openModal('bnsipc')">BNS vs IPC provisions →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. FIR & accident records</h3>
+          <p>FIR lodged; police prepare the Accident Information Report / charge-sheet. These records form the backbone of both proceedings.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to collect</h3>
+          <ul>
+            <li>Copy of FIR + site plan / accident report</li>
+            <li>Driving licence & registration of the offending vehicle</li>
+            <li>Insurance policy of the offending vehicle</li>
+            <li>Medical records / post-mortem report</li>
+            <li>Income & dependency proof of the victim</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. What was the outcome of the accident?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('death')">Death</button>
+            <button class="btn-alt" onclick="choose('injury')">Injury</button>
+            <button class="btn-yes" onclick="choose('property')">Only property damage</button>
+          </div>
+        </div>`
+    },
+    'property': {
+      label: 'Property damage', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Only property damage</div>
+        <div class="box info">
+          <h3>Property damage claim</h3>
+          <p>Claim for vehicle / property damage through insurance or MACT. Criminal liability for rash driving may be minor (BNS / earlier IPC s.279).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Settle via insurance / MACT</h3><p>Compounding of the minor driving offence is often possible</p></div>`
+    },
+    'injury': {
+      label: 'Injury', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Bodily injury</div>
+        <div class="box process">
+          <h3>Criminal: causing hurt by rash driving</h3>
+          <p>BNS 2023 provisions for endangering life and causing hurt by rash act (earlier IPC s.279 / s.337 / s.338). Simultaneously file the MACT claim.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to the compensation claim?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('claim')">File MACT claim</button>
+          </div>
+        </div>`
+    },
+    'death': {
+      label: 'Death', labelClass: 'no',
+      html: `
+        <div class="path-label no">Death caused</div>
+        <div class="box danger">
+          <h3>Criminal: death by negligence</h3>
+          <p>Causing death by rash / negligent driving is an offence under BNS 2023 (earlier IPC s.304A), with enhanced punishment for hit-and-run cases.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to the compensation claim?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('claim')">File MACT claim</button>
+          </div>
+        </div>`
+    },
+    'claim': {
+      label: 'MACT claim', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Compensation claim before MACT</div>
+        <div class="box process">
+          <h3>3. File claim petition</h3>
+          <p>Claim under MV Act s.166 by the injured / legal representatives, before the Tribunal where the accident occurred or the claimant / respondent resides. Detailed Accident Report may be treated as a claim.</p>
+          <span class="info-link" onclick="openModal('basis')">Fault vs no-fault →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>4. On what basis is the claim pressed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('fault')">Fault liability (s.166)</button>
+            <button class="btn-alt" onclick="choose('nofault')">No-fault / structured (s.164)</button>
+          </div>
+        </div>`
+    },
+    'nofault': {
+      label: 'No-fault', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">No-fault / fixed compensation</div>
+        <div class="box info">
+          <h3>Quick fixed compensation (s.164)</h3>
+          <p>Fixed amounts for death and permanent disability without proof of negligence. Useful for speedy interim relief.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to insurer's liability?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('insurer')">Continue</button>
+          </div>
+        </div>`
+    },
+    'fault': {
+      label: 'Fault liability', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Fault liability claim (s.166)</div>
+        <div class="box process">
+          <h3>5. Prove negligence & compute compensation</h3>
+          <p>Claimant proves negligence of the driver. Compensation computed on income, multiplier, future prospects, and conventional heads (loss of consortium, estate, funeral).</p>
+          <span class="info-link" onclick="openModal('compute')">Multiplier method →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Proof of loss</h3>
+          <ul>
+            <li>Salary slips / ITR / income proof of deceased or injured</li>
+            <li>Age proof (for multiplier)</li>
+            <li>Disability certificate (in injury cases)</li>
+            <li>Medical bills and treatment records</li>
+            <li>List of dependants</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to insurer's liability?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('insurer')">Continue</button>
+          </div>
+        </div>`
+    },
+    'insurer': {
+      label: 'Insurer liability', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Insurer's liability</div>
+        <div class="box decision">
+          <h3>6. Was the vehicle validly insured and driver licensed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('award')">YES – Insurer pays</button>
+            <button class="btn-no"  onclick="choose('payrecover')">NO – Breach of policy</button>
+          </div>
+        </div>`
+    },
+    'payrecover': {
+      label: 'Pay and recover', labelClass: 'no',
+      html: `
+        <div class="path-label no">Policy breach (no licence / fake insurance)</div>
+        <div class="box info">
+          <h3>Pay-and-recover direction</h3>
+          <p>To protect the victim, the Tribunal may direct the insurer to pay first and recover the amount from the owner / driver. If uninsured, the owner is personally liable.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to award?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('award')">Continue</button>
+          </div>
+        </div>`
+    },
+    'award': {
+      label: 'Award', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Tribunal award</div>
+        <div class="box success">
+          <h3>END – Compensation awarded</h3>
+          <p>MACT passes a reasoned award with interest. Appeal to the High Court under MV Act s.173. The parallel criminal case continues independently – a conviction there does not reduce the compensation.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Criminal case outcome</h3>
+          <p>In the criminal trial the driver may be convicted (BNS 2023 / earlier IPC s.304A) or acquitted. Minor driving offences are often compounded; a death case proceeds to full trial.</p>
+        </div>`
+    }
+  },
+  modals: {
+    bnsipc: `<h2>Driving Offences – new vs old</h2>
+      <ul>
+        <li>Offences on/after 1 July 2024 are charged under BNS 2023 (rash/negligent act, causing death by negligence, hit-and-run).</li>
+        <li>Earlier offences continue under IPC s.279 (rash driving) and s.304A (death by negligence).</li>
+        <li>Compensation is always governed by the Motor Vehicles Act, 1988 regardless of date.</li>
+      </ul>`,
+    basis: `<h2>Fault vs No-fault Claims</h2>
+      <ul>
+        <li><strong>s.166 (fault)</strong> – full compensation on proof of the driver's negligence.</li>
+        <li><strong>s.164 (no-fault)</strong> – fixed compensation for death / permanent disability without proving negligence.</li>
+        <li>A claimant may choose the route giving fuller relief.</li>
+      </ul>`,
+    compute: `<h2>Multiplier Method of Computation</h2>
+      <ul>
+        <li>Annual income, less personal expenses, multiplied by an age-based multiplier.</li>
+        <li>Addition for future prospects depending on age and employment.</li>
+        <li>Conventional heads: loss of consortium, loss of estate, funeral expenses.</li>
+        <li>Deductions for the deceased's own living expenses as per dependants.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

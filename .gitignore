@@ -1,0 +1,15 @@
+# Local reference / tooling material — not part of the published site
+Kiro/
+
+# Python virtual environments
+venv/
+.venv/
+**/venv/
+__pycache__/
+*.pyc
+
+# Editor / OS cruft
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

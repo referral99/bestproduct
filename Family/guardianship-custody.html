@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardianship & Child Custody – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Guardianship & Child Custody – Complete Flow (Uttar Pradesh)",
+  subtitle: "Welfare of the child is paramount • GWA 1890 • HMGA natural guardian<br>Guardians and Wards Act 1890 + Hindu Minority & Guardianship Act 1956 + Family Courts Act 1984",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Family", href:"index.html"},
+    {label:"Guardianship & Custody"}
+  ],
+  acts: [
+    {name:"Guardians and Wards Act, 1890", href:"Guardians_and_Wards_Act_1890.pdf"},
+    {name:"Hindu Minority & Guardianship Act, 1956", href:"Hindu_Minority_and_Guardianship_Act_1956.pdf"},
+    {name:"Family Courts Act, 1984", href:"Family_Courts_Act_1984.pdf"}
+  ],
+  related: [
+    {label:"Guardianship of a Minor Heir's Share – Succession", href:"../Succession/guardianship-minor-heir.html"},
+    {label:"Hindu Adoption", href:"adoption.html"},
+    {label:"Hindu Divorce", href:"hindu-divorce.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A question arises over who should have guardianship or custody of a minor</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Guiding principle</h3>
+          <p>In every custody and guardianship decision the <strong>welfare of the minor is the paramount consideration</strong>, overriding statutory preferences.</p>
+          <span class="info-link" onclick="openModal('welfare')">The welfare principle →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. What is being sought?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('custody')">Custody dispute between parents</button>
+            <button class="btn-alt" onclick="choose('guardian-person')">Appointment of a guardian (person/property)</button>
+          </div>
+        </div>`
+    },
+    'guardian-person': {
+      label: 'Appoint guardian', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Appointment of a Guardian – GWA 1890</div>
+        <div class="box process">
+          <h3>2. Natural vs declared guardian</h3>
+          <p>For a Hindu minor, HMGA s.6 names the natural guardian (father, then mother; for an illegitimate child, the mother first). The court can appoint/declare a guardian under the GWA where needed.</p>
+          <span class="info-link" onclick="openModal('natural')">Natural guardian – HMGA →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>3. File petition under the GWA</h3>
+          <p>Petition before the District Court / Family Court for the place where the minor ordinarily resides.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Guardianship Petition</h3>
+          <ul>
+            <li>Petition under the Guardians and Wards Act 1890</li>
+            <li>Birth certificate / age proof of the minor</li>
+            <li>Proof of relationship of the proposed guardian</li>
+            <li>Details of the minor's property (if property guardianship)</li>
+            <li>Income/means of the proposed guardian</li>
+            <li>Consent / notice to other interested persons</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>4. Notice & enquiry</h3><p>Court issues notice to parents / relatives, may hear the minor's preference (if old enough), and assesses welfare.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is appointment in the minor's welfare?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('guardian-order')">YES – appoint</button>
+            <button class="btn-no"  onclick="choose('refused')">NO – refuse</button>
+          </div>
+        </div>`
+    },
+    'guardian-order': {
+      label: 'Guardian appointed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Guardian appointed</div>
+        <div class="box success">
+          <h3>Order appointing the guardian</h3>
+          <p>A guardian of the person and/or property is appointed. A property guardian may need court permission to deal with the minor's assets and must account to the court.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Ongoing duties</h3><p>The guardian acts for the minor's benefit and files accounts if directed. Guardianship ends at majority.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Guardianship in place</h3></div>`
+    },
+    'refused': {
+      label: 'Refused', labelClass: 'no',
+      html: `
+        <div class="path-label no">Not in the minor's welfare</div>
+        <div class="box danger"><h3>Petition refused</h3><p>Court declines the appointment; an alternative arrangement protecting the minor is explored.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – No appointment</h3></div>`
+    },
+    'custody': {
+      label: 'Custody dispute', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Custody dispute between parents</div>
+        <div class="box process">
+          <h3>2. Forum</h3>
+          <p>Filed in the Family Court (where established) or the District Court. Custody can also be decided within a pending divorce/judicial separation case.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Age / circumstances of the child?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('tender')">Child below ~5 years (tender age)</button>
+            <button class="btn-alt" onclick="choose('older')">Older child</button>
+          </div>
+        </div>`
+    },
+    'tender': {
+      label: 'Tender age', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Child of tender age</div>
+        <div class="box info">
+          <h3>Mother generally preferred</h3>
+          <p>Custody of a child below about five years is ordinarily given to the mother, subject always to the child's welfare. The other parent usually gets visitation.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to the welfare enquiry & order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('enquiry')">YES – continue</button>
+          </div>
+        </div>`
+    },
+    'older': {
+      label: 'Older child', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Older child</div>
+        <div class="box info">
+          <h3>Child's preference considered</h3>
+          <p>For an older child capable of forming an intelligent preference, the court gives weight to the child's wishes, along with stability, schooling and each parent's conduct.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to the welfare enquiry & order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('enquiry')">YES – continue</button>
+          </div>
+        </div>`
+    },
+    'enquiry': {
+      label: 'Welfare enquiry', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Welfare enquiry</div>
+        <div class="box docs">
+          <h3>Documents – Custody Petition</h3>
+          <ul>
+            <li>Custody petition (standalone or within matrimonial case)</li>
+            <li>Birth certificate / age proof of the child</li>
+            <li>Marriage proof of the parents</li>
+            <li>Income, residence and schooling details</li>
+            <li>Evidence relevant to welfare (conduct, environment, support)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>3. Mediation & interim custody / visitation</h3>
+          <p>The Family Court attempts settlement and may pass interim custody and visitation orders, sometimes after interacting with the child.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>What does the court decide?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('sole')">Sole custody to one parent + visitation</button>
+            <button class="btn-alt" onclick="choose('joint')">Shared / joint arrangement</button>
+          </div>
+        </div>`
+    },
+    'sole': {
+      label: 'Sole custody', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Sole custody with visitation</div>
+        <div class="box success">
+          <h3>Custody order passed</h3>
+          <p>Custody with one parent; the other gets defined visitation/access. Child's maintenance is fixed (see Maintenance flow; BNSS s.144 / HAMA).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Modifiable</h3><p>Custody orders are not final — they can be revisited if the child's welfare requires change.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Custody decided</h3></div>`
+    },
+    'joint': {
+      label: 'Joint custody', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Shared parenting</div>
+        <div class="box success">
+          <h3>Shared / joint custody arrangement</h3>
+          <p>A structured schedule (holidays, weekends, education decisions) balancing both parents, centred on the child's welfare.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Modifiable</h3><p>The arrangement can be revised as the child grows or circumstances change.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Shared custody in place</h3></div>`
+    }
+  },
+  modals: {
+    welfare: `<h2>The Welfare Principle</h2>
+      <ul>
+        <li>Welfare of the minor is the paramount consideration in both custody (GWA s.17) and guardianship.</li>
+        <li>It overrides the parent's statutory right where the two conflict.</li>
+        <li>Factors: age and sex of the child, the child's wishes (if mature), each parent's character and capacity, stability and schooling.</li>
+      </ul>`,
+    natural: `<h2>Natural Guardian – HMGA s.6</h2>
+      <ul>
+        <li>For a Hindu minor's person and property: the father, and after him the mother.</li>
+        <li>Custody of a child below five is ordinarily with the mother.</li>
+        <li>For an illegitimate child, the mother is first, then the father.</li>
+        <li>The natural guardian cannot dispose of the minor's immovable property without the court's prior permission (s.8).</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

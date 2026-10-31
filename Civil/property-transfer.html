@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Property Transfer – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Property Transfer – Complete Flow (Uttar Pradesh)",
+  subtitle: "Sale • Gift • Lease • Exchange • Partition • Mortgage<br>Transfer of Property Act 1882 + Registration Act 1908 + UP Stamp Act 1899",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Civil", href:"index.html"},
+    {label:"Property Transfer"}
+  ],
+  acts: [
+    {name:"Transfer of Property Act, 1882", href:"Transfer_of_Property_Act_1882.pdf"},
+    {name:"Transfer of Property (Amendment) Act, 2002", href:"Transfer_of_Property_Amendment_Act_2002.pdf"},
+    {name:"Registration Act, 1908", href:"Registration_Act_1908.pdf"},
+    {name:"Indian Stamp Act, 1899 (UP)", href:"Indian_Stamp_Act_1899_UP.pdf"},
+    {name:"Indian Stamp Act, 1899 (UP) – Schedule", href:"Indian_Stamp_Act_1899_UP_Schedule.pdf"}
+  ],
+  related: [
+    {label:"Mutation on Sale / Gift – Revenue", href:"../Revenue/mutation-sale.html"},
+    {label:"Specific Performance of Contract", href:"specific-performance.html"},
+    {label:"Hindu Succession – Full Flow", href:"../Succession/hindu-succession.html"},
+    {label:"Injunction / Stay (to protect possession)", href:"injunction.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>An owner in Uttar Pradesh wishes to transfer immovable property</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Confirm transferability</h3>
+          <p>Property must be transferable (TPA s.6) and the transferor competent to contract (s.7), of sound mind and the lawful owner/authorised person.</p>
+          <span class="info-link" onclick="openModal('compet')">Who may transfer? →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Which mode of transfer?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('sale')">Sale (s.54)</button>
+            <button class="btn-alt" onclick="choose('gift')">Gift (s.122)</button>
+            <button class="btn-alt" onclick="choose('lease')">Lease (s.105)</button>
+            <button class="btn-no"  onclick="choose('other')">Exchange / Partition / Mortgage</button>
+          </div>
+        </div>`
+    },
+    sale: {
+      label: 'Sale', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Sale – Transfer of ownership for a price</div>
+        <div class="box process">
+          <h3>Sale (TPA s.54)</h3>
+          <p>Sale of tangible immovable property of value ₹100 or more is made <strong>only by registered instrument</strong>. Ownership passes on execution + registration.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Verify title first</h3>
+          <p>Trace the chain of title for 30 years, check encumbrances, mutation (Khatauni/Bhulekh), and that the land is not Gram Sabha / disputed / under ceiling.</p>
+          <span class="info-link" onclick="openModal('duediligence')">Title due-diligence checklist →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is it agricultural land in UP?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('agri')">YES – Agricultural</button>
+            <button class="btn-no"  onclick="choose('deed-sale')">NO – House / Plot / Commercial</button>
+          </div>
+        </div>`
+    },
+    agri: {
+      label: 'Agricultural land', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Agricultural Land – UP restrictions</div>
+        <div class="box danger">
+          <h3>Check UP land-ceiling & purchaser eligibility</h3>
+          <p>A bhumidhar's holding is governed by the UP Revenue Code. Purchase beyond the ceiling or by a non-agriculturist in certain cases needs permission; consolidation-locked land cannot be transferred.</p>
+          <span class="info-link" onclick="openModal('agrirules')">UP agricultural transfer rules →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Obtain any required collector/SDM permission</h3><p>Then proceed to deed preparation.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Permission / eligibility cleared?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('deed-sale')">YES – Proceed</button>
+            <button class="btn-no"  onclick="choose('blocked')">NO – Transfer barred</button>
+          </div>
+        </div>`
+    },
+    blocked: {
+      label: 'Transfer barred', labelClass: 'no',
+      html: `
+        <div class="path-label no">Transfer not permissible</div>
+        <div class="box danger"><h3>Transfer cannot proceed</h3><p>A void transfer of agricultural land can be set aside and vested in the Gram Sabha/State. Reconsider structure or obtain lawful permission.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Transfer not completed</h3></div>`
+    },
+    'deed-sale': {
+      label: 'Prepare Sale Deed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Prepare & register Sale Deed</div>
+        <div class="box process">
+          <h3>Draft Sale Deed</h3>
+          <p>Describe parties, property, consideration, covenants, and delivery of possession. Compute stamp duty on circle rate or consideration, whichever is higher.</p>
+          <span class="info-link" onclick="openModal('stamp')">Stamp duty & registration – UP →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for registration (Sale)</h3>
+          <ul>
+            <li>Draft Sale Deed on e-stamp paper</li>
+            <li>Chain of title deeds + latest Khatauni / mutation extract</li>
+            <li>Circle-rate valuation & stamp duty + registration fee paid</li>
+            <li>ID & address proof + photos of seller, buyer, two witnesses</li>
+            <li>PAN / Form 60; TDS u/s 194-IA if consideration ≥ ₹50 lakh</li>
+            <li>Encumbrance / NOC where applicable</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Register at Sub-Registrar</h3><p>Compulsory under Registration Act s.17. Present within 4 months of execution (s.23).</p></div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Apply for mutation in buyer's name</h3><p>Tehsil (rural) or Nagar Nigam/Palika (urban) with the registered deed.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Ownership transferred & recorded</h3><p>Buyer gets clean registered title; records updated.</p></div>`
+    },
+    gift: {
+      label: 'Gift', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Gift – Transfer without consideration</div>
+        <div class="box process">
+          <h3>Gift (TPA s.122–123)</h3>
+          <p>Voluntary transfer without consideration; must be <strong>accepted by donee during donor's lifetime</strong>. Gift of immovable property requires a registered instrument attested by two witnesses.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for Gift Deed</h3>
+          <ul>
+            <li>Gift Deed on e-stamp (concessional duty often for blood relations in UP)</li>
+            <li>Title deeds + mutation extract</li>
+            <li>ID/address proof + photos of donor, donee, two witnesses</li>
+            <li>Acceptance clause signed by the donee</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Revocation</h3><p>A gift cannot be revoked at will. It can be revoked only on an agreed contingency (s.126) or cancelled for fraud/coercion through court.</p></div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Register + mutate</h3><p>Register at Sub-Registrar, then apply for mutation in the donee's name.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Gift completed</h3></div>`
+    },
+    lease: {
+      label: 'Lease', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Lease – Transfer of a right to enjoy</div>
+        <div class="box decision">
+          <h3>Lease term?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('lease-long')">1 year or more / yearly</button>
+            <button class="btn-no"  onclick="choose('lease-short')">Less than 1 year</button>
+          </div>
+        </div>`
+    },
+    'lease-long': {
+      label: 'Lease ≥ 1 year', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Lease of 1 year or more</div>
+        <div class="box process"><h3>Registered lease deed required</h3><p>TPA s.107: a lease from year to year, or for a term exceeding one year, or reserving a yearly rent, can be made only by a registered instrument.</p></div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents</h3>
+          <ul>
+            <li>Lease Deed on e-stamp (duty on average annual rent + premium)</li>
+            <li>Title proof of lessor; ID/photos of parties & witnesses</li>
+            <li>Rent, term, renewal and possession clauses</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Register at Sub-Registrar</h3></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Lease created</h3></div>`
+    },
+    'lease-short': {
+      label: 'Lease < 1 year', labelClass: 'no',
+      html: `
+        <div class="path-label no">Lease under one year</div>
+        <div class="box info"><h3>Writing optional, registration not compulsory</h3><p>Can be oral with delivery of possession, but a stamped written agreement is strongly advised for evidence.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Short lease</h3></div>`
+    },
+    other: {
+      label: 'Exchange / Partition / Mortgage', labelClass: 'no',
+      html: `
+        <div class="path-label no">Exchange • Partition • Mortgage</div>
+        <div class="box process">
+          <h3>Other modes under TPA</h3>
+          <p><strong>Exchange (s.118)</strong> – mutual transfer; registration like a sale.<br>
+          <strong>Partition</strong> – registered partition deed divides co-owned property by metes & bounds.<br>
+          <strong>Mortgage (s.58)</strong> – security for a loan; most forms (except mortgage by deposit of title deeds) need a registered deed if ₹100+.</p>
+          <span class="info-link" onclick="openModal('mortgage')">Mortgage types →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents</h3>
+          <ul>
+            <li>Relevant deed (Exchange / Partition / Mortgage) on e-stamp</li>
+            <li>Title & mutation records of all parties</li>
+            <li>ID/address proof + photos of parties and witnesses</li>
+            <li>Schedule of property/shares</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Register + mutate</h3><p>Register under Registration Act s.17 and update revenue records.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Transfer completed</h3></div>`
+    }
+  },
+  modals: {
+    compet: `<h2>Who may transfer (TPA s.7)</h2>
+      <ul>
+        <li>Must be competent to contract: major, sound mind, not disqualified by law.</li>
+        <li>Must be entitled to the property or authorised to dispose of transferable property not his own.</li>
+        <li>A minor's property is dealt with only by a lawful guardian with court permission.</li>
+        <li>Property expressly made non-transferable (s.6) – e.g. mere right to sue, future maintenance – cannot be transferred.</li>
+      </ul>`,
+    duediligence: `<h2>Title Due-Diligence Checklist</h2>
+      <ul>
+        <li>30-year chain of title deeds and mother deed.</li>
+        <li>Latest Khatauni / Khasra / Bhulekh UP entry and mutation history.</li>
+        <li>Encumbrance search; pending loans or liens.</li>
+        <li>No pending litigation, attachment, or acquisition notice.</li>
+        <li>Property tax / revenue dues cleared; approved land use.</li>
+      </ul>`,
+    agrirules: `<h2>UP Agricultural Transfer Rules</h2>
+      <ul>
+        <li>Bhumidhar's rights and ceiling governed by the UP Revenue Code, 2006.</li>
+        <li>Land under consolidation proceedings generally cannot be transferred.</li>
+        <li>Certain purchases need SDM/Collector permission; a void transfer can vest the land in the Gram Sabha.</li>
+        <li>Verify purchaser eligibility and existing holding size before executing.</li>
+      </ul>`,
+    stamp: `<h2>Stamp Duty & Registration – UP (indicative)</h2>
+      <ul>
+        <li>Duty on the higher of circle rate or consideration.</li>
+        <li>Sale duty roughly 5–7%; registration fee additional (commonly ~1%).</li>
+        <li>Concessions often available for women buyers and blood-relation gifts.</li>
+        <li>Under-stamped documents are inadmissible in evidence and attract penalty (Stamp Act).</li>
+        <li>Present for registration within 4 months of execution (Registration Act s.23).</li>
+      </ul>`,
+    mortgage: `<h2>Kinds of Mortgage (TPA s.58)</h2>
+      <ol>
+        <li>Simple mortgage</li>
+        <li>Mortgage by conditional sale</li>
+        <li>Usufructuary mortgage</li>
+        <li>English mortgage</li>
+        <li>Mortgage by deposit of title deeds (equitable) – no registration needed</li>
+        <li>Anomalous mortgage</li>
+      </ol>
+      <p>All except the equitable mortgage require a registered deed where the principal sum is ₹100 or more.</p>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

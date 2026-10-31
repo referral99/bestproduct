@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Correction of Revenue Record – Full Flow (UP Revenue)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Correction of Revenue Record – Complete Flow (Uttar Pradesh)",
+  subtitle: "Fixing wrong area, name, share or khasra in khatauni / khasra • Clerical vs disputed • Appeal<br>UP Revenue Code, 2006 – correction & maintenance of records",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Revenue", href:"index.html"},
+    {label:"Correction of Revenue Record"}
+  ],
+  acts: [
+    {name:"UP Revenue Code, 2006", href:"UP_Revenue_Code_2006.pdf"},
+    {name:"UP Revenue Code, 2006 (amended & consolidated)", href:"UP_Revenue_Code_2006_amended_consolidated.pdf"}
+  ],
+  related: [
+    {label:"Boundary Demarcation (Paimaish)", href:"boundary-demarcation.html"},
+    {label:"Mutation on Inheritance (Varasat)", href:"mutation-varasat.html"},
+    {label:"Declaration of Bhumidhari Rights", href:"declaration-bhumidhari.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>An error is found in the khatauni / khasra (wrong name, area, share or khasra number)</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Identify the exact error</h3>
+          <p>Obtain the current <strong>khatauni</strong> & <strong>khasra</strong> and pinpoint whether the mistake is in the name spelling, recorded area, share fraction, or plot (khasra) number.</p>
+          <span class="info-link" onclick="openModal('records')">What the records contain →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Nature of the error?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('clerical')">Clerical / typographical</button>
+            <button class="btn-no"  onclick="choose('substantive')">Substantive (area / share / title)</button>
+          </div>
+        </div>`
+    },
+    'clerical': {
+      label: 'Clerical error', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Clerical / typographical mistake</div>
+        <div class="box process">
+          <h3>3. Apply for correction to the Tehsildar</h3>
+          <p>A simple error (spelling, transposed digits) not affecting anyone's rights can be corrected by the Tehsildar / SDM on a Lekhpal report.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Clerical Correction</h3>
+          <ul>
+            <li>Application pointing out the exact error</li>
+            <li>Correct & incorrect khatauni / khasra extracts</li>
+            <li>Supporting proof (registered deed, old record, order)</li>
+            <li>ID + address proof of applicant</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Lekhpal report → Tehsildar/SDM order</h3><p>If no one's interest is affected, correction is allowed.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>Record corrected</h3><p>Updated khatauni / khasra issued.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END</h3></div>`
+    },
+    'substantive': {
+      label: 'Substantive error', labelClass: 'no',
+      html: `
+        <div class="path-label no">Substantive correction (area / share / title)</div>
+        <div class="box info">
+          <h3>Requires enquiry</h3>
+          <p>A change in recorded area, share fraction or who is a co-holder affects rights, so it cannot be a mere clerical fix — notice to affected persons is required.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the correction involve wrong area / boundary?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('area')">YES – Area / measurement</button>
+            <button class="btn-no"  onclick="choose('share')">NO – Name / share / co-holder</button>
+          </div>
+        </div>`
+    },
+    'area': {
+      label: 'Area correction', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Wrong area / measurement</div>
+        <div class="box process">
+          <h3>Paimaish ordered</h3>
+          <p>Tehsildar directs the Lekhpal / Revenue Inspector to re-measure (<strong>paimaish</strong>) the khasra and report the correct area.</p>
+          <span class="info-link" onclick="openModal('paimaish')">Paimaish (demarcation) note →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Area Correction</h3>
+          <ul>
+            <li>Application with the disputed khasra number</li>
+            <li>Khatauni / khasra & map (shajra) extract</li>
+            <li>Old settlement / consolidation records</li>
+            <li>Any prior paimaish report</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Notice to adjoining holders</h3><p>Affected neighbours are heard before any area is altered.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any objection to the re-measurement?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('contested')">YES – Objection</button>
+            <button class="btn-no"  onclick="choose('corrected')">NO – Accepted</button>
+          </div>
+        </div>`
+    },
+    'share': {
+      label: 'Name / share correction', labelClass: 'no',
+      html: `
+        <div class="path-label no">Wrong name / share / co-holder</div>
+        <div class="box process">
+          <h3>Correction with notice</h3>
+          <p>Tehsildar / SDM issues notice to all persons recorded in the khata before correcting shares or adding/removing a name.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Name / Share Correction</h3>
+          <ul>
+            <li>Application detailing the correct share / name</li>
+            <li>Registered deed / court order / succession proof</li>
+            <li>Khatauni extract showing the wrong entry</li>
+            <li>Consent / NOC of other co-holders (if available)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Do the co-holders object?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('contested')">YES – Objection</button>
+            <button class="btn-no"  onclick="choose('corrected')">NO – No objection</button>
+          </div>
+        </div>`
+    },
+    'contested': {
+      label: 'Contested correction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Correction contested</div>
+        <div class="box danger">
+          <h3>Decide on evidence</h3>
+          <p>The matter becomes a contested revenue case; the Tehsildar / SDM records evidence and decides. A genuine title dispute may be relegated to a declaratory suit.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Satisfied with the order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('corrected')">YES – Accept</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Appeal</button>
+          </div>
+        </div>`
+    },
+    'appeal': {
+      label: 'Appeal', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Appeal / revision</div>
+        <div class="box process">
+          <h3>Appeal ladder</h3>
+          <p>Tehsildar / SDM → <strong>Collector</strong> → <strong>Board of Revenue</strong> within the limitation period.</p>
+          <span class="info-link" onclick="openModal('forums')">Revenue forums →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Appellate order passed</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Give effect to the final order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('corrected')">YES – Correct record</button>
+          </div>
+        </div>`
+    },
+    'corrected': {
+      label: 'Record corrected', labelClass: 'no',
+      html: `
+        <div class="path-label no">Correction allowed</div>
+        <div class="box success">
+          <h3>Khatauni / khasra corrected</h3>
+          <p>The error in name, area, share or khasra is rectified and the correct entry is recorded.</p>
+          <p class="note">Correction aligns the record with the true position; it does not by itself create title.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Collect after correction</h3>
+          <ul>
+            <li>Corrected khatauni / khasra extract</li>
+            <li>Certified copy of the correction order</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Record now accurate</h3></div>`
+    }
+  },
+  modals: {
+    records: `<h2>Revenue Records</h2>
+      <ul>
+        <li><strong>Khasra</strong> – plot register: number, area, soil, crop.</li>
+        <li><strong>Khatauni</strong> – register of rights with holders and shares.</li>
+        <li><strong>Shajra</strong> – the village map showing plot boundaries.</li>
+      </ul>
+      <p>Errors commonly arise during copying each fasli year or from old settlement entries.</p>`,
+    paimaish: `<h2>Paimaish (Measurement)</h2>
+      <p>Paimaish is the on-ground re-measurement of a plot against the shajra map, done by the Lekhpal / Revenue Inspector to confirm the true area and boundaries before any area correction.</p>`,
+    forums: `<h2>Revenue Forums & Appeal Ladder</h2>
+      <ul>
+        <li><strong>Lekhpal</strong> – field record-keeper.</li>
+        <li><strong>Tehsildar / SDM</strong> – order correction after enquiry.</li>
+        <li><strong>Collector</strong> – appeal.</li>
+        <li><strong>Board of Revenue</strong> – revision.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

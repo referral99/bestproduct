@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dissolution of Muslim Marriage – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Dissolution of Muslim Marriage – Complete Flow (Uttar Pradesh)",
+  subtitle: "Wife's grounds under the 1939 Act • Talaq / Khula / Mubarat context • Maintenance<br>Dissolution of Muslim Marriages Act 1939 + Shariat Application Act 1937",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Family", href:"index.html"},
+    {label:"Dissolution of Muslim Marriage"}
+  ],
+  acts: [
+    {name:"Dissolution of Muslim Marriages Act, 1939", href:"Dissolution_of_Muslim_Marriages_Act_1939.pdf"},
+    {name:"Muslim Personal Law (Shariat) Application Act, 1937", href:"Muslim_Personal_Law_Shariat_Application_Act_1937.pdf"},
+    {name:"Family Courts Act, 1984", href:"Family_Courts_Act_1984.pdf"}
+  ],
+  related: [
+    {label:"Maintenance of Wife / Child / Parent", href:"maintenance.html"},
+    {label:"Muslim Succession (Faraid)", href:"../Succession/muslim-succession.html"},
+    {label:"Guardianship & Child Custody", href:"guardianship-custody.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A Muslim marriage (nikah) has broken down and the parties seek dissolution</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Identify who seeks the dissolution & the mode</h3>
+          <p>Modes recognised: Talaq (husband), Khula / Mubarat (by agreement), and judicial dissolution by the wife under the 1939 Act.</p>
+          <span class="info-link" onclick="openModal('modes')">Modes of dissolution →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Which route applies?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('wife-court')">Wife seeks court decree (1939 Act)</button>
+            <button class="btn-alt" onclick="choose('khula')">Mutual – Khula / Mubarat</button>
+            <button class="btn-no"  onclick="choose('talaq')">Husband pronounces Talaq</button>
+          </div>
+        </div>`
+    },
+    'talaq': {
+      label: 'Talaq by husband', labelClass: 'no',
+      html: `
+        <div class="path-label no">Talaq by the husband</div>
+        <div class="box info">
+          <h3>Context</h3>
+          <p>Talaq-e-ahsan / talaq-e-hasan are revocable, pronounced over successive periods. Instant triple talaq (talaq-e-biddat) is void and penalised by law.</p>
+          <span class="info-link" onclick="openModal('talaqnote')">Triple talaq note →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>Iddat & finality</h3>
+          <p>The divorce becomes final after the iddat period if not revoked. The wife retains mahr and maintenance rights.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the wife need maintenance / mahr enforcement?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('maintenance')">YES – claim maintenance</button>
+            <button class="btn-no"  onclick="choose('end-talaq')">NO – settled</button>
+          </div>
+        </div>`
+    },
+    'end-talaq': {
+      label: 'Settled', labelClass: 'no',
+      html: `
+        <div class="path-label no">Dissolution complete</div>
+        <div class="box success"><h3>END – Marriage dissolved; mahr and iddat dues settled</h3></div>`
+    },
+    'khula': {
+      label: 'Khula / Mubarat', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Khula or Mubarat (by agreement)</div>
+        <div class="box process">
+          <h3>Consensual dissolution</h3>
+          <p><strong>Khula</strong> – at the wife's instance, usually returning the mahr/consideration.<br>
+          <strong>Mubarat</strong> – by mutual agreement where both desire separation.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Khula / Mubarat</h3>
+          <ul>
+            <li>Deed of Khula / Mubarat recording terms</li>
+            <li>Nikahnama (marriage proof)</li>
+            <li>Terms on mahr and return of consideration</li>
+            <li>Arrangements for children and their maintenance</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is a maintenance / custody dispute left over?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('maintenance')">YES</button>
+            <button class="btn-no"  onclick="choose('end-talaq')">NO</button>
+          </div>
+        </div>`
+    },
+    'wife-court': {
+      label: 'Wife – 1939 Act decree', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Judicial dissolution by the wife</div>
+        <div class="box process">
+          <h3>3. Identify a statutory ground</h3>
+          <p>The Dissolution of Muslim Marriages Act 1939 lets a Muslim wife obtain a court decree on specified grounds.</p>
+          <span class="info-link" onclick="openModal('grounds')">Grounds under s.2 →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is a s.2 ground available with evidence?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('wife-file')">YES – ground + evidence</button>
+            <button class="btn-no"  onclick="choose('no-ground')">NO – no ground</button>
+          </div>
+        </div>`
+    },
+    'no-ground': {
+      label: 'No ground', labelClass: 'no',
+      html: `
+        <div class="path-label no">No statutory ground</div>
+        <div class="box danger"><h3>Court decree unlikely</h3><p>Without a s.2 ground, consider a consensual Khula / Mubarat instead.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Try consensual route?</h3>
+          <div class="choice-btns">
+            <button class="btn-alt" onclick="choose('khula')">Khula / Mubarat</button>
+          </div>
+        </div>`
+    },
+    'wife-file': {
+      label: 'File suit', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Ground established</div>
+        <div class="box process">
+          <h3>4. File suit in the Family Court</h3>
+          <p>The wife files for dissolution. Where a Family Court is established (Family Courts Act 1984), it hears the matter; otherwise the District Court.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – 1939 Act Suit</h3>
+          <ul>
+            <li>Plaint stating the s.2 ground(s)</li>
+            <li>Nikahnama / proof of marriage and mahr</li>
+            <li>Evidence of the ground (cruelty, non-maintenance, whereabouts unknown, etc.)</li>
+            <li>Address proof and photographs</li>
+            <li>Details of children and claimed maintenance</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Special safeguard – apostasy</h3>
+          <p>Renunciation of Islam by the wife does not by itself dissolve the marriage; her 1939-Act grounds survive.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the ground proved at trial?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('decree')">YES – proved</button>
+            <button class="btn-no"  onclick="choose('dismissed')">NO – not proved</button>
+          </div>
+        </div>`
+    },
+    'dismissed': {
+      label: 'Suit dismissed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Ground not proved</div>
+        <div class="box danger"><h3>Suit dismissed</h3><p>Marriage subsists; the wife may appeal or explore Khula.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – No decree</h3></div>`
+    },
+    'decree': {
+      label: 'Decree of dissolution', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Ground proved</div>
+        <div class="box success">
+          <h3>Decree dissolving the marriage</h3>
+          <p>The court grants dissolution; the wife's mahr and iddat-period dues are protected.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Pursue maintenance / custody now?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('maintenance')">YES</button>
+            <button class="btn-no"  onclick="choose('end-talaq')">NO</button>
+          </div>
+        </div>`
+    },
+    'maintenance': {
+      label: 'Maintenance & mahr', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Maintenance, mahr & children</div>
+        <div class="box process">
+          <h3>Maintenance routes</h3>
+          <p>A divorced Muslim wife may claim under the secular provision — BNSS 2023 s.144 (which replaced CrPC s.125 from 1 July 2024) — and under the 1986 Act for the iddat period and provision for her future.</p>
+          <span class="info-link" onclick="openModal('maint')">Maintenance options →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Maintenance claim</h3>
+          <ul>
+            <li>Proof of marriage and its dissolution</li>
+            <li>Mahr details and any unpaid amount</li>
+            <li>Income and assets of the husband</li>
+            <li>Needs of the wife and children</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Dissolution with maintenance resolved</h3></div>`
+    }
+  },
+  modals: {
+    modes: `<h2>Modes of Dissolution</h2>
+      <ul>
+        <li><strong>Talaq</strong> – by the husband (talaq-e-ahsan / hasan are revocable and spread over time).</li>
+        <li><strong>Khula</strong> – initiated by the wife, generally with return of mahr/consideration.</li>
+        <li><strong>Mubarat</strong> – mutual agreement to separate.</li>
+        <li><strong>Judicial dissolution</strong> – by the wife under the Dissolution of Muslim Marriages Act 1939.</li>
+      </ul>`,
+    talaqnote: `<h2>Instant Triple Talaq</h2>
+      <ul>
+        <li>Talaq-e-biddat (instant, irrevocable triple talaq) was held unconstitutional and is void.</li>
+        <li>Pronouncing it is a punishable offence under the 2019 law; the marriage is not validly dissolved by it.</li>
+        <li>The wife retains her rights to mahr, maintenance and the custody of young children.</li>
+      </ul>`,
+    grounds: `<h2>Grounds for the Wife – s.2 of the 1939 Act</h2>
+      <ol>
+        <li>Whereabouts of the husband unknown for 4 years.</li>
+        <li>Failure to provide maintenance for 2 years.</li>
+        <li>Husband sentenced to imprisonment of 7 years or more.</li>
+        <li>Failure to perform marital obligations for 3 years without cause.</li>
+        <li>Husband's impotence.</li>
+        <li>Insanity for 2 years, leprosy or virulent venereal disease.</li>
+        <li>Marriage before age 15 repudiated before 18 (option of puberty).</li>
+        <li>Cruelty (physical, or conduct making married life unsafe).</li>
+      </ol>`,
+    maint: `<h2>Maintenance after Dissolution</h2>
+      <ul>
+        <li>Secular remedy: BNSS 2023 s.144 (replaced CrPC s.125 from 1 July 2024) — a divorced wife unable to maintain herself can claim.</li>
+        <li>The Muslim Women (Protection of Rights on Divorce) Act 1986 covers reasonable and fair provision and iddat-period maintenance.</li>
+        <li>Children's maintenance and custody (hizanat) are decided on the child's welfare.</li>
+        <li>Mahr is a debt recoverable by the wife.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arbitration Reference & Award – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Arbitration Reference & Award – Complete Flow (UP)",
+  subtitle: "Resolving disputes outside court through arbitration<br>Arbitration & Conciliation Act 1996 + Commercial Courts Act 2015 + Contract Act 1872",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Civil", href:"index.html"},
+    {label:"Arbitration Reference & Award"}
+  ],
+  acts: [
+    {name:"Arbitration & Conciliation Act, 1996", href:"Arbitration_and_Conciliation_Act_1996.pdf"},
+    {name:"Commercial Courts Act, 2015", href:"Commercial_Courts_Act_2015.pdf"},
+    {name:"Indian Contract Act, 1872", href:"Indian_Contract_Act_1872.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A dispute arises under a contract between the parties</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Is there a valid arbitration agreement?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('agreement')">YES – Arbitration clause / agreement</button>
+            <button class="btn-no"  onclick="choose('noagreement')">NO – No agreement</button>
+          </div>
+        </div>`
+    },
+    noagreement: {
+      label: 'No arbitration agreement', labelClass: 'no',
+      html: `
+        <div class="path-label no">No agreement to arbitrate</div>
+        <div class="box danger"><h3>Arbitration not available</h3><p>Arbitration requires a written agreement (s.7). Parties may still agree to arbitrate after the dispute, else approach the civil/commercial court.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Litigate instead</h3></div>`
+    },
+    agreement: {
+      label: 'Valid agreement', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Written arbitration agreement (s.7)</div>
+        <div class="box info">
+          <h3>2. Is the subject-matter arbitrable?</h3>
+          <p>Most commercial/contractual disputes are arbitrable. Excluded: criminal offences, matrimonial, insolvency, testamentary, tenancy under rent-control, and rights in rem.</p>
+          <span class="info-link" onclick="openModal('arbitrable')">Arbitrability →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the dispute arbitrable?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('invoke')">YES – Arbitrable</button>
+            <button class="btn-no"  onclick="choose('noagreement')">NO – Not arbitrable</button>
+          </div>
+        </div>`
+    },
+    invoke: {
+      label: 'Invoke arbitration', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Invoke the clause</div>
+        <div class="box process"><h3>3. Issue notice & appoint tribunal</h3><p>Serve a notice invoking arbitration (s.21). Parties appoint arbitrator(s) as agreed; if they fail, apply to the High Court under s.11 for appointment.</p></div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Interim protection</h3><p>Either party may seek interim measures from the court (s.9) or the tribunal (s.17) – e.g. securing the amount or preserving property.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is this a "commercial dispute" of specified value?</h3>
+          <div class="choice-btns">
+            <button class="btn-alt" onclick="choose('commercial')">YES – Commercial Courts Act</button>
+            <button class="btn-yes" onclick="choose('proceedings')">NO – Ordinary arbitration</button>
+          </div>
+        </div>`
+    },
+    commercial: {
+      label: 'Commercial dispute', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Commercial Courts Act, 2015</div>
+        <div class="box info"><h3>Specialised forum</h3><p>Arbitration applications (s.9, s.34, appeals) in a commercial dispute of the specified value go before the Commercial Division/Commercial Court, enabling faster, structured disposal.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed with the reference?</h3>
+          <div class="choice-btns"><button class="btn-yes" onclick="choose('proceedings')">YES</button></div>
+        </div>`
+    },
+    proceedings: {
+      label: 'Arbitral proceedings', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Conduct the arbitration</div>
+        <div class="box process">
+          <h3>4. Proceedings before the tribunal</h3>
+          <p>Statement of claim & defence (s.23), hearings, evidence. The tribunal rules on its own jurisdiction (s.16 – kompetenz-kompetenz). Award to be made within 12 months of completion of pleadings (s.29A), extendable by 6 months by consent.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents in the reference</h3>
+          <ul>
+            <li>Arbitration agreement / contract with the clause</li>
+            <li>Notice invoking arbitration (s.21)</li>
+            <li>Statement of claim, defence & counter-claim</li>
+            <li>Documentary evidence and witness affidavits</li>
+            <li>Written submissions on law and quantum</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>5. Arbitral award</h3><p>The tribunal passes a reasoned, signed, dated written award (s.31). The award is final and binding between the parties.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the losing party challenge the award?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('enforce')">NO – Accepts award</button>
+            <button class="btn-alt" onclick="choose('challenge')">YES – Challenge (s.34)</button>
+          </div>
+        </div>`
+    },
+    challenge: {
+      label: 'Challenge (s.34)', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Set-aside application (s.34)</div>
+        <div class="box process"><h3>Limited grounds</h3><p>Apply within 3 months (extendable by 30 days) on narrow grounds: incapacity, invalid agreement, lack of notice, beyond scope, or conflict with public policy. Courts do not re-appreciate merits.</p>
+          <span class="info-link" onclick="openModal('s34')">Grounds under s.34 →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the award set aside?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('enforce')">NO – Upheld</button>
+            <button class="btn-yes" onclick="choose('setaside')">YES – Set aside</button>
+          </div>
+        </div>`
+    },
+    setaside: {
+      label: 'Award set aside', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Award set aside</div>
+        <div class="box danger"><h3>Award falls</h3><p>Parties may refer the dispute afresh to arbitration or pursue other remedies. An appeal lies under s.37.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Re-arbitrate / appeal</h3></div>`
+    },
+    enforce: {
+      label: 'Enforce award', labelClass: 'no',
+      html: `
+        <div class="path-label no">Enforce the award</div>
+        <div class="box success"><h3>Award enforced as a decree (s.36)</h3><p>After the challenge period lapses (or challenge fails), the award is enforced like a decree of court under the CPC.</p></div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Execution</h3><p>Execute through the court by attachment/sale of assets or garnishee, as for any money decree.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Award realised</h3></div>`
+    }
+  },
+  modals: {
+    arbitrable: `<h2>Arbitrability</h2>
+      <ul>
+        <li>Arbitrable: contractual/commercial disputes, construction, supply, services, partnership accounts.</li>
+        <li>Not arbitrable: criminal matters, matrimonial, guardianship, insolvency, testamentary, and disputes affecting rights in rem.</li>
+        <li>The tribunal can rule on its own jurisdiction under s.16.</li>
+      </ul>`,
+    s34: `<h2>Grounds to Set Aside an Award (s.34)</h2>
+      <ul>
+        <li>A party was under some incapacity.</li>
+        <li>The arbitration agreement was not valid.</li>
+        <li>No proper notice / inability to present the case.</li>
+        <li>Award deals with a dispute beyond the scope of reference.</li>
+        <li>Tribunal composition/procedure not as agreed.</li>
+        <li>Subject-matter not arbitrable, or award conflicts with the public policy of India.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

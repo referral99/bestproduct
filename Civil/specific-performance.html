@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Specific Performance – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Specific Performance of Contract – Complete Flow (UP)",
+  subtitle: "Enforcing a contract instead of only claiming damages<br>Specific Relief Act 1963 (as amended 2018) + Contract Act 1872 + CPC 1908",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Civil", href:"index.html"},
+    {label:"Specific Performance"}
+  ],
+  acts: [
+    {name:"Specific Relief Act, 1963", href:"Specific_Relief_Act_1963.pdf"},
+    {name:"Specific Relief (Amendment) Act, 2018 – note", href:"Specific_Relief_Amendment_Act_2018_note.pdf"},
+    {name:"Indian Contract Act, 1872", href:"Indian_Contract_Act_1872.pdf"},
+    {name:"Limitation Act, 1963", href:"Limitation_Act_1963.pdf"},
+    {name:"Code of Civil Procedure, 1908", href:"Code_of_Civil_Procedure_1908.pdf"}
+  ],
+  related: [
+    {label:"Property Transfer (Sale Deed)", href:"property-transfer.html"},
+    {label:"Breach of Contract / Damages", href:"breach-of-contract.html"},
+    {label:"Injunction / Stay", href:"injunction.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A party refuses to perform a contract (commonly sale of immovable property)</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Is there a valid, concluded contract?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('valid')">YES – Valid contract</button>
+            <button class="btn-no"  onclick="choose('novalid')">NO – No concluded contract</button>
+          </div>
+        </div>`
+    },
+    novalid: {
+      label: 'No valid contract', labelClass: 'no',
+      html: `
+        <div class="path-label no">No enforceable agreement</div>
+        <div class="box danger"><h3>Specific performance not available</h3><p>Without an enforceable contract under the Contract Act there is nothing to specifically enforce.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Claim not maintainable</h3></div>`
+    },
+    valid: {
+      label: 'Valid contract', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Valid, concluded contract</div>
+        <div class="box process">
+          <h3>Post-2018 position</h3>
+          <p>After the 2018 amendment, specific performance is a <strong>general remedy</strong> (not discretionary) and is available unless the contract falls in an excepted category (s.14).</p>
+          <span class="info-link" onclick="openModal('amend2018')">What the 2018 amendment changed →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is the plaintiff ready & willing to perform his part?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('ready')">YES – Ready & willing</button>
+            <button class="btn-no"  onclick="choose('notready')">NO</button>
+          </div>
+        </div>`
+    },
+    notready: {
+      label: 'Not ready & willing', labelClass: 'no',
+      html: `
+        <div class="path-label no">Readiness & willingness not proved</div>
+        <div class="box danger"><h3>Relief refused (s.16(c))</h3><p>Continuous readiness and willingness to perform the plaintiff's own obligations is essential. Absence is fatal to a specific performance suit.</p></div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Fallback</h3><p>The plaintiff may still sue for damages for breach under the Contract Act.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Only damages possible</h3></div>`
+    },
+    ready: {
+      label: 'Ready & willing', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Plaintiff ready & willing</div>
+        <div class="box decision">
+          <h3>3. Does the contract fall under a s.14 exception (not specifically enforceable)?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('excepted')">YES – Excepted contract</button>
+            <button class="btn-yes" onclick="choose('enforceable')">NO – Enforceable</button>
+          </div>
+        </div>`
+    },
+    excepted: {
+      label: 'Excepted contract (s.14)', labelClass: 'no',
+      html: `
+        <div class="path-label no">Not specifically enforceable</div>
+        <div class="box danger">
+          <h3>s.14 exceptions</h3>
+          <p>e.g. where a substituted performance has already been obtained, contracts involving continuous duties the court cannot supervise, those dependent on personal qualifications, or determinable contracts.</p>
+          <span class="info-link" onclick="openModal('s14')">Contracts not enforceable →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Remedy</h3><p>Claim damages or, where provided, substituted performance (s.20) by getting the work done through a third party at the defaulter's cost.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Damages / substituted performance</h3></div>`
+    },
+    enforceable: {
+      label: 'Enforceable', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Contract specifically enforceable</div>
+        <div class="box info">
+          <h3>4. Limitation</h3>
+          <p>Article 54, Limitation Act: 3 years from the date fixed for performance, or if none fixed, from when the plaintiff had notice that performance was refused. Compute carefully.</p>
+          <span class="info-link" onclick="openModal('limit')">Limitation detail →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the suit within limitation?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('file')">YES – Within time</button>
+            <button class="btn-no"  onclick="choose('timebar')">NO – Time-barred</button>
+          </div>
+        </div>`
+    },
+    timebar: {
+      label: 'Time-barred', labelClass: 'no',
+      html: `
+        <div class="path-label no">Suit beyond 3 years</div>
+        <div class="box danger"><h3>Barred by limitation</h3><p>A time-barred suit is liable to be dismissed under s.3 of the Limitation Act even if no defence is raised.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Remedy lost</h3></div>`
+    },
+    file: {
+      label: 'File suit', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">File the suit</div>
+        <div class="box process">
+          <h3>Forum & pleadings</h3>
+          <p>File in the Civil Court (Civil Judge / District Judge) with territorial & pecuniary jurisdiction where the property is situated. Plead readiness & willingness and seek specific performance with alternative damages (s.21).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to file</h3>
+          <ul>
+            <li>Plaint seeking specific performance + alternative damages</li>
+            <li>Original agreement to sell / contract</li>
+            <li>Proof of payment of earnest money / part consideration</li>
+            <li>Notices exchanged showing readiness & willingness</li>
+            <li>Title documents of the property</li>
+            <li>Court fee (ad valorem on consideration) under Court Fees Act</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Protect the lis</h3><p>Consider a temporary injunction (O.39 CPC) restraining alienation and register a lis pendens notice.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Outcome at trial?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('decree')">Decree granted</button>
+            <button class="btn-no"  onclick="choose('refused')">Specific performance refused</button>
+          </div>
+        </div>`
+    },
+    decree: {
+      label: 'Decree granted', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Decree for specific performance</div>
+        <div class="box success"><h3>Court directs execution of the sale deed</h3><p>Defendant must execute within the time fixed; if he fails, the court can execute the deed through an officer (O.21 r.34 CPC).</p></div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Execute & register the sale deed</h3><p>Pay balance consideration, register at Sub-Registrar, then apply for mutation.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Contract enforced, title obtained</h3></div>`
+    },
+    refused: {
+      label: 'Refused', labelClass: 'no',
+      html: `
+        <div class="path-label no">Specific performance declined</div>
+        <div class="box info"><h3>Alternative relief (s.21)</h3><p>The court may still award compensation/damages in lieu of or in addition to specific performance, or refund of earnest money with interest.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Monetary relief</h3></div>`
+    }
+  },
+  modals: {
+    amend2018: `<h2>Specific Relief (Amendment) Act, 2018</h2>
+      <ul>
+        <li>Specific performance is now the rule, not a discretionary exception.</li>
+        <li>Introduced "substituted performance" (s.20) – get the work done by another at the defaulter's cost.</li>
+        <li>Special provisions and courts for infrastructure contracts; limits on injunctions in such projects.</li>
+        <li>Courts to decide such suits expeditiously.</li>
+      </ul>`,
+    s14: `<h2>Contracts not specifically enforceable (s.14)</h2>
+      <ul>
+        <li>Where substituted performance has already been obtained.</li>
+        <li>Contracts involving performance of a continuous duty the court cannot supervise.</li>
+        <li>Contracts so dependent on the personal qualifications of a party that the court cannot enforce their material terms.</li>
+        <li>Contracts of a determinable nature.</li>
+      </ul>`,
+    limit: `<h2>Limitation – Article 54</h2>
+      <ul>
+        <li>Three years from the date fixed for performance.</li>
+        <li>If no date is fixed, three years from when the plaintiff has notice that performance is refused.</li>
+        <li>Time starts afresh only on a valid acknowledgement in writing (s.18).</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

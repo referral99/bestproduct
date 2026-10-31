@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade Licence – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Trade / Establishment Licence (Uttar Pradesh Urban Local Bodies)",
+  subtitle: "Shops & trades • Dangerous / offensive trades • Renewal • Penalty<br>UP Municipalities Act 1916 (Nagar Palika) + UP Municipal Corporation Act 1959 (Nagar Nigam)",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Nagar Palika", href:"index.html"},
+    {label:"Trade Licence"}
+  ],
+  acts: [
+    {name:"UP Municipalities Act, 1916", href:"UP_Municipalities_Act_1916.pdf"},
+    {name:"UP Municipal Corporation Act, 1959", href:"UP_Municipal_Corporation_Act_1959.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>You want to run a shop, eatery, workshop or trade from premises in an urban local body area in UP</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Is a municipal licence needed?</h3>
+          <p>ULBs regulate shops and certain trades; dangerous / offensive trades specifically require a licence before they are carried on.</p>
+          <span class="info-link" onclick="openModal('why')">Why a trade licence? →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. What kind of trade is it?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('general-trade')">General shop / establishment</button>
+            <button class="btn-no"  onclick="choose('dangerous-trade')">Dangerous / offensive trade</button>
+          </div>
+        </div>`
+    },
+    'general-trade': {
+      label: 'General shop', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">General shop / establishment</div>
+        <div class="box info">
+          <h3>Routine licensing</h3>
+          <p>Ordinary retail / service establishments need the ULB trade licence and must conform to the permitted land use for the premises.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Continue to apply?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('apply')">Apply for licence</button>
+          </div>
+        </div>`
+    },
+    'dangerous-trade': {
+      label: 'Dangerous trade', labelClass: 'no',
+      html: `
+        <div class="path-label no">Dangerous / offensive trade</div>
+        <div class="box danger">
+          <h3>Special scrutiny</h3>
+          <p>Trades notified as dangerous/offensive (e.g. certain manufacturing, storage of inflammables, slaughter, tanning) need stricter conditions and often additional NOCs.</p>
+          <span class="info-link" onclick="openModal('dangerous')">Examples & extra NOCs →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Continue to apply?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('apply')">Apply for licence</button>
+          </div>
+        </div>`
+    },
+    'apply': {
+      label: 'Application filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Application for trade licence</div>
+        <div class="box process">
+          <h3>3. Submit application to the ULB</h3>
+          <p>Apply to the Nagar Nigam (1959) or Nagar Palika / Panchayat (1916) health / licensing department with fee.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for trade licence</h3>
+          <ul>
+            <li>Application form with trade / activity details</li>
+            <li>Proof of premises (ownership deed or rent agreement + owner NOC)</li>
+            <li>Latest house-tax / property-tax receipt of the premises</li>
+            <li>Applicant ID & address proof, photographs</li>
+            <li>GST / shop registration (if applicable)</li>
+            <li>Fire NOC / pollution consent for notified trades</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>4. Inspection</h3><p>Sanitary / health inspector verifies the premises for hygiene, safety and permitted use.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the premises comply with conditions?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('granted')">YES – Compliant</button>
+            <button class="btn-no"  onclick="choose('deficiency')">NO – Deficiency found</button>
+          </div>
+        </div>`
+    },
+    'deficiency': {
+      label: 'Deficiency', labelClass: 'no',
+      html: `
+        <div class="path-label no">Deficiency / objection raised</div>
+        <div class="box danger">
+          <h3>Comply with directions</h3>
+          <p>Missing NOC, wrong land use, sanitation or safety defects must be cured within the time allowed.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Deficiency rectified?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('granted')">YES – Rectified</button>
+            <button class="btn-no"  onclick="choose('refused')">NO – Not rectified</button>
+          </div>
+        </div>`
+    },
+    'refused': {
+      label: 'Refused', labelClass: 'no',
+      html: `
+        <div class="path-label no">Licence refused</div>
+        <div class="box danger"><h3>Refusal with reasons</h3><p>If use is impermissible or conditions unmet, the licence is refused. Appeal lies to the prescribed municipal authority.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Appeal or relocate</h3><p>Either challenge the refusal in appeal, cure the defect, or shift the trade to a compliant premises.</p></div>`
+    },
+    'granted': {
+      label: 'Licence granted', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Licence granted</div>
+        <div class="box success">
+          <h3>5. Trade licence issued</h3>
+          <p>Licence carries conditions, validity period and fee. Display it at the premises.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>6. Is the licence being kept valid (renewed on time)?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('renew')">YES – Renew on time</button>
+            <button class="btn-no"  onclick="choose('lapsed')">NO – Expired / running without renewal</button>
+          </div>
+        </div>`
+    },
+    'renew': {
+      label: 'Renewed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Timely renewal</div>
+        <div class="box process">
+          <h3>Renewal</h3>
+          <p>Apply before expiry with updated documents and renewal fee; conditions are re-verified.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for renewal</h3>
+          <ul>
+            <li>Previous licence copy</li>
+            <li>Updated house-tax receipt / No-Dues</li>
+            <li>Renewal fee receipt</li>
+            <li>Current NOCs (fire / pollution) if applicable</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Licence valid & compliant</h3><p>Trade continues lawfully; keep the licence displayed and renew each cycle.</p></div>`
+    },
+    'lapsed': {
+      label: 'Lapsed / unlicensed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Operating without a valid licence</div>
+        <div class="box danger">
+          <h3>Penalty & sealing</h3>
+          <p>Running a regulated trade without a valid licence attracts penalty, prosecution and possible sealing of the premises by the ULB.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Regularise now?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('renew')">YES – Pay penalty & renew</button>
+            <button class="btn-no"  onclick="choose('sealed')">NO – Continue in default</button>
+          </div>
+        </div>`
+    },
+    'sealed': {
+      label: 'Sealed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Premises sealed / prosecuted</div>
+        <div class="box danger"><h3>Enforcement</h3><p>Premises may be sealed and a fine imposed; the trade cannot be carried on until the licence is obtained and dues cleared.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Comply to reopen</h3><p>Obtain the licence, pay penalty and remove defects to resume the trade lawfully.</p></div>`
+    }
+  },
+  modals: {
+    why: `<h2>Why a Trade Licence?</h2>
+      <ul>
+        <li>Ensures the activity is safe, hygienic and in a permitted location.</li>
+        <li>Mandatory for dangerous / offensive trades before they commence.</li>
+        <li>Protects public health and neighbouring occupiers.</li>
+        <li>Links the trade to a tax-paying, identifiable premises.</li>
+      </ul>`,
+    dangerous: `<h2>Dangerous / Offensive Trades</h2>
+      <ul>
+        <li>Storage of inflammable / hazardous materials.</li>
+        <li>Certain manufacturing, foundries, workshops with noise / fumes.</li>
+        <li>Slaughter, meat / fish trade, tanning, bone / hide dealing.</li>
+        <li>Often need Fire NOC and Pollution Control Board consent in addition to the municipal licence.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

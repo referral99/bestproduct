@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SC/ST Prevention of Atrocities – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "SC/ST Prevention of Atrocities Act (Uttar Pradesh)",
+  subtitle: "FIR → Special Court → Bar on anticipatory bail → Trial<br>Procedure under BNSS 2023 (earlier CrPC); offences also attract BNS 2023 (earlier IPC)",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Criminal", href:"index.html"},
+    {label:"SC/ST Atrocities"}
+  ],
+  acts: [
+    {name:"SC/ST (Prevention of Atrocities) Act, 1989", href:"SC_ST_Prevention_of_Atrocities_Act_1989.pdf"},
+    {name:"Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS – procedure, new)", href:"BNSS_2023_Bharatiya_Nagarik_Suraksha_Sanhita.pdf"},
+    {name:"Bharatiya Nyaya Sanhita, 2023 (BNS – offences, new)", href:"BNS_2023_Bharatiya_Nyaya_Sanhita_Gazette.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>An offence against a member of a Scheduled Caste / Scheduled Tribe is reported in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Special Act with stringent safeguards</h3>
+          <p>Applies when the victim is an SC/ST member and the accused is not, and the act falls within the atrocities listed in s.3. Procedure under BNSS 2023 (earlier CrPC); the act may also be an offence under BNS 2023 (earlier IPC).</p>
+          <span class="info-link" onclick="openModal('atrocity')">What is an "atrocity" →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Is the victim an SC/ST member AND the accused a non-member?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('fir')">YES – Act applies</button>
+            <button class="btn-no"  onclick="choose('notapply')">NO</button>
+          </div>
+        </div>`
+    },
+    'notapply': {
+      label: 'Act not attracted', labelClass: 'no',
+      html: `
+        <div class="path-label no">Act not attracted</div>
+        <div class="box danger"><h3>END – Ordinary law applies</h3><p>Proceed under BNS / BNSS (earlier IPC / CrPC) for the general offence</p></div>`
+    },
+    'fir': {
+      label: 'FIR & investigation', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Act applies</div>
+        <div class="box process">
+          <h3>2. Register FIR & time-bound investigation</h3>
+          <p>FIR mandatory for these cognizable offences. Investigation by an officer not below DSP rank; charge-sheet within 60 days (SC/ST Rules).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents / evidence</h3>
+          <ul>
+            <li>FIR recording caste identity of victim</li>
+            <li>Caste certificate of the victim</li>
+            <li>Statements of witnesses & victim</li>
+            <li>Medical / injury report; site plan</li>
+            <li>Investigation by DSP-rank officer</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>3. Relief & rehabilitation to victim</h3>
+          <p>Immediate interim compensation and protection to the victim/witnesses are provided under the SC/ST Rules.</p>
+          <span class="info-link" onclick="openModal('relief')">Victim relief →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>4. Does the accused seek anticipatory bail?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('anticip')">YES – Anticipatory bail sought</button>
+            <button class="btn-yes" onclick="choose('chargesheet')">NO – Investigation continues</button>
+          </div>
+        </div>`
+    },
+    'anticip': {
+      label: 'Anticipatory bail barred', labelClass: 'no',
+      html: `
+        <div class="path-label no">Anticipatory bail</div>
+        <div class="box danger">
+          <h3>Bar under s.18</h3>
+          <p>Section 18 of the Act bars anticipatory bail (BNSS s.482 / old CrPC s.438 excluded). Courts refuse anticipatory bail where a prima facie atrocity is made out.</p>
+          <span class="info-link" onclick="openModal('bail')">Narrow exception →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the FIR make out a prima facie offence under the Act?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('refusebail')">YES – Anticipatory bail refused</button>
+            <button class="btn-yes" onclick="choose('chargesheet')">NO – No prima facie case</button>
+          </div>
+        </div>`
+    },
+    'refusebail': {
+      label: 'Anticipatory bail refused', labelClass: 'no',
+      html: `
+        <div class="path-label no">Anticipatory bail refused</div>
+        <div class="box danger"><h3>Accused faces arrest</h3><p>May later seek regular bail; investigation / charge-sheet proceeds</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to charge-sheet & trial?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('chargesheet')">Continue</button>
+          </div>
+        </div>`
+    },
+    'chargesheet': {
+      label: 'Charge-sheet', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Charge-sheet filed</div>
+        <div class="box process">
+          <h3>5. Trial before Exclusive Special Court</h3>
+          <p>Case tried by an Exclusive Special Court / Special Court designated under s.14. Day-to-day trial aimed at completion within 2 months of charge-sheet (where feasible).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Special features</h3>
+          <p>Special Public Prosecutor; victim & witness protection; in-camera where needed; enhanced punishment for public servants who neglect duty (s.4).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>6. Verdict?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('convict')">Guilty</button>
+            <button class="btn-no"  onclick="choose('acquit')">Not Guilty</button>
+          </div>
+        </div>`
+    },
+    'convict': {
+      label: 'Conviction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Conviction</div>
+        <div class="box success">
+          <h3>END – Convicted & sentenced</h3>
+          <p>Enhanced, offence-specific punishment under s.3. Final compensation to the victim released. Appeal lies to the High Court.</p>
+        </div>`
+    },
+    'acquit': {
+      label: 'Acquittal', labelClass: 'no',
+      html: `
+        <div class="path-label no">Acquittal</div>
+        <div class="box success"><h3>END – Acquitted</h3><p>Caste element or the atrocity could not be proved; State may appeal to the High Court</p></div>`
+    }
+  },
+  modals: {
+    atrocity: `<h2>Atrocities under s.3</h2>
+      <ul>
+        <li>Social humiliation, forcing to eat obnoxious substances, parading, outraging dignity.</li>
+        <li>Wrongful occupation of land / dispossession.</li>
+        <li>Caste-based abuse in public view.</li>
+        <li>Sexual offences, intimidation and economic boycott targeting SC/ST members.</li>
+        <li>The caste identity of victim and offender is central to the offence.</li>
+      </ul>`,
+    relief: `<h2>Victim Relief & Rehabilitation</h2>
+      <ul>
+        <li>Immediate and staged compensation under the SC/ST Rules.</li>
+        <li>Travel and maintenance allowance for attending court.</li>
+        <li>Protection of victims and witnesses from intimidation.</li>
+        <li>Rehabilitation measures in serious cases.</li>
+      </ul>`,
+    bail: `<h2>s.18 Bar on Anticipatory Bail</h2>
+      <ul>
+        <li>Anticipatory bail (BNSS s.482 / CrPC s.438) is barred for offences under the Act.</li>
+        <li>Courts may examine whether a prima facie atrocity is actually disclosed; if the allegations do not attract the Act, the bar may not apply.</li>
+        <li>Regular bail remains available on ordinary principles after arrest.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

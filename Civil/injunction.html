@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Injunction (Temporary & Permanent) – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Injunction (Temporary O.39 & Permanent) – Complete Flow (UP)",
+  subtitle: "Stopping or compelling an act through the civil court<br>Specific Relief Act 1963 + CPC 1908 (Order 39) + Limitation Act 1963",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Civil", href:"index.html"},
+    {label:"Injunction"}
+  ],
+  acts: [
+    {name:"Specific Relief Act, 1963", href:"Specific_Relief_Act_1963.pdf"},
+    {name:"Code of Civil Procedure, 1908", href:"Code_of_Civil_Procedure_1908.pdf"},
+    {name:"Limitation Act, 1963", href:"Limitation_Act_1963.pdf"}
+  ],
+  related: [
+    {label:"Property Transfer", href:"property-transfer.html"},
+    {label:"Specific Performance of Contract", href:"specific-performance.html"},
+    {label:"Easement / Right of Way", href:"easement.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A person needs the court to stop (or compel) an act affecting their rights</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. What kind of injunction is needed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('temporary')">Temporary – urgent, during the suit</button>
+            <button class="btn-alt" onclick="choose('permanent')">Permanent – final at the end of trial</button>
+            <button class="btn-no"  onclick="choose('mandatory')">Mandatory – undo / compel an act</button>
+          </div>
+        </div>`
+    },
+    temporary: {
+      label: 'Temporary injunction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Temporary injunction (Order 39 CPC)</div>
+        <div class="box process">
+          <h3>Three-fold test</h3>
+          <p>The applicant must show: (1) a <strong>prima facie case</strong>, (2) <strong>balance of convenience</strong> in his favour, and (3) <strong>irreparable injury</strong> not compensable in money.</p>
+          <span class="info-link" onclick="openModal('triple')">The triple test →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the matter so urgent that notice would defeat the purpose?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('exparte')">YES – Seek ex-parte relief</button>
+            <button class="btn-no"  onclick="choose('notice')">NO – After notice</button>
+          </div>
+        </div>`
+    },
+    exparte: {
+      label: 'Ex-parte', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Ex-parte ad-interim order</div>
+        <div class="box process"><h3>Order 39 r.3</h3><p>Court may grant an ex-parte injunction recording reasons, but must direct immediate notice to the opposite party. The applicant files the pleading/documents on the opponent at once.</p></div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Early disposal</h3><p>An ex-parte application should ordinarily be decided within 30 days (O.39 r.3A); the respondent may move to vacate (O.39 r.4).</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to file the main suit & documents?</h3>
+          <div class="choice-btns"><button class="btn-yes" onclick="choose('file')">YES</button></div>
+        </div>`
+    },
+    notice: {
+      label: 'After notice', labelClass: 'no',
+      html: `
+        <div class="path-label no">Injunction after hearing both sides</div>
+        <div class="box process"><h3>Order 39 r.1 & 2</h3><p>Notice issued to the opposite party; after hearing, the court grants or refuses the temporary injunction, often with an undertaking as to damages.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to file the main suit & documents?</h3>
+          <div class="choice-btns"><button class="btn-yes" onclick="choose('file')">YES</button></div>
+        </div>`
+    },
+    permanent: {
+      label: 'Permanent injunction', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Permanent injunction (SRA ss.38–42)</div>
+        <div class="box process">
+          <h3>Granted by the decree</h3>
+          <p>A perpetual injunction is granted at the end of the trial to permanently restrain a breach of an obligation / invasion of a right (s.38), e.g. protecting possession, title, or an easement.</p>
+          <span class="info-link" onclick="openModal('perm')">When a permanent injunction lies →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to file the suit?</h3>
+          <div class="choice-btns"><button class="btn-yes" onclick="choose('file')">YES</button></div>
+        </div>`
+    },
+    mandatory: {
+      label: 'Mandatory injunction', labelClass: 'no',
+      html: `
+        <div class="path-label no">Mandatory injunction (SRA s.39)</div>
+        <div class="box process"><h3>Compel an act / undo a wrong</h3><p>Where necessary to prevent the breach of an obligation, the court can compel performance of certain acts — e.g. removing an illegal construction or restoring a demolished wall.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to file the suit?</h3>
+          <div class="choice-btns"><button class="btn-yes" onclick="choose('file')">YES</button></div>
+        </div>`
+    },
+    file: {
+      label: 'File suit', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">File in the Civil Court</div>
+        <div class="box process"><h3>Forum</h3><p>Suit in the Civil Court with territorial & pecuniary jurisdiction where the property/cause lies. Permanent injunction is prayed in the plaint; temporary injunction by a separate Order 39 application with affidavit.</p></div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to file</h3>
+          <ul>
+            <li>Plaint seeking permanent injunction (and declaration, if needed)</li>
+            <li>Order 39 application + supporting affidavit for temporary relief</li>
+            <li>Title / possession documents, site plan, revenue records</li>
+            <li>Photographs and evidence of the threatened/continuing act</li>
+            <li>Court fee (fixed/ad valorem) under the Court Fees Act</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Where injunction is refused (s.41)</h3><p>No injunction to stay other court proceedings, against public officials' statutory acts, where damages are an adequate remedy, or where the plaintiff has no personal interest.</p>
+          <span class="info-link" onclick="openModal('refuse')">Bars to injunction →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Outcome?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('granted')">Granted</button>
+            <button class="btn-no"  onclick="choose('refused')">Refused</button>
+          </div>
+        </div>`
+    },
+    granted: {
+      label: 'Injunction granted', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Injunction granted</div>
+        <div class="box success"><h3>Right protected</h3><p>Opposite party restrained (or compelled). Disobedience of a temporary injunction invites attachment/detention under O.39 r.2A CPC; a permanent injunction is enforced through execution.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Relief secured</h3></div>`
+    },
+    refused: {
+      label: 'Injunction refused', labelClass: 'no',
+      html: `
+        <div class="path-label no">Injunction declined</div>
+        <div class="box info"><h3>Options</h3><p>Prefer an appeal (O.43 r.1 for temporary injunction orders), or continue the suit for damages/other relief.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Appeal / alternative relief</h3></div>`
+    }
+  },
+  modals: {
+    triple: `<h2>The Triple Test for Temporary Injunction</h2>
+      <ul>
+        <li><strong>Prima facie case:</strong> a serious question to be tried, not a sure win.</li>
+        <li><strong>Balance of convenience:</strong> greater hardship to the applicant if refused than to the opponent if granted.</li>
+        <li><strong>Irreparable injury:</strong> harm that cannot be adequately compensated in money.</li>
+        <li>The court may also require an undertaking as to damages.</li>
+      </ul>`,
+    perm: `<h2>Permanent Injunction (ss.38–42)</h2>
+      <ul>
+        <li>To protect existing possession or title from invasion.</li>
+        <li>To restrain a repeated or continuing breach of an obligation.</li>
+        <li>To enforce a negative covenant (s.42).</li>
+        <li>Granted by the final decree after trial.</li>
+      </ul>`,
+    refuse: `<h2>When an Injunction is Refused (s.41)</h2>
+      <ul>
+        <li>To stay proceedings in a court of concurrent/superior jurisdiction.</li>
+        <li>Against lawful acts of public/statutory authorities done in good faith.</li>
+        <li>Where damages are an adequate remedy.</li>
+        <li>Where the applicant has no personal interest, or comes with unclean hands / delay.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

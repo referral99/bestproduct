@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Juvenile in Conflict with Law – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Juvenile in Conflict with Law (Uttar Pradesh)",
+  subtitle: "JJB → Age determination → Preliminary assessment (heinous) → Disposition<br>Underlying offence defined by BNS 2023 (earlier IPC); POCSO where sexual",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Criminal", href:"index.html"},
+    {label:"Juvenile in Conflict with Law"}
+  ],
+  acts: [
+    {name:"Juvenile Justice (Care & Protection of Children) Act, 2015", href:"Juvenile_Justice_Care_Protection_Act_2015.pdf"},
+    {name:"Bharatiya Nyaya Sanhita, 2023 (BNS – underlying offence, new)", href:"BNS_2023_Bharatiya_Nyaya_Sanhita_Gazette.pdf"},
+    {name:"Protection of Children from Sexual Offences Act, 2012 (if sexual offence)", href:"POCSO_Act_2012.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A person apprehended for an offence appears to be a child in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Child-centric, not punitive</h3>
+          <p>A child in conflict with law is dealt with by the Juvenile Justice Board (JJB), not a regular criminal court. The offence itself is defined by BNS 2023 (earlier IPC), or POCSO if sexual.</p>
+          <span class="info-link" onclick="openModal('principles')">Guiding principles →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Apprehension & production before JJB</h3>
+          <p>The child is placed in charge of the Special Juvenile Police Unit / Child Welfare Police Officer and produced before the JJB within 24 hours. The child is <strong>not</strong> sent to a police lock-up or jail.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is the person below 18 years on the date of the offence?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('age')">YES / claimed to be a child</button>
+            <button class="btn-no"  onclick="choose('adult')">NO – Clearly an adult</button>
+          </div>
+        </div>`
+    },
+    'adult': {
+      label: 'Adult', labelClass: 'no',
+      html: `
+        <div class="path-label no">18 or above</div>
+        <div class="box danger"><h3>END – Ordinary criminal process</h3><p>Tried as an adult under BNS / BNSS (earlier IPC / CrPC)</p></div>`
+    },
+    'age': {
+      label: 'Age determination', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Claim of juvenility</div>
+        <div class="box process">
+          <h3>3. Age determination inquiry</h3>
+          <p>JJB determines age (JJ Act s.94): first from matriculation / school certificate, else birth certificate, else ossification / medical test. Benefit of doubt favours the child.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Age-proof documents</h3>
+          <ul>
+            <li>Matriculation or school leaving certificate</li>
+            <li>Birth certificate from Municipality / Panchayat</li>
+            <li>Medical ossification test (only if above are absent)</li>
+            <li>Social Investigation Report by Probation Officer</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>4. What is the category of the offence?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('petty')">Petty / Serious</button>
+            <button class="btn-no"  onclick="choose('heinous')">Heinous (7+ yrs)</button>
+          </div>
+        </div>`
+    },
+    'petty': {
+      label: 'Petty / serious offence', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Petty or serious offence</div>
+        <div class="box info">
+          <h3>Inquiry by JJB</h3>
+          <p>JJB conducts an inquiry (not a trial) in a child-friendly manner, to be completed within 4 months. The child is treated under the rehabilitative scheme regardless of age 16–18.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to disposition order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('disposition')">Continue</button>
+          </div>
+        </div>`
+    },
+    'heinous': {
+      label: 'Heinous offence', labelClass: 'no',
+      html: `
+        <div class="path-label no">Heinous offence (minimum 7 years)</div>
+        <div class="box decision">
+          <h3>5. Is the child aged 16 to 18 years?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('assessment')">YES – 16 to 18</button>
+            <button class="btn-yes" onclick="choose('petty')">NO – Below 16</button>
+          </div>
+        </div>`
+    },
+    'assessment': {
+      label: 'Preliminary assessment', labelClass: 'no',
+      html: `
+        <div class="path-label no">16–18 + heinous → preliminary assessment</div>
+        <div class="box process">
+          <h3>6. Preliminary assessment (s.15)</h3>
+          <p>JJB assesses mental & physical capacity to commit the offence, ability to understand its consequences and the circumstances, assisted by psychologists / experts.</p>
+          <span class="info-link" onclick="openModal('assessment')">What s.15 examines →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>7. Should the child be tried as an adult?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('childrenscourt')">YES – Transfer to Children's Court</button>
+            <button class="btn-yes" onclick="choose('disposition')">NO – Retain before JJB</button>
+          </div>
+        </div>`
+    },
+    'childrenscourt': {
+      label: "Children's Court", labelClass: 'no',
+      html: `
+        <div class="path-label no">Transferred to Children's Court</div>
+        <div class="box danger">
+          <h3>Trial as an adult (with safeguards)</h3>
+          <p>The Children's Court decides whether to try the child as an adult (s.19). Even if convicted, <strong>no death penalty or life imprisonment without possibility of release</strong>; the child is kept in a place of safety, not an adult jail, until 21.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Children's Court disposal</h3><p>Reformation-focused even where tried as an adult</p></div>`
+    },
+    'disposition': {
+      label: 'JJB disposition', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Disposition by JJB (s.18)</div>
+        <div class="box info">
+          <h3>8. Rehabilitative orders</h3>
+          <p>JJB may: release after advice / admonition; release on probation to a guardian / fit person; community service; impose a fine on the guardian; or send the child to a Special Home for up to 3 years.</p>
+          <span class="info-link" onclick="openModal('disposal')">Disposition menu →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success">
+          <h3>END – Rehabilitation order</h3>
+          <p>No child is sentenced to death or life imprisonment without release. Records may be erased to protect the child's future.</p>
+        </div>`
+    }
+  },
+  modals: {
+    principles: `<h2>Guiding Principles (JJ Act)</h2>
+      <ul>
+        <li>Presumption of innocence and dignity of the child.</li>
+        <li>Best interest of the child is paramount.</li>
+        <li>Rehabilitation and social reintegration over punishment.</li>
+        <li>No child kept in a police lock-up or regular jail.</li>
+        <li>Confidentiality of the child's identity.</li>
+      </ul>`,
+    assessment: `<h2>Preliminary Assessment (s.15)</h2>
+      <ul>
+        <li>Mental and physical capacity to commit the offence.</li>
+        <li>Ability to understand the consequences of the act.</li>
+        <li>Circumstances in which the offence was committed.</li>
+        <li>It is only an assessment of capacity, not a finding of guilt.</li>
+      </ul>`,
+    disposal: `<h2>Disposition Orders (s.18)</h2>
+      <ul>
+        <li>Advice / admonition and release.</li>
+        <li>Probation under care of parent / guardian / fit person.</li>
+        <li>Community service.</li>
+        <li>Fine payable by parent / guardian.</li>
+        <li>Stay in a Special Home for a maximum of three years.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

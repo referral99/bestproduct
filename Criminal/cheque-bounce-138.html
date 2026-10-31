@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheque Bounce s.138 NI Act – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Cheque Bounce – s.138 NI Act (Uttar Pradesh)",
+  subtitle: "Dishonour → Legal notice → Complaint → Limitation → Trial<br>Procedure: BNSS 2023 (from 1 July 2024); earlier complaints → CrPC 1973",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Criminal", href:"index.html"},
+    {label:"Cheque Bounce s.138"}
+  ],
+  acts: [
+    {name:"Negotiable Instruments Act, 1881 (ss.138–142)", href:"Negotiable_Instruments_Act_1881.pdf"},
+    {name:"Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS – procedure, new)", href:"BNSS_2023_Bharatiya_Nagarik_Suraksha_Sanhita.pdf"},
+    {name:"Code of Criminal Procedure, 1973 (procedure, old)", href:"Code_of_Criminal_Procedure_1973.pdf"}
+  ],
+  related: [
+    {label:"Civil recovery of the cheque amount – Summary Suit (O.37)", href:"../Civil/cheque-recovery.html"},
+    {label:"Recovery of Money / Debt (Civil)", href:"../Civil/recovery-of-money.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A cheque is issued to discharge a debt / liability and is presented to the bank</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Was the cheque dishonoured (bounced)?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dishonour')">YES – Returned unpaid</button>
+            <button class="btn-no"  onclick="choose('cleared')">NO – Cleared</button>
+          </div>
+        </div>`
+    },
+    'cleared': {
+      label: 'Cheque cleared', labelClass: 'no',
+      html: `
+        <div class="path-label no">Cheque honoured</div>
+        <div class="box success"><h3>END – No offence</h3><p>Liability discharged; no cause of action under s.138</p></div>`
+    },
+    'dishonour': {
+      label: 'Cheque dishonoured', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Cheque returned unpaid</div>
+        <div class="box process">
+          <h3>2. Obtain the bank return memo</h3>
+          <p>Reason must be "insufficient funds" or "exceeds arrangement" (or account closed / stop payment with liability). Keep the dishonour memo.</p>
+          <span class="info-link" onclick="openModal('ingredients')">Ingredients of s.138 →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. Is there a legally enforceable debt behind the cheque?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('notice')">YES – Enforceable debt</button>
+            <button class="btn-no"  onclick="choose('nodebt')">NO – Gift / no liability</button>
+          </div>
+        </div>`
+    },
+    'nodebt': {
+      label: 'No enforceable debt', labelClass: 'no',
+      html: `
+        <div class="path-label no">No legally enforceable debt</div>
+        <div class="box danger"><h3>END – s.138 not attracted</h3><p>A cheque not issued for a debt or liability (e.g. pure gift, security without liability) does not attract s.138</p></div>`
+    },
+    'notice': {
+      label: 'Legal notice', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Enforceable debt exists</div>
+        <div class="box process">
+          <h3>4. Send legal demand notice</h3>
+          <p>Within <strong>30 days</strong> of receiving the dishonour memo, send a written notice demanding payment of the cheque amount (NI Act s.138 proviso (b)).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents to preserve</h3>
+          <ul>
+            <li>Original dishonoured cheque</li>
+            <li>Bank return / dishonour memo</li>
+            <li>Copy of the legal notice</li>
+            <li>Postal receipt + acknowledgment / tracking proof</li>
+            <li>Proof of the underlying debt (invoice, loan, agreement)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Did the drawer pay within 15 days of the notice?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('paid')">YES – Paid</button>
+            <button class="btn-no"  onclick="choose('notpaid')">NO – Failed to pay</button>
+          </div>
+        </div>`
+    },
+    'paid': {
+      label: 'Paid within 15 days', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Payment made within 15 days</div>
+        <div class="box success"><h3>END – No offence completed</h3><p>Cause of action does not arise if the amount is paid within 15 days of the demand notice</p></div>`
+    },
+    'notpaid': {
+      label: 'Did not pay', labelClass: 'no',
+      html: `
+        <div class="path-label no">Drawer failed to pay in 15 days</div>
+        <div class="box process">
+          <h3>6. Cause of action arises</h3>
+          <p>Offence under s.138 is complete on expiry of 15 days. The complaint must be filed <strong>within 1 month</strong> of that date (NI Act s.142).</p>
+          <span class="info-link" onclick="openModal('limitation')">Limitation timeline →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>7. Is the complaint within the limitation period?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('complaint')">YES – Within 1 month</button>
+            <button class="btn-no"  onclick="choose('delay')">NO – Delayed</button>
+          </div>
+        </div>`
+    },
+    'delay': {
+      label: 'Delayed complaint', labelClass: 'no',
+      html: `
+        <div class="path-label no">Complaint filed late</div>
+        <div class="box danger">
+          <h3>Seek condonation of delay</h3>
+          <p>Court may condone delay on sufficient cause shown (proviso to s.142(b)). Without condonation the complaint is barred.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Delay condoned?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('complaint')">YES – Condoned</button>
+            <button class="btn-no"  onclick="choose('barred')">NO – Rejected</button>
+          </div>
+        </div>`
+    },
+    'barred': {
+      label: 'Time-barred', labelClass: 'no',
+      html: `
+        <div class="path-label no">Barred by limitation</div>
+        <div class="box danger"><h3>END – Complaint not maintainable</h3><p>Criminal remedy lost; civil recovery suit may still be available</p></div>`
+    },
+    'complaint': {
+      label: 'Complaint filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Complaint before Magistrate</div>
+        <div class="box process">
+          <h3>8. File complaint before Judicial Magistrate</h3>
+          <p>Written complaint (NI Act s.142) before the Magistrate having jurisdiction where the payee's bank is situated. Sworn statement recorded; summons issued to accused.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Complaint annexures</h3>
+          <ul>
+            <li>Original cheque + return memo</li>
+            <li>Notice copy + dispatch / delivery proof</li>
+            <li>Affidavit of complainant (evidence by affidavit permitted)</li>
+            <li>Board resolution / authority if filed by a company</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>9. Is the matter compounded / settled before judgment?</h3>
+          <div class="choice-btns">
+            <button class="btn-alt" onclick="choose('compound')">YES – Settled / Compounded</button>
+            <button class="btn-yes" onclick="choose('trial')">NO – Proceed to trial</button>
+          </div>
+        </div>`
+    },
+    'compound': {
+      label: 'Compounded', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Compounding (s.147 NI Act)</div>
+        <div class="box success">
+          <h3>END – Case compounded</h3>
+          <p>Offence under s.138 is compoundable (NI Act s.147). On payment of the cheque amount + any compensation / cost, the accused is acquitted and the matter closed.</p>
+        </div>`
+    },
+    'trial': {
+      label: 'Trial', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Summary / summons trial</div>
+        <div class="box process">
+          <h3>10. Trial</h3>
+          <p>Presumption under s.139 that cheque was issued for a debt. Burden shifts to accused to rebut on preponderance of probabilities. Court may order interim compensation (s.143A).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>11. Verdict?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('convict')">Guilty</button>
+            <button class="btn-no"  onclick="choose('acquit')">Not Guilty</button>
+          </div>
+        </div>`
+    },
+    'convict': {
+      label: 'Conviction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Conviction</div>
+        <div class="box success">
+          <h3>END – Convicted</h3>
+          <p>Punishment up to 2 years imprisonment and/or fine up to twice the cheque amount (s.138). Compensation to complainant commonly ordered.</p>
+        </div>`
+    },
+    'acquit': {
+      label: 'Acquittal', labelClass: 'no',
+      html: `
+        <div class="path-label no">Acquittal</div>
+        <div class="box success"><h3>END – Acquitted</h3><p>Accused successfully rebutted the s.139 presumption; complainant may appeal with leave</p></div>`
+    }
+  },
+  modals: {
+    ingredients: `<h2>Ingredients of s.138 NI Act</h2>
+      <ol>
+        <li>Cheque drawn for discharge of a legally enforceable debt or liability.</li>
+        <li>Presented within its validity (3 months).</li>
+        <li>Returned unpaid for insufficiency of funds or exceeding arrangement.</li>
+        <li>Demand notice within 30 days of dishonour memo.</li>
+        <li>Drawer fails to pay within 15 days of the notice.</li>
+      </ol>`,
+    limitation: `<h2>Limitation Timeline</h2>
+      <ul>
+        <li><strong>Day 0</strong> – Cheque dishonoured, memo received.</li>
+        <li><strong>Within 30 days</strong> – Send legal demand notice.</li>
+        <li><strong>15 days</strong> – Grace period for drawer to pay.</li>
+        <li><strong>Day 16 onward (1 month)</strong> – File the complaint under s.142.</li>
+        <li>Delay beyond one month requires condonation for sufficient cause.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Muslim Succession – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Muslim Succession – Complete Flow (Uttar Pradesh)",
+  subtitle: "Faraid • Sharers & Residuaries • 1/3 testamentary limit • UP mutation procedure<br>Muslim Personal Law (Shariat) Application Act 1937 + Indian Succession Act 1925 (administration)",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Succession", href:"index.html"},
+    {label:"Muslim Succession"}
+  ],
+  acts: [
+    {name:"Muslim Personal Law (Shariat) Application Act, 1937", href:"Muslim_Personal_Law_Shariat_Application_Act_1937.pdf"},
+    {name:"Indian Succession Act, 1925 (administration / probate)", href:"Indian_Succession_Act_1925.pdf"},
+    {name:"UP Revenue Code, 2006", href:"../Revenue/UP_Revenue_Code_2006.pdf"}
+  ],
+  related: [
+    {label:"Legal Heir / Varasat Certificate", href:"legal-heir-certificate.html"},
+    {label:"Succession Certificate", href:"succession-certificate.html"},
+    {label:"Partition of Inherited Estate", href:"partition-of-estate.html"},
+    {label:"Mutation on Inheritance (Varasat) – Revenue", href:"../Revenue/mutation-varasat.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A Muslim dies in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Obtain Death Certificate</h3>
+          <p>Urban → Municipality / Nagar Palika<br>Rural → Gram Panchayat / Registrar of Births & Deaths</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>2. Settle prior charges first</h3>
+          <p>Before distribution the estate must meet, in order: funeral expenses → debts → valid bequests (within limit)</p>
+          <span class="info-link" onclick="openModal('order')">Order of estate settlement →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. Did the deceased leave a Will (Wasiyat)?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('will-yes')">YES – Will exists</button>
+            <button class="btn-no"  onclick="choose('will-no')">NO – Dies intestate</button>
+          </div>
+        </div>`
+    },
+    'will-yes': {
+      label: 'Will (Wasiyat) exists', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Will / Wasiyat exists</div>
+        <div class="box process">
+          <h3>Apply the 1/3 rule</h3>
+          <p>A Muslim can bequeath only up to <strong>one-third</strong> of the net estate.<br>
+          Beyond 1/3, or to an heir, the bequest is valid only with consent of the other heirs.</p>
+          <span class="info-link" onclick="openModal('will')">Wasiyat rules →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the bequest within 1/3 and to a non-heir?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('will-valid')">YES – Valid bequest</button>
+            <button class="btn-no"  onclick="choose('will-excess')">NO – Exceeds 1/3 or to an heir</button>
+          </div>
+        </div>`
+    },
+    'will-valid': {
+      label: 'Valid bequest (≤1/3)', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Bequest valid – within 1/3</div>
+        <div class="box success">
+          <h3>Honour the bequest, then distribute the balance</h3>
+          <p>Up to 1/3 passes under the Will; the remaining estate devolves by Faraid among the legal heirs.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to identify the heirs?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('sect')">YES – Determine heirs</button>
+          </div>
+        </div>`
+    },
+    'will-excess': {
+      label: 'Excess bequest', labelClass: 'no',
+      html: `
+        <div class="path-label no">Bequest exceeds 1/3 or favours an heir</div>
+        <div class="box danger">
+          <h3>Requires consent of other heirs</h3>
+          <p>The excess (or the bequest to an heir) takes effect only if the remaining heirs consent after the death. Without consent it is reduced to 1/3 / disallowed and that part falls back into the estate.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Do all other heirs consent to the excess?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('sect')">YES – Consent given</button>
+            <button class="btn-no"  onclick="choose('sect')">NO – Reduce to 1/3, then distribute balance</button>
+          </div>
+        </div>`
+    },
+    'will-no': {
+      label: 'Intestate', labelClass: 'no',
+      html: `
+        <div class="path-label no">Died intestate – full estate by Faraid</div>
+        <div class="box process">
+          <h3>Whole estate devolves by Faraid</h3>
+          <p>No bequest to apply; distribute the entire net estate under Islamic law of inheritance.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Identify the heirs – first fix the sect?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('sect')">YES – Determine sect & heirs</button>
+          </div>
+        </div>`
+    },
+    'sect': {
+      label: 'School / Sect', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Which school applies?</div>
+        <div class="box info">
+          <h3>Sunni (Hanafi) or Shia?</h3>
+          <p>Distribution rules for residuaries differ between schools. Most of UP follows Sunni (Hanafi) law.</p>
+        </div>
+        <div class="box decision">
+          <h3>Select the applicable school</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('sunni')">Sunni (Hanafi)</button>
+            <button class="btn-alt" onclick="choose('shia')">Shia</button>
+          </div>
+        </div>`
+    },
+    'sunni': {
+      label: 'Sunni (Hanafi)', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Sunni (Hanafi) distribution</div>
+        <div class="box process">
+          <h3>Three classes of heirs</h3>
+          <p>1. <strong>Sharers (Zawil-furud)</strong> – fixed Quranic shares<br>
+          2. <strong>Residuaries (Asaba)</strong> – take the remainder<br>
+          3. <strong>Distant kindred</strong> – only if no sharer/residuary</p>
+          <span class="info-link" onclick="openModal('sharers')">Sharers & their shares →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box example">
+          <h3>Common share examples (Sunni)</h3>
+          <ul>
+            <li><strong>Widow + children</strong> → widow 1/8, balance 7/8 to children (son : daughter = 2 : 1)</li>
+            <li><strong>Husband + children</strong> → husband 1/4, balance to children</li>
+            <li><strong>Widow, no child</strong> → widow 1/4; mother 1/3 of residue rules may apply</li>
+            <li><strong>Only daughters (two or more)</strong> → 2/3 collectively; residue to residuaries</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to document checklist for mutation?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('docs')">YES – Documents</button>
+          </div>
+        </div>`
+    },
+    'shia': {
+      label: 'Shia', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Shia distribution</div>
+        <div class="box process">
+          <h3>Heirs by descent grouped in categories</h3>
+          <p>Shia law groups heirs by (a) parents & children, (b) grandparents, brothers/sisters & their issue, (c) uncles/aunts. A nearer category wholly excludes a remoter one.</p>
+          <span class="info-link" onclick="openModal('sharers')">Sharers reference →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box example">
+          <h3>Common share examples (Shia)</h3>
+          <ul>
+            <li><strong>Widow + children</strong> → widow 1/8, balance to children (son : daughter = 2 : 1)</li>
+            <li><strong>Single daughter, no son</strong> → daughter may take the whole after fixed shares (no male residuary of same class)</li>
+            <li><strong>Husband + children</strong> → husband 1/4, balance to children</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to document checklist for mutation?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('docs')">YES – Documents</button>
+          </div>
+        </div>`
+    },
+    'docs': {
+      label: 'Documents', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Document checklist</div>
+        <div class="box docs">
+          <h3>Documents to establish the heirs</h3>
+          <ul>
+            <li>Death Certificate</li>
+            <li>Legal-heir / family-tree (Warisan) affidavit listing every sharer & residuary</li>
+            <li>Identity + address proof of all heirs</li>
+            <li>NOC / consent of co-heirs (and consent to any excess bequest)</li>
+            <li>Original Will (Wasiyat), if any</li>
+            <li>Latest Khata / Khatauni or municipal record of the property</li>
+          </ul>
+          <p class="note">Legal-heir (Warisan) certificate → Tehsildar / SDM. Succession Certificate for debts & securities → Civil Court.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the property Agricultural land in UP?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('agri-yes')">YES – Agricultural</button>
+            <button class="btn-no"  onclick="choose('agri-no')">NO – House / Shop / Plot</button>
+          </div>
+        </div>`
+    },
+    'agri-yes': {
+      label: 'Agricultural (UP)', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Agricultural land – Uttar Pradesh</div>
+        <div class="box info">
+          <h3>UP Revenue Code applies</h3>
+          <p>Varasat mutation by Tehsildar on Lekhpal report after public notice.</p>
+          <span class="info-link" onclick="openModal('upmutation')">UP Mutation steps →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any dispute among heirs over shares?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dispute-yes')">YES – Dispute</button>
+            <button class="btn-no"  onclick="choose('dispute-no')">NO – All agree</button>
+          </div>
+        </div>`
+    },
+    'agri-no': {
+      label: 'Non-Agricultural', labelClass: 'no',
+      html: `
+        <div class="path-label no">House / Shop / Plot</div>
+        <div class="box info">
+          <h3>Non-agricultural property</h3>
+          <p>Mutation in Municipal records (urban) or Tehsil (rural). Any transfer deed needs registration.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any dispute among heirs over shares?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dispute-yes')">YES – Dispute</button>
+            <button class="btn-no"  onclick="choose('dispute-no')">NO – All agree</button>
+          </div>
+        </div>`
+    },
+    'dispute-yes': {
+      label: 'Dispute', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Dispute over shares / title</div>
+        <div class="box danger">
+          <h3>Civil remedy</h3>
+          <p>File a partition suit or a suit for declaration/possession before the competent Civil Court; obtain a decree fixing shares.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Apply for mutation with the certified decree</h3><p>Revenue authority records shares per decree.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Shares settled & mutated</h3><p>Record updated as per the court decree.</p></div>`
+    },
+    'dispute-no': {
+      label: 'No Dispute', labelClass: 'no',
+      html: `
+        <div class="path-label no">All heirs agree</div>
+        <div class="box process">
+          <h3>Apply for Mutation (Varasat)</h3>
+          <p>Application to Tehsildar → Lekhpal report → Public notice → Order recording all sharers in proportion.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any objection after public notice?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dispute-yes')">YES – Objection</button>
+            <button class="btn-no"  onclick="choose('done')">NO – No objection</button>
+          </div>
+        </div>`
+    },
+    'done': {
+      label: 'Mutation approved', labelClass: 'no',
+      html: `
+        <div class="path-label no">No objection</div>
+        <div class="box success">
+          <h3>Mutation Approved</h3>
+          <p>All sharers and residuaries entered in the record in their Faraid proportions.</p>
+          <p class="note">Mutation updates the public record only; title flows from inheritance + any registered deed.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END</h3></div>`
+    }
+  },
+  modals: {
+    order: `<h2>Order of Estate Settlement</h2>
+      <ol>
+        <li>Funeral and burial expenses.</li>
+        <li>Debts of the deceased.</li>
+        <li>Valid bequests (Wasiyat) up to one-third of the balance.</li>
+        <li>Distribution of the remaining estate among heirs by Faraid.</li>
+      </ol>`,
+    will: `<h2>Wasiyat (Will) under Muslim Law</h2>
+      <ul>
+        <li>A Muslim may bequeath only up to <strong>one-third</strong> of the net estate.</li>
+        <li>A bequest beyond 1/3 is valid only with the consent of the other heirs, given after death.</li>
+        <li>A bequest in favour of an heir generally requires the consent of the co-heirs.</li>
+        <li>No specific form is required, but proof of a genuine testamentary intention is essential.</li>
+      </ul>`,
+    sharers: `<h2>Principal Sharers (Zawil-furud)</h2>
+      <ul>
+        <li><strong>Husband</strong> – 1/4 with child, 1/2 without child.</li>
+        <li><strong>Widow</strong> – 1/8 with child, 1/4 without child (shared among widows).</li>
+        <li><strong>Daughter</strong> – 1/2 (single), 2/3 (two or more) when no son; with a son she becomes residuary (son : daughter = 2 : 1).</li>
+        <li><strong>Mother</strong> – 1/6 with child, 1/3 in certain cases without child.</li>
+        <li><strong>Father</strong> – 1/6 as sharer, plus residue as residuary.</li>
+      </ul>
+      <p>Residuaries (Asaba) take whatever remains after the sharers. If the shares exceed unity, the doctrine of Aul (increase) applies; if they fall short and no residuary exists, Radd (return) applies.</p>`,
+    upmutation: `<h2>UP Mutation Procedure (Varasat)</h2>
+      <ol>
+        <li>Application to the Tehsildar with documents.</li>
+        <li>Lekhpal inspects and reports.</li>
+        <li>Public notice (15–30 days).</li>
+        <li>No objection → Tehsildar orders mutation.</li>
+        <li>Objection → enquiry / hearing → reasoned order.</li>
+        <li>Appeal lies to SDM / Collector.</li>
+        <li>Entry recorded in Khatauni; Bhulekh UP reflects the change.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mutation on Inheritance (Varasat) – Full Flow (UP Revenue)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Mutation on Inheritance (Varasat) – Complete Flow (Uttar Pradesh)",
+  subtitle: "Recording heirs in khatauni after a tenure-holder's death • Documents • Objection & appeal<br>UP Revenue Code, 2006 (succession & mutation) + legacy UP ZALR Act, 1950",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Revenue", href:"index.html"},
+    {label:"Mutation on Inheritance (Varasat)"}
+  ],
+  acts: [
+    {name:"UP Revenue Code, 2006", href:"UP_Revenue_Code_2006.pdf"},
+    {name:"UP Revenue Code, 2006 (amended & consolidated)", href:"UP_Revenue_Code_2006_amended_consolidated.pdf"},
+    {name:"UP Zamindari Abolition & Land Reforms Act, 1950", href:"UP_Zamindari_Abolition_Land_Reforms_Act_1950.pdf"}
+  ],
+  related: [
+    {label:"Hindu Succession – Full Flow", href:"../Succession/hindu-succession.html"},
+    {label:"Legal Heir / Varasat Certificate", href:"../Succession/legal-heir-certificate.html"},
+    {label:"Partition of Agricultural Holding", href:"land-partition.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A recorded tenure-holder (bhumidhar) of agricultural land dies in UP</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Obtain Death Certificate</h3>
+          <p>Rural → Gram Panchayat / Registrar of Births & Deaths<br>Urban → Nagar Palika / Nagar Nigam</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>2. Inspect current record</h3>
+          <p>Get latest <strong>khatauni</strong>, <strong>khasra</strong> and <strong>khata</strong> number from the Lekhpal / Bhulekh portal to confirm the deceased's entry.</p>
+          <span class="info-link" onclick="openModal('records')">Khatauni / khasra / khata explained →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. Was the deceased a bhumidhar with transferable rights?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('bhum-transferable')">YES – Transferable rights</button>
+            <button class="btn-no"  onclick="choose('bhum-nontransferable')">NO – Non-transferable / asami</button>
+          </div>
+        </div>`
+    },
+    'bhum-transferable': {
+      label: 'Bhumidhar – transferable', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Bhumidhar with transferable rights</div>
+        <div class="box info">
+          <h3>Succession under UP Revenue Code</h3>
+          <p>Holding devolves on the legal heirs per the order of succession in the Revenue Code. Mutation (varasat) merely records this in the khatauni.</p>
+          <span class="info-link" onclick="openModal('succession')">Order of succession notes →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>4. Is there agreement among all heirs?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('heirs-agree')">YES – All heirs agree</button>
+            <button class="btn-no"  onclick="choose('heirs-dispute')">NO – Dispute among heirs</button>
+          </div>
+        </div>`
+    },
+    'bhum-nontransferable': {
+      label: 'Non-transferable / asami', labelClass: 'no',
+      html: `
+        <div class="path-label no">Bhumidhar with non-transferable rights / asami</div>
+        <div class="box info">
+          <h3>Limited devolution</h3>
+          <p>Rights of a bhumidhar with non-transferable rights or an asami devolve on a narrower class of heirs under the Revenue Code; such land cannot be freely sold.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>4. Is there agreement among the entitled heirs?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('heirs-agree')">YES – All agree</button>
+            <button class="btn-no"  onclick="choose('heirs-dispute')">NO – Dispute</button>
+          </div>
+        </div>`
+    },
+    'heirs-agree': {
+      label: 'Heirs agree', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">All heirs consent</div>
+        <div class="box process">
+          <h3>5. File varasat (mutation) application</h3>
+          <p>Apply to the <strong>Tehsildar</strong> through the Lekhpal (or online on the e-varasat / Bhulekh portal) for entry of heirs' names.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for Varasat Mutation</h3>
+          <ul>
+            <li>Application in prescribed form (PA-10 / online)</li>
+            <li>Death Certificate of the tenure-holder</li>
+            <li>Family-tree affidavit / legal-heir details</li>
+            <li>Consent / NOC of all other heirs</li>
+            <li>Latest khatauni & khasra extract</li>
+            <li>Identity + address proofs + photos of applicants</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>6. Lekhpal report + public notice</h3>
+          <p>Lekhpal verifies possession & pedigree; a public notice is issued inviting objections (usually 15–30 days).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>7. Any objection during the notice period?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection-yes')">YES – Objection filed</button>
+            <button class="btn-no"  onclick="choose('objection-no')">NO – No objection</button>
+          </div>
+        </div>`
+    },
+    'heirs-dispute': {
+      label: 'Dispute among heirs', labelClass: 'no',
+      html: `
+        <div class="path-label no">Heirs dispute shares / title</div>
+        <div class="box danger">
+          <h3>Contested varasat</h3>
+          <p>Where heirship or shares are disputed, the Tehsildar refers it as a contested case; parties lead evidence.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents in a contested case</h3>
+          <ul>
+            <li>Written statement / objection with pedigree</li>
+            <li>Death Certificate</li>
+            <li>Documentary proof of relationship (ration card, voter list, old records)</li>
+            <li>Any Will, gift or partition relied upon</li>
+            <li>Witness list</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Tehsildar decides after hearing</h3><p>Heirs and shares are determined on evidence.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Satisfied with the Tehsildar's order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection-no')">YES – Accept order</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Appeal</button>
+          </div>
+        </div>`
+    },
+    'objection-yes': {
+      label: 'Objection filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Objection received</div>
+        <div class="box danger">
+          <h3>Revenue enquiry / hearing</h3>
+          <p>Tehsildar converts it into a contested mutation, hears both sides and records evidence before deciding.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Accept the Tehsildar's decision?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection-no')">YES – Accept</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Appeal to SDM</button>
+          </div>
+        </div>`
+    },
+    'appeal': {
+      label: 'Appeal', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Appeal / revision</div>
+        <div class="box process">
+          <h3>Hierarchy of appeal</h3>
+          <p>Tehsildar → <strong>SDM</strong> → <strong>Collector</strong> → <strong>Board of Revenue</strong>. File within the limitation period with a certified copy of the order.</p>
+          <span class="info-link" onclick="openModal('forums')">Revenue forums & appeal ladder →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Appellate order passed</h3><p>The final order binds the revenue staff for mutation.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to record the final shares?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection-no')">YES – Record it</button>
+          </div>
+        </div>`
+    },
+    'objection-no': {
+      label: 'No objection / settled', labelClass: 'no',
+      html: `
+        <div class="path-label no">Uncontested / settled</div>
+        <div class="box success">
+          <h3>8. Varasat Mutation ordered</h3>
+          <p>Names of the heirs are entered in the khatauni in their respective shares; the deceased's entry is deleted.</p>
+          <p class="note">Mutation updates the revenue record only. Title flows from succession, not from the mutation entry.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Collect after mutation</h3>
+          <ul>
+            <li>Updated khatauni showing heirs' names</li>
+            <li>Certified copy of the mutation order</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Heirs recorded in revenue records</h3><p>Later sale, gift or partition requires a fresh mutation.</p></div>`
+    }
+  },
+  modals: {
+    records: `<h2>Khatauni, Khasra & Khata</h2>
+      <ul>
+        <li><strong>Khasra</strong> – plot-wise record identifying each field by number, area and crop.</li>
+        <li><strong>Khata / khata number</strong> – account grouping all plots held by a tenure-holder.</li>
+        <li><strong>Khatauni</strong> – the register of rights listing khatas, holders and their shares, updated each fasli year.</li>
+      </ul>
+      <p>These can be viewed on the UP Bhulekh portal and obtained through the Lekhpal.</p>`,
+    succession: `<h2>Order of Succession (Revenue Code)</h2>
+      <p>On the death of a bhumidhar, the interest devolves on the heirs in the order set out in the UP Revenue Code, 2006 (which carried forward the devolution scheme of the old UP ZALR Act, 1950).</p>
+      <p>Widow, sons, daughters and predeceased-child branches generally take together; where no nearer heir exists, more distant heirs take in the statutory order.</p>`,
+    forums: `<h2>Revenue Forums & Appeal Ladder</h2>
+      <ul>
+        <li><strong>Lekhpal</strong> – field record-keeper; prepares reports.</li>
+        <li><strong>Tehsildar</strong> – orders routine & contested mutation.</li>
+        <li><strong>SDM (Sub-Divisional Magistrate)</strong> – first appeal / original revenue suits.</li>
+        <li><strong>Collector / Additional Collector</strong> – higher appeal.</li>
+        <li><strong>Board of Revenue</strong> – apex revenue authority (revision).</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

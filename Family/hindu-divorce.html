@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hindu Divorce – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Hindu Divorce – Complete Flow (Uttar Pradesh)",
+  subtitle: "Fault grounds (s.13) • Mutual consent (s.13B) • Judicial separation (s.10)<br>Hindu Marriage Act 1955 + Family Courts Act 1984",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Family", href:"index.html"},
+    {label:"Hindu Divorce"}
+  ],
+  acts: [
+    {name:"Hindu Marriage Act, 1955", href:"Hindu_Marriage_Act_1955.pdf"},
+    {name:"Family Courts Act, 1984", href:"Family_Courts_Act_1984.pdf"},
+    {name:"Hindu Adoptions & Maintenance Act, 1956", href:"Hindu_Adoptions_and_Maintenance_Act_1956.pdf"}
+  ],
+  related: [
+    {label:"Maintenance of Wife / Child / Parent", href:"maintenance.html"},
+    {label:"Guardianship & Child Custody", href:"guardianship-custody.html"},
+    {label:"Restitution of Conjugal Rights", href:"restitution.html"},
+    {label:"Domestic Violence – Civil Reliefs", href:"domestic-violence-relief.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A Hindu marriage solemnised under the Hindu Marriage Act 1955 has broken down</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Confirm the Act applies</h3>
+          <p>Both parties Hindu, Buddhist, Jain or Sikh and the marriage was validly solemnised.</p>
+          <span class="info-link" onclick="openModal('forum')">Which court? (Family Court) →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Do both spouses want the divorce?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('mutual')">Both agree – Mutual Consent</button>
+            <button class="btn-no"  onclick="choose('contested')">Only one wants it – Contested</button>
+            <button class="btn-alt" onclick="choose('separation')">Not divorce yet – Judicial Separation</button>
+          </div>
+        </div>`
+    },
+    'mutual': {
+      label: 'Mutual consent (s.13B)', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Divorce by Mutual Consent – s.13B</div>
+        <div class="box process">
+          <h3>Threshold</h3>
+          <p>Spouses have been living separately for at least one year and are unable to live together, and both freely agree to dissolve the marriage.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Have they lived apart for 1 year or more?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('mutual-ok')">YES – ≥ 1 year apart</button>
+            <button class="btn-no"  onclick="choose('mutual-wait')">NO – less than 1 year</button>
+          </div>
+        </div>`
+    },
+    'mutual-wait': {
+      label: 'Wait for 1 year', labelClass: 'no',
+      html: `
+        <div class="path-label no">Statutory period not complete</div>
+        <div class="box danger">
+          <h3>Petition is premature</h3>
+          <p>A s.13B petition needs at least one year of living separately. Either wait, or proceed on a fault ground under s.13 if one exists.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is there a fault ground available now?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('contested')">YES – go to contested s.13</button>
+            <button class="btn-no"  onclick="choose('end-wait')">NO – wait out the period</button>
+          </div>
+        </div>`
+    },
+    'end-wait': {
+      label: 'Wait', labelClass: 'no',
+      html: `
+        <div class="path-label no">No ground yet</div>
+        <div class="box info"><h3>Hold the petition</h3><p>Complete one year of separation, then file jointly under s.13B.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Revisit after 1 year</h3></div>`
+    },
+    'mutual-ok': {
+      label: 'First motion', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Eligible for s.13B</div>
+        <div class="box process">
+          <h3>3. File the Joint Petition (First Motion)</h3>
+          <p>Both spouses file jointly before the Family Court verifying consent, separation and settlement of issues (alimony, custody, stridhan).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – First Motion</h3>
+          <ul>
+            <li>Joint petition under s.13B with both affidavits</li>
+            <li>Marriage proof (certificate / photos / invitation)</li>
+            <li>Address proof of both parties</li>
+            <li>Proof of living separately for ≥ 1 year</li>
+            <li>Settlement terms – alimony / maintenance, child custody, stridhan return</li>
+            <li>Photographs of the parties</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>4. Cooling-off / Second Motion</h3>
+          <p>After recording statements, a 6-month gap (s.13B(2)) before the second motion. The Family Court may waive it where parties are firm and all issues are settled (per Supreme Court guidance).</p>
+          <span class="info-link" onclick="openModal('coolingoff')">Cooling-off & waiver →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Do both still consent at second motion?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('mutual-decree')">YES – consent intact</button>
+            <button class="btn-no"  onclick="choose('consent-withdrawn')">NO – one withdrew</button>
+          </div>
+        </div>`
+    },
+    'consent-withdrawn': {
+      label: 'Consent withdrawn', labelClass: 'no',
+      html: `
+        <div class="path-label no">Consent withdrawn before second motion</div>
+        <div class="box danger">
+          <h3>Mutual consent fails</h3>
+          <p>Consent must subsist until the decree. If one party withdraws, the court cannot grant a s.13B decree.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the willing spouse have a fault ground?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('contested')">YES – convert to contested s.13</button>
+            <button class="btn-no"  onclick="choose('end-wait')">NO – no ground</button>
+          </div>
+        </div>`
+    },
+    'mutual-decree': {
+      label: 'Decree granted', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Second motion recorded</div>
+        <div class="box success">
+          <h3>Decree of Divorce by Mutual Consent</h3>
+          <p>Family Court passes the decree dissolving the marriage; settlement terms merge into the decree.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Appeal window</h3><p>Either party may appeal within the limitation period before remarriage.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Marriage dissolved</h3><p>Keep certified copy of the decree for all future records.</p></div>`
+    },
+    'contested': {
+      label: 'Contested (s.13)', labelClass: 'no',
+      html: `
+        <div class="path-label no">Contested Divorce – Fault Grounds s.13</div>
+        <div class="box process">
+          <h3>3. Identify a statutory ground</h3>
+          <p>Cruelty, desertion (≥ 2 years), adultery, conversion, unsoundness of mind, incurable disease, renunciation, or presumption of death.</p>
+          <span class="info-link" onclick="openModal('grounds')">Full list of s.13 grounds →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is a valid ground available with evidence?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('contested-file')">YES – ground + evidence</button>
+            <button class="btn-no"  onclick="choose('no-ground')">NO – no clear ground</button>
+          </div>
+        </div>`
+    },
+    'no-ground': {
+      label: 'No ground', labelClass: 'no',
+      html: `
+        <div class="path-label no">No fault ground established</div>
+        <div class="box danger"><h3>Contested divorce unlikely</h3><p>Without a proven s.13 ground the petition fails. Consider judicial separation or mutual consent.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Try another route?</h3>
+          <div class="choice-btns">
+            <button class="btn-alt" onclick="choose('separation')">Judicial separation (s.10)</button>
+            <button class="btn-yes" onclick="choose('mutual')">Mutual consent (s.13B)</button>
+          </div>
+        </div>`
+    },
+    'contested-file': {
+      label: 'File petition', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Ground established</div>
+        <div class="box process">
+          <h3>4. File petition in the Family Court</h3>
+          <p>Petition under s.13 at the place of marriage, last residence together, or where the respondent resides.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Contested Petition</h3>
+          <ul>
+            <li>Divorce petition stating the s.13 ground</li>
+            <li>Marriage proof</li>
+            <li>Evidence of the ground (medical, police, messages, witnesses)</li>
+            <li>Income / asset details for maintenance & alimony claims</li>
+            <li>Details of children for custody</li>
+            <li>Address proof & photographs</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>5. Reconciliation & interim orders</h3>
+          <p>Family Court first attempts reconciliation / mediation. Interim maintenance (s.24) and custody may be ordered meanwhile.</p>
+          <span class="info-link" onclick="openModal('interim')">Interim maintenance s.24 →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does reconciliation succeed?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('reconciled')">YES – parties reconcile</button>
+            <button class="btn-yes" onclick="choose('trial')">NO – proceed to trial</button>
+          </div>
+        </div>`
+    },
+    'reconciled': {
+      label: 'Reconciled', labelClass: 'no',
+      html: `
+        <div class="path-label no">Parties reconcile</div>
+        <div class="box success"><h3>Petition withdrawn</h3><p>Marriage continues; the court records the reconciliation.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – No divorce</h3></div>`
+    },
+    'trial': {
+      label: 'Trial & decree', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Trial proceeds</div>
+        <div class="box process">
+          <h3>6. Evidence & arguments</h3>
+          <p>Issues framed, evidence led, cross-examination, final arguments. Burden is on the petitioner to prove the ground.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the ground proved?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('decree-granted')">YES – proved</button>
+            <button class="btn-no"  onclick="choose('dismissed')">NO – not proved</button>
+          </div>
+        </div>`
+    },
+    'dismissed': {
+      label: 'Petition dismissed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Ground not proved</div>
+        <div class="box danger"><h3>Petition dismissed</h3><p>Marriage subsists. Petitioner may appeal to the High Court.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Marriage continues</h3></div>`
+    },
+    'decree-granted': {
+      label: 'Decree granted', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Ground proved</div>
+        <div class="box success">
+          <h3>Decree of Divorce granted</h3>
+          <p>Court also decides permanent alimony (s.25), custody and division of stridhan.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Appeal period</h3><p>Appeal lies to the High Court within the limitation period; remarriage only after it lapses.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Marriage dissolved</h3><p>Certified decree copy secured.</p></div>`
+    },
+    'separation': {
+      label: 'Judicial separation (s.10)', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Judicial Separation – s.10</div>
+        <div class="box process">
+          <h3>File for judicial separation</h3>
+          <p>On the same grounds as divorce; the marriage is <strong>not</strong> dissolved but cohabitation obligation is suspended.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Judicial Separation</h3>
+          <ul>
+            <li>Petition under s.10 stating grounds</li>
+            <li>Marriage proof</li>
+            <li>Evidence of the ground relied on</li>
+            <li>Income details for maintenance</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Effect & next step</h3>
+          <p>If no resumption of cohabitation for one year after the decree, either party may seek divorce under s.13(1A).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Resume cohabitation or move to divorce?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('reconciled')">Resume – reconcile</button>
+            <button class="btn-yes" onclick="choose('contested')">Convert to divorce s.13(1A)</button>
+          </div>
+        </div>`
+    }
+  },
+  modals: {
+    forum: `<h2>Forum – Family Court (UP)</h2>
+      <ul>
+        <li>Where a Family Court is established (Family Courts Act 1984), matrimonial petitions are filed there.</li>
+        <li>In districts without a Family Court, the District Court / designated Civil Court hears the matter.</li>
+        <li>Territorial jurisdiction: place of marriage, where the couple last resided together, or where the respondent resides.</li>
+        <li>Proceedings are camera-friendly and emphasise reconciliation and mediation.</li>
+      </ul>`,
+    grounds: `<h2>Grounds for Divorce – s.13 HMA</h2>
+      <ol>
+        <li>Adultery (voluntary intercourse outside marriage)</li>
+        <li>Cruelty (physical or mental)</li>
+        <li>Desertion for a continuous period of at least two years</li>
+        <li>Conversion to another religion</li>
+        <li>Incurable unsoundness of mind / mental disorder</li>
+        <li>Virulent and incurable disease</li>
+        <li>Renunciation of the world (sanyas)</li>
+        <li>Presumption of death (not heard of for 7 years)</li>
+      </ol>
+      <p>Wife's additional grounds (s.13(2)) include bigamy, rape/sodomy, and repudiation of a marriage before age 15.</p>`,
+    coolingoff: `<h2>Cooling-off Period (s.13B(2))</h2>
+      <ul>
+        <li>A gap of 6 months (max 18 months) between first and second motion is the default.</li>
+        <li>The Supreme Court has held the period is directory, not mandatory, and can be waived where parties are certain and all issues (alimony, custody, stridhan) are settled.</li>
+        <li>Waiver is sought by a separate application before the Family Court.</li>
+      </ul>`,
+    interim: `<h2>Interim Maintenance & Expenses – s.24 HMA</h2>
+      <ul>
+        <li>Either spouse without sufficient independent income can claim maintenance pendente lite and litigation expenses.</li>
+        <li>Granted after considering the income of both parties.</li>
+        <li>Separate from permanent alimony under s.25 fixed at the final decree.</li>
+        <li>A wife/child may also claim maintenance under BNSS 2023 s.144 (which replaced CrPC s.125 from 1 July 2024) or under HAMA s.18.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

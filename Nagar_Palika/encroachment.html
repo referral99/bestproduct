@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encroachment Removal – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Encroachment Removal from Municipal Land / Road (Uttar Pradesh)",
+  subtitle: "Complaint • Notice • Removal • Penalty / recovery • Appeal<br>UP Municipalities Act 1916 (Nagar Palika) + UP Municipal Corporation Act 1959 (Nagar Nigam)",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Nagar Palika", href:"index.html"},
+    {label:"Encroachment"}
+  ],
+  acts: [
+    {name:"UP Municipalities Act, 1916", href:"UP_Municipalities_Act_1916.pdf"},
+    {name:"UP Municipal Corporation Act, 1959", href:"UP_Municipal_Corporation_Act_1959.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A structure, shop extension, ramp, shed or material occupies a public road, footpath, drain or municipal land</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Identify the land</h3>
+          <p>ULBs can remove encroachments from streets, public places and municipal property. The first question is who owns the land.</p>
+          <span class="info-link" onclick="openModal('publicland')">What counts as municipal / public land →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is the encroachment on public / municipal land?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('public-land')">YES – Public road / municipal land</button>
+            <button class="btn-no"  onclick="choose('private-dispute')">NO – Private land boundary dispute</button>
+          </div>
+        </div>`
+    },
+    'private-dispute': {
+      label: 'Private dispute', labelClass: 'no',
+      html: `
+        <div class="path-label no">Encroachment on private land</div>
+        <div class="box info">
+          <h3>Not a ULB matter</h3>
+          <p>A boundary / possession dispute between two private owners is a civil matter; the ULB does not remove it.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Right remedy</h3>
+          <ul>
+            <li>Civil suit for possession / injunction / mandatory injunction</li>
+            <li>Demarcation by revenue authority (for recorded plots)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Civil remedy</h3><p>Approach the civil court / revenue authority for a private boundary dispute.</p></div>`
+    },
+    'public-land': {
+      label: 'Public land', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Encroachment on public / municipal land</div>
+        <div class="box process">
+          <h3>3. Complaint / suo motu action</h3>
+          <p>A complaint is filed with the ULB (or it acts on its own). The engineering / enforcement wing inspects and records the encroachment.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Supporting material (complaint)</h3>
+          <ul>
+            <li>Location / site details, photographs</li>
+            <li>Map or plan showing the public road / municipal plot</li>
+            <li>Nature of obstruction (permanent structure / temporary / material)</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>4. Is the obstruction temporary or a permanent structure?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('temporary')">Temporary (material / cart / ramp)</button>
+            <button class="btn-no"  onclick="choose('permanent')">Permanent structure</button>
+          </div>
+        </div>`
+    },
+    'temporary': {
+      label: 'Temporary obstruction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Temporary obstruction</div>
+        <div class="box process">
+          <h3>Immediate removal</h3>
+          <p>Carts, displayed goods, building material or temporary ramps on a public street can be removed quickly, often with short / verbal notice, and a fine imposed.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the encroacher clear it on being told?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('cleared')">YES – Voluntarily removed</button>
+            <button class="btn-no"  onclick="choose('forced-removal')">NO – ULB removes it</button>
+          </div>
+        </div>`
+    },
+    'permanent': {
+      label: 'Permanent structure', labelClass: 'no',
+      html: `
+        <div class="path-label no">Permanent encroaching structure</div>
+        <div class="box process">
+          <h3>Written notice to remove</h3>
+          <p>A notice is served requiring removal of the encroachment within the specified time, with an opportunity to show cause.</p>
+          <span class="info-link" onclick="openModal('notice')">What the notice contains →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents / reply by occupier</h3>
+          <ul>
+            <li>Any lease / allotment / licence over the land (if claimed)</li>
+            <li>Proof the land is not public (if disputed)</li>
+            <li>Representation / objection to the notice</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the occupier have a valid right to the land?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('valid-right')">YES – Valid allotment / lease</button>
+            <button class="btn-no"  onclick="choose('no-right')">NO – No right</button>
+          </div>
+        </div>`
+    },
+    'valid-right': {
+      label: 'Valid right', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Occupier shows a valid right</div>
+        <div class="box info"><h3>No encroachment established</h3><p>If a genuine lease / allotment / licence exists, the notice is dropped; any dispute over its scope is decided separately.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Notice withdrawn</h3><p>Lawful occupation is protected; the ULB may still regulate the permitted use.</p></div>`
+    },
+    'no-right': {
+      label: 'No right', labelClass: 'no',
+      html: `
+        <div class="path-label no">No right to occupy</div>
+        <div class="box danger">
+          <h3>Removal order</h3>
+          <p>After hearing, the ULB passes an order to remove the encroachment and sets a deadline.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the encroacher comply by the deadline?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('cleared')">YES – Self-removal</button>
+            <button class="btn-no"  onclick="choose('forced-removal')">NO – Default</button>
+          </div>
+        </div>`
+    },
+    'forced-removal': {
+      label: 'Forced removal', labelClass: 'no',
+      html: `
+        <div class="path-label no">Removal by the ULB</div>
+        <div class="box danger">
+          <h3>Demolition / removal drive</h3>
+          <p>The ULB removes / demolishes the encroachment and recovers the cost of removal from the encroacher as arrears of land revenue, plus penalty.</p>
+          <span class="info-link" onclick="openModal('recovery')">Cost recovery & penalty →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the encroacher challenge the order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('appeal')">YES – File appeal</button>
+            <button class="btn-no"  onclick="choose('cleared')">NO – Accept removal</button>
+          </div>
+        </div>`
+    },
+    'appeal': {
+      label: 'Appeal', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Appeal against removal</div>
+        <div class="box process">
+          <h3>Statutory appeal</h3>
+          <p>Appeal to the prescribed municipal appellate authority; a civil court cannot normally restrain removal of an encroachment from public land without a strong prima facie right.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Appellate decision</h3><p>Removal is upheld, or relief is granted if the appellant proves a valid right / procedural lapse.</p></div>`
+    },
+    'cleared': {
+      label: 'Cleared', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Public land cleared</div>
+        <div class="box success">
+          <h3>END – Encroachment removed</h3>
+          <p>Road / footpath / municipal land restored for public use; any removal cost and penalty recovered from the encroacher.</p>
+          <p class="note">Repeat encroachment can attract fresh action and higher penalty.</p>
+        </div>`
+    }
+  },
+  modals: {
+    publicland: `<h2>Municipal / Public Land</h2>
+      <ul>
+        <li>Streets, lanes, footpaths and road margins vested in the ULB.</li>
+        <li>Public drains, parks and open spaces.</li>
+        <li>Land recorded as municipal / nazul property.</li>
+      </ul>
+      <p>Occupying any of these without authority is an encroachment the ULB can remove.</p>`,
+    notice: `<h2>Removal Notice</h2>
+      <ul>
+        <li>Describes the encroachment and the public land occupied.</li>
+        <li>Requires removal within a stated time.</li>
+        <li>Gives an opportunity to show cause / reply.</li>
+        <li>Warns that in default the ULB will remove it at the encroacher's cost.</li>
+      </ul>`,
+    recovery: `<h2>Cost Recovery & Penalty</h2>
+      <ul>
+        <li>Expenses of removal / demolition are charged to the encroacher.</li>
+        <li>Recoverable as arrears of land revenue.</li>
+        <li>Fine / penalty may be imposed for the obstruction.</li>
+        <li>Repeated encroachment can lead to prosecution.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

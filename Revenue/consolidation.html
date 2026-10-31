@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Consolidation of Holdings (Chakbandi) – Full Flow (UP Revenue)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Consolidation of Holdings (Chakbandi) – Complete Flow (Uttar Pradesh)",
+  subtitle: "Village chakbandi: objections, chak allotment & appeals • Consolidation Officer → SOC → DDC<br>UP Consolidation of Holdings Act, 1953 + UP Revenue Code, 2006",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Revenue", href:"index.html"},
+    {label:"Consolidation of Holdings (Chakbandi)"}
+  ],
+  acts: [
+    {name:"UP Consolidation of Holdings Act, 1953", href:"UP_Consolidation_of_Holdings_Act_1953.pdf"},
+    {name:"UP Revenue Code, 2006", href:"UP_Revenue_Code_2006.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A village is notified for chakbandi (consolidation) to merge scattered plots into compact chaks</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Notification under the 1953 Act</h3>
+          <p>On the consolidation notification, ordinary mutation/partition before revenue courts is stayed and the Consolidation Authorities take over the record.</p>
+          <span class="info-link" onclick="openModal('chakbandi')">What chakbandi does →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>2. Preparation of statements</h3>
+          <p>Existing rights are recorded, land is valued, and a provisional <strong>chak</strong> allotment scheme is drawn up.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. Is your recorded right or valuation correct?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('rights-ok')">YES – Record is correct</button>
+            <button class="btn-no"  onclick="choose('obj-rights')">NO – Wrong entry / valuation</button>
+          </div>
+        </div>`
+    },
+    'obj-rights': {
+      label: 'Objection to rights/valuation', labelClass: 'no',
+      html: `
+        <div class="path-label no">Objection to recorded rights / valuation</div>
+        <div class="box process">
+          <h3>File objection before the Assistant Consolidation Officer / Consolidation Officer</h3>
+          <p>Objections to the extract of rights, share or soil-valuation are filed at the statement stage.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Rights / Valuation Objection</h3>
+          <ul>
+            <li>Written objection specifying the error</li>
+            <li>Old khatauni / khasra & possession proof</li>
+            <li>Inheritance / transfer documents</li>
+            <li>Valuation / soil-classification grounds</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>CO decides the objection</h3><p>The corrected right / valuation feeds into the chak allotment.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to chak allotment stage?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('rights-ok')">YES – Continue</button>
+          </div>
+        </div>`
+    },
+    'rights-ok': {
+      label: 'Rights settled', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Rights & valuation settled</div>
+        <div class="box process">
+          <h3>4. Provisional chak allotment</h3>
+          <p>Each holder is allotted a consolidated <strong>chak</strong> of roughly equal value in place of scattered plots, as far as possible around the holder's well / residence.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Are you satisfied with the allotted chak?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('accept')">YES – Satisfied</button>
+            <button class="btn-no"  onclick="choose('obj-chak')">NO – Object to allotment</button>
+          </div>
+        </div>`
+    },
+    'obj-chak': {
+      label: 'Objection to chak', labelClass: 'no',
+      html: `
+        <div class="path-label no">Objection to chak allotment</div>
+        <div class="box danger">
+          <h3>6. Objection to the Consolidation Officer</h3>
+          <p>Grounds: lower-value land given, chak away from well / residence, loss of irrigation or access.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Chak Objection</h3>
+          <ul>
+            <li>Objection with the chak / plot numbers</li>
+            <li>Valuation comparison of old vs new land</li>
+            <li>Map showing well / tubewell / access</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>CO hears & decides</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Satisfied with the CO's order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('accept')">YES – Accept</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Appeal</button>
+          </div>
+        </div>`
+    },
+    'appeal': {
+      label: 'Appeal (SOC/DDC)', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Consolidation appeal / revision</div>
+        <div class="box process">
+          <h3>7. Appeal & revision ladder</h3>
+          <p>Consolidation Officer → <strong>Settlement Officer Consolidation (SOC)</strong> → <strong>Deputy Director of Consolidation (DDC)</strong> (revision). These are the special forums under the 1953 Act.</p>
+          <span class="info-link" onclick="openModal('forums')">Consolidation forums →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Final order on chak</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Give effect to the allotment?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('accept')">YES – Finalise</button>
+          </div>
+        </div>`
+    },
+    'accept': {
+      label: 'Chak confirmed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Allotment confirmed</div>
+        <div class="box process">
+          <h3>8. Possession & new record</h3>
+          <p>Possession of the new chak is delivered; fresh <strong>khasra</strong>/<strong>khatauni</strong> and a new map are prepared for the consolidated village.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Collect after chakbandi</h3>
+          <ul>
+            <li>New chak number & consolidated khatauni</li>
+            <li>New village map (chak map)</li>
+            <li>Order confirming allotment</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>De-notification</h3>
+          <p>When consolidation closes, the village is de-notified and normal UP Revenue Code procedure (mutation, partition) resumes.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Consolidated holding allotted</h3></div>`
+    }
+  },
+  modals: {
+    chakbandi: `<h2>Chakbandi (Consolidation)</h2>
+      <p>Consolidation re-arranges a cultivator's many scattered small plots into one or a few compact <strong>chaks</strong> of equivalent value, improving cultivation and reducing boundary disputes. It is run under the UP Consolidation of Holdings Act, 1953 by a special set of authorities.</p>`,
+    forums: `<h2>Consolidation Forums</h2>
+      <ul>
+        <li><strong>Assistant Consolidation Officer / Consolidation Officer (CO)</strong> – objections to rights, valuation & chak.</li>
+        <li><strong>Settlement Officer Consolidation (SOC)</strong> – appeal.</li>
+        <li><strong>Deputy Director of Consolidation (DDC)</strong> – revision.</li>
+      </ul>
+      <p>During consolidation, ordinary revenue courts do not entertain the same matters.</p>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Christian / Parsi & General Succession – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Christian / Parsi & General Succession – Complete Flow (UP)",
+  subtitle: "Intestate succession under the Indian Succession Act 1925 • Documents • Share examples • UP mutation<br>Applies to Christians, Parsis, and Special Marriage Act couples",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Succession", href:"index.html"},
+    {label:"Christian / Parsi Succession"}
+  ],
+  acts: [
+    {name:"Indian Succession Act, 1925", href:"Indian_Succession_Act_1925.pdf"},
+    {name:"Special Marriage Act, 1954", href:"Special_Marriage_Act_1954.pdf"},
+    {name:"UP Revenue Code, 2006", href:"../Revenue/UP_Revenue_Code_2006.pdf"}
+  ],
+  related: [
+    {label:"Will & Probate / Letters of Administration", href:"will-probate.html"},
+    {label:"Succession Certificate", href:"succession-certificate.html"},
+    {label:"Legal Heir / Varasat Certificate", href:"legal-heir-certificate.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A Christian / Parsi (or Special Marriage Act spouse) dies in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Obtain Death Certificate</h3>
+          <p>Urban → Municipality / Nagar Palika<br>Rural → Gram Panchayat / Registrar of Births & Deaths</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Did the deceased leave a Will?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('will-yes')">YES – Will exists</button>
+            <button class="btn-no"  onclick="choose('community')">NO – Intestate</button>
+          </div>
+        </div>`
+    },
+    'will-yes': {
+      label: 'Will exists', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Will exists – testate succession</div>
+        <div class="box process">
+          <h3>Property passes under the Will</h3>
+          <p>A testator of sound mind may dispose of the whole estate by Will (Part VI, Indian Succession Act). Probate is advisable for a large estate.</p>
+          <span class="info-link" onclick="openModal('will')">Will & probate notes →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the Will valid / unchallenged?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('will-valid')">YES – Valid</button>
+            <button class="btn-no"  onclick="choose('community')">NO – Invalid → treat as intestate</button>
+          </div>
+        </div>`
+    },
+    'will-valid': {
+      label: 'Valid Will', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Valid Will</div>
+        <div class="box success">
+          <h3>Estate devolves strictly as per the Will</h3>
+          <p>Executor administers the estate after obtaining probate where required.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to mutation of immovable property?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('agri-yes')">Agricultural land (UP)</button>
+            <button class="btn-no"  onclick="choose('agri-no')">House / Shop / Plot</button>
+          </div>
+        </div>`
+    },
+    'community': {
+      label: 'Intestate – community?', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Intestate – which rules apply?</div>
+        <div class="box info">
+          <h3>Indian Succession Act 1925 governs</h3>
+          <p>Christians & general cases → ss.31–49.<br>Parsis → ss.50–56 (separate scheme).</p>
+        </div>
+        <div class="box decision">
+          <h3>Community of the deceased?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('christian')">Christian / General</button>
+            <button class="btn-alt" onclick="choose('parsi')">Parsi</button>
+          </div>
+        </div>`
+    },
+    'christian': {
+      label: 'Christian / General', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Christian / General intestate (ss.31–49)</div>
+        <div class="box process">
+          <h3>Devolution rules</h3>
+          <p>Widow/widower takes a fixed share; the rest goes to lineal descendants, failing whom to kindred.</p>
+          <span class="info-link" onclick="openModal('christian')">Christian intestate shares →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box example">
+          <h3>Common share examples</h3>
+          <ul>
+            <li><strong>Spouse + children</strong> → spouse 1/3, children share 2/3 equally</li>
+            <li><strong>Spouse, no lineal descendant but kindred</strong> → spouse 1/2, kindred 1/2</li>
+            <li><strong>Spouse, no descendant & no kindred</strong> → spouse takes the whole</li>
+            <li><strong>No spouse</strong> → entire estate to children / lineal descendants equally</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to document checklist?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('docs')">YES – Documents</button>
+          </div>
+        </div>`
+    },
+    'parsi': {
+      label: 'Parsi', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Parsi intestate (ss.50–56)</div>
+        <div class="box process">
+          <h3>Parsi scheme of distribution</h3>
+          <p>Surviving spouse and each child take equal shares; a parent is also entitled to a share where the deceased leaves lineal descendants.</p>
+          <span class="info-link" onclick="openModal('parsi')">Parsi intestate shares →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box example">
+          <h3>Common share examples</h3>
+          <ul>
+            <li><strong>Widow + 2 children</strong> → each of the three takes an equal share</li>
+            <li><strong>Widow + children + parent(s)</strong> → each parent takes half of a child's share</li>
+            <li><strong>No spouse / no descendant</strong> → estate goes to the enumerated relatives in Schedule II</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to document checklist?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('docs')">YES – Documents</button>
+          </div>
+        </div>`
+    },
+    'docs': {
+      label: 'Documents', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Document checklist</div>
+        <div class="box docs">
+          <h3>Documents to establish the heirs</h3>
+          <ul>
+            <li>Death Certificate</li>
+            <li>Legal-heir certificate / family-tree affidavit</li>
+            <li>Marriage certificate (incl. Special Marriage Act registration, if applicable)</li>
+            <li>Birth certificates of children / lineal descendants</li>
+            <li>Identity + address proof of all heirs; NOCs of co-heirs</li>
+            <li>Succession Certificate (for debts & securities) / Letters of Administration where required</li>
+            <li>Latest Khata / Khatauni or municipal record of the property</li>
+          </ul>
+          <p class="note">Legal-heir certificate → Tehsildar / SDM. Succession Certificate & Letters of Administration → Civil Court / District Judge.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the property Agricultural land in UP?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('agri-yes')">YES – Agricultural</button>
+            <button class="btn-no"  onclick="choose('agri-no')">NO – House / Shop / Plot</button>
+          </div>
+        </div>`
+    },
+    'agri-yes': {
+      label: 'Agricultural (UP)', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Agricultural land – Uttar Pradesh</div>
+        <div class="box info">
+          <h3>UP Revenue Code applies</h3>
+          <p>Mutation by Tehsildar on Lekhpal report after public notice.</p>
+          <span class="info-link" onclick="openModal('upmutation')">UP Mutation steps →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any dispute among heirs?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dispute-yes')">YES – Dispute</button>
+            <button class="btn-no"  onclick="choose('dispute-no')">NO – All agree</button>
+          </div>
+        </div>`
+    },
+    'agri-no': {
+      label: 'Non-Agricultural', labelClass: 'no',
+      html: `
+        <div class="path-label no">House / Shop / Plot</div>
+        <div class="box info">
+          <h3>Non-agricultural property</h3>
+          <p>Mutation in Municipal records (urban) or Tehsil (rural). Transfer deeds require registration.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any dispute among heirs?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dispute-yes')">YES – Dispute</button>
+            <button class="btn-no"  onclick="choose('dispute-no')">NO – All agree</button>
+          </div>
+        </div>`
+    },
+    'dispute-yes': {
+      label: 'Dispute', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Dispute over shares / title</div>
+        <div class="box danger">
+          <h3>Civil remedy</h3>
+          <p>File a partition suit or a declaratory suit before the competent Civil Court; obtain a decree fixing shares.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Apply for mutation with the certified decree</h3></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Shares settled & mutated</h3></div>`
+    },
+    'dispute-no': {
+      label: 'No Dispute', labelClass: 'no',
+      html: `
+        <div class="path-label no">All heirs agree</div>
+        <div class="box process">
+          <h3>Apply for Mutation</h3>
+          <p>Application to Tehsildar → Lekhpal report → Public notice → Order recording the heirs in their shares.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any objection after public notice?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dispute-yes')">YES – Objection</button>
+            <button class="btn-no"  onclick="choose('done')">NO – No objection</button>
+          </div>
+        </div>`
+    },
+    'done': {
+      label: 'Mutation approved', labelClass: 'no',
+      html: `
+        <div class="path-label no">No objection</div>
+        <div class="box success">
+          <h3>Mutation Approved</h3>
+          <p>Heirs entered in the record in their respective shares.</p>
+          <p class="note">Mutation updates the public record only; title flows from succession + any registered deed.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END</h3></div>`
+    }
+  },
+  modals: {
+    will: `<h2>Will & Probate – Indian Succession Act 1925</h2>
+      <ul>
+        <li>A testator of sound mind may dispose of the entire estate by a valid Will.</li>
+        <li>The Will must be signed by the testator and attested by at least two witnesses.</li>
+        <li>Probate / Letters of Administration may be obtained from the District Judge to administer the estate.</li>
+        <li>If the Will is invalid, the estate is distributed under the intestate rules.</li>
+      </ul>`,
+    christian: `<h2>Christian / General Intestate Succession (ss.31–49)</h2>
+      <ul>
+        <li>Where the deceased leaves a spouse and lineal descendants: spouse takes 1/3, descendants share 2/3.</li>
+        <li>Spouse but no lineal descendant (only kindred): spouse 1/2, kindred 1/2.</li>
+        <li>Spouse but no descendant and no kindred: spouse takes the whole.</li>
+        <li>No spouse: the estate goes to the lineal descendants; failing them, to the kindred.</li>
+        <li>Lineal descendants of equal degree share equally (per stirpes for remoter degrees).</li>
+      </ul>`,
+    parsi: `<h2>Parsi Intestate Succession (ss.50–56)</h2>
+      <ul>
+        <li>The surviving spouse and each child take equal shares.</li>
+        <li>Where the deceased leaves lineal descendants, each surviving parent takes a share equal to half of a child's share.</li>
+        <li>If no spouse or descendant survives, the estate devolves on the relatives listed in Schedule II.</li>
+      </ul>`,
+    upmutation: `<h2>UP Mutation Procedure</h2>
+      <ol>
+        <li>Application to the Tehsildar with documents.</li>
+        <li>Lekhpal inspects and reports.</li>
+        <li>Public notice (15–30 days).</li>
+        <li>No objection → Tehsildar orders mutation.</li>
+        <li>Objection → enquiry / hearing → reasoned order.</li>
+        <li>Appeal lies to SDM / Collector.</li>
+        <li>Entry recorded in Khatauni; Bhulekh UP reflects the change.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

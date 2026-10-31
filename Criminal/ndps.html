@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NDPS Narcotics Offence – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "NDPS Narcotics Offence – Complete Flow (Uttar Pradesh)",
+  subtitle: "Quantity (small / intermediate / commercial) • s.37 bail bar • Trial<br>Procedure: BNSS 2023 + BSA 2023 (from 1 July 2024); earlier cases → CrPC / Evidence Act",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Criminal", href:"index.html"},
+    {label:"NDPS Narcotics Offence"}
+  ],
+  acts: [
+    {name:"Narcotic Drugs and Psychotropic Substances Act, 1985", href:"NDPS_Act_1985.pdf"},
+    {name:"Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS – procedure, new)", href:"BNSS_2023_Bharatiya_Nagarik_Suraksha_Sanhita.pdf"},
+    {name:"Bharatiya Sakshya Adhiniyam, 2023 (BSA – evidence, new)", href:"BSA_2023_Bharatiya_Sakshya_Adhiniyam_Gazette.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>Suspected narcotic drug / psychotropic substance seized in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Procedure codes</h3>
+          <p>The NDPS Act is a special statute. General procedure follows BNSS 2023 (earlier: CrPC) and evidence follows BSA 2023 (earlier: Evidence Act), subject to NDPS overrides.</p>
+          <span class="info-link" onclick="openModal('safeguards')">NDPS safeguards →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Were search & seizure safeguards followed (s.42 / s.50)?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('seizure')">YES – Complied</button>
+            <button class="btn-no"  onclick="choose('breach')">NO – Breach</button>
+          </div>
+        </div>`
+    },
+    'breach': {
+      label: 'Safeguard breach', labelClass: 'no',
+      html: `
+        <div class="path-label no">Mandatory safeguards not followed</div>
+        <div class="box danger">
+          <h3>Fatal to prosecution</h3>
+          <p>Non-compliance with s.50 (right to be searched before a Gazetted Officer / Magistrate) or s.42 (recording & sending of information) can vitiate the trial.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Likely acquittal on procedural illegality</h3></div>`
+    },
+    'seizure': {
+      label: 'Valid seizure', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Seizure & sampling valid</div>
+        <div class="box process">
+          <h3>2. Weigh the contraband & send sample to FSL</h3>
+          <p>Representative sample drawn, sealed, and sent for forensic analysis. Quantity determines the entire severity of the case.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Evidence to preserve</h3>
+          <ul>
+            <li>Seizure memo + panchnama with independent witnesses</li>
+            <li>Weighment record and sealed samples</li>
+            <li>FSL / chemical analysis report</li>
+            <li>Chain-of-custody (malkhana) register</li>
+            <li>Arrest memo and grounds of arrest</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. What is the seized quantity?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('small')">Small quantity</button>
+            <button class="btn-alt" onclick="choose('intermediate')">More than small, less than commercial</button>
+            <button class="btn-no"  onclick="choose('commercial')">Commercial quantity</button>
+          </div>
+        </div>`
+    },
+    'small': {
+      label: 'Small quantity', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Small quantity</div>
+        <div class="box info">
+          <h3>Lesser punishment</h3>
+          <p>Up to 1 year imprisonment and/or fine (s.21(a)/27 etc.). Bail is governed by ordinary principles – s.37 bar does NOT apply.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>Bail comparatively easier → proceed to trial</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to trial?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('trial')">Continue</button>
+          </div>
+        </div>`
+    },
+    'intermediate': {
+      label: 'Intermediate quantity', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">More than small, less than commercial</div>
+        <div class="box info">
+          <h3>Medium punishment</h3>
+          <p>Rigorous imprisonment up to 10 years and fine. Bail considered on ordinary principles; s.37 rigours generally do not apply.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to trial?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('trial')">Continue</button>
+          </div>
+        </div>`
+    },
+    'commercial': {
+      label: 'Commercial quantity', labelClass: 'no',
+      html: `
+        <div class="path-label no">Commercial quantity</div>
+        <div class="box danger">
+          <h3>Severe punishment + s.37 bail bar</h3>
+          <p>Rigorous imprisonment 10–20 years and heavy fine. Bail is barred unless the twin conditions of s.37 are satisfied.</p>
+          <span class="info-link" onclick="openModal('s37')">Section 37 twin test →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Can the s.37 twin conditions be satisfied for bail?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('bailgrant')">YES – Reasonable grounds of innocence</button>
+            <button class="btn-no"  onclick="choose('custody')">NO – Bail refused</button>
+          </div>
+        </div>`
+    },
+    'bailgrant': {
+      label: 'Bail under s.37', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">s.37 satisfied</div>
+        <div class="box success"><h3>Conditional bail granted</h3><p>Court satisfied there are reasonable grounds to believe the accused is not guilty and will not reoffend</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to trial?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('trial')">Continue</button>
+          </div>
+        </div>`
+    },
+    'custody': {
+      label: 'Judicial custody', labelClass: 'no',
+      html: `
+        <div class="path-label no">Bail refused</div>
+        <div class="box danger"><h3>Accused remains in custody</h3><p>Trial proceeds before the Special NDPS Court</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to trial?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('trial')">Continue</button>
+          </div>
+        </div>`
+    },
+    'trial': {
+      label: 'Special Court trial', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Trial before Special NDPS Court</div>
+        <div class="box process">
+          <h3>4. Charge-sheet & trial</h3>
+          <p>Investigation and charge-sheet (extended custody limits under s.36A). Trial before Special Court. Presumption of culpable mental state (s.35) and possession (s.54) once foundational facts proved.</p>
+          <span class="info-link" onclick="openModal('presumption')">Statutory presumptions →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>What prosecution must prove</h3>
+          <ul>
+            <li>Valid seizure linked to the accused</li>
+            <li>Positive FSL report matching the sealed sample</li>
+            <li>Unbroken chain of custody</li>
+            <li>Compliance with ss.42, 50, 52, 55, 57</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Verdict?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('convict')">Guilty</button>
+            <button class="btn-no"  onclick="choose('acquit')">Not Guilty</button>
+          </div>
+        </div>`
+    },
+    'convict': {
+      label: 'Conviction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Conviction</div>
+        <div class="box success">
+          <h3>END – Convicted & sentenced</h3>
+          <p>Sentence scaled to quantity. Appeal lies to the High Court. No remission benefit in commercial cases under s.32A restrictions.</p>
+        </div>`
+    },
+    'acquit': {
+      label: 'Acquittal', labelClass: 'no',
+      html: `
+        <div class="path-label no">Acquittal</div>
+        <div class="box success"><h3>END – Acquitted</h3><p>Prosecution failed on seizure legality, sampling, or chain of custody</p></div>`
+    }
+  },
+  modals: {
+    safeguards: `<h2>Key NDPS Safeguards</h2>
+      <ul>
+        <li><strong>s.42</strong> – recording information and sending it to superior officer.</li>
+        <li><strong>s.50</strong> – right of the person to be searched before a Gazetted Officer or Magistrate.</li>
+        <li><strong>s.52 & 55</strong> – disposal and safe custody of seized articles.</li>
+        <li><strong>s.57</strong> – report of arrest and seizure within 48 hours.</li>
+        <li>Breach of mandatory safeguards is frequently fatal to the prosecution.</li>
+      </ul>`,
+    s37: `<h2>Section 37 – Bail Bar</h2>
+      <p>For offences involving commercial quantity, bail can be granted only if the court is satisfied that:</p>
+      <ol>
+        <li>there are reasonable grounds for believing the accused is <strong>not guilty</strong>; and</li>
+        <li>the accused is <strong>not likely to commit</strong> any offence while on bail.</li>
+      </ol>
+      <p>These twin conditions are in addition to ordinary bail considerations.</p>`,
+    presumption: `<h2>Statutory Presumptions</h2>
+      <ul>
+        <li><strong>s.35</strong> – presumption of culpable mental state once the actus reus is shown.</li>
+        <li><strong>s.54</strong> – presumption that the accused committed the offence from possession of contraband unless satisfactorily accounted for.</li>
+        <li>The burden shifts to the accused to rebut these presumptions.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

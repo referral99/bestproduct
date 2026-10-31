@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Will & Probate / Letters of Administration – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Will & Probate / Letters of Administration – Complete Flow (UP)",
+  subtitle: "Valid Will • Proof of execution • Probate petition • Caveat & objections<br>Indian Succession Act 1925 + Hindu Succession Act 1956 + Court Fees & Registration",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Succession", href:"index.html"},
+    {label:"Will & Probate"}
+  ],
+  acts: [
+    {name:"Indian Succession Act, 1925", href:"Indian_Succession_Act_1925.pdf"},
+    {name:"Hindu Succession Act, 1956 (principal)", href:"Hindu_Succession_Act_1956_principal.pdf"},
+    {name:"Court Fees Act, 1870", href:"../Civil/Court_Fees_Act_1870.pdf"},
+    {name:"Registration Act, 1908", href:"../Civil/Registration_Act_1908.pdf"}
+  ],
+  related: [
+    {label:"Succession Certificate", href:"succession-certificate.html"},
+    {label:"Hindu Succession – Full Flow", href:"hindu-succession.html"},
+    {label:"Partition of Inherited Estate", href:"partition-of-estate.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A person has died in Uttar Pradesh leaving (or alleged to leave) a Will</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Obtain Death Certificate & locate the Will</h3>
+          <p>Trace the original Will; check if it was registered with the Sub-Registrar.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Was a valid Will left?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('will-found')">YES – Will found</button>
+            <button class="btn-no"  onclick="choose('no-will')">NO – No Will / cannot be found</button>
+          </div>
+        </div>`
+    },
+    'will-found': {
+      label: 'Will found', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Will located</div>
+        <div class="box process">
+          <h3>Test validity of the Will</h3>
+          <p>Signed by the testator, who was of sound mind, and attested by at least two witnesses (s.63 Indian Succession Act).</p>
+          <span class="info-link" onclick="openModal('valid')">Essentials of a valid Will →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the Will satisfy all formalities?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('executor')">YES – Formally valid</button>
+            <button class="btn-no"  onclick="choose('invalid')">NO – Defective</button>
+          </div>
+        </div>`
+    },
+    'invalid': {
+      label: 'Will defective', labelClass: 'no',
+      html: `
+        <div class="path-label no">Will fails the formalities</div>
+        <div class="box danger">
+          <h3>Will cannot be admitted</h3>
+          <p>An invalid Will is ignored and the estate devolves by intestate succession under the personal law of the deceased.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Switch to intestate route</h3><p>Apply for Letters of Administration / Succession Certificate as applicable.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed as administration of an intestate estate?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('no-will')">YES – Administration (no Will)</button>
+          </div>
+        </div>`
+    },
+    'executor': {
+      label: 'Executor named?', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Valid Will – choose the right grant</div>
+        <div class="box info">
+          <h3>Probate vs Letters of Administration with Will annexed</h3>
+          <p>If the Will names an executor → Probate.<br>If no executor is named (or the executor declines) → Letters of Administration with the Will annexed.</p>
+          <span class="info-link" onclick="openModal('grant')">When is a grant needed? →</span>
+        </div>
+        <div class="box decision">
+          <h3>Does the Will appoint an executor?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('probate')">YES – Executor named → Probate</button>
+            <button class="btn-no"  onclick="choose('loa-will')">NO – No executor → LA with Will annexed</button>
+          </div>
+        </div>`
+    },
+    'probate': {
+      label: 'Probate petition', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Petition for Probate</div>
+        <div class="box process">
+          <h3>File petition before the District Judge</h3>
+          <p>The executor petitions the court of competent jurisdiction to prove the Will and grant probate.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for the Probate petition</h3>
+          <ul>
+            <li>Original Will (and codicils, if any)</li>
+            <li>Death Certificate of the testator</li>
+            <li>Affidavit / evidence of at least one attesting witness</li>
+            <li>Schedule & valuation of all assets covered by the Will</li>
+            <li>List of legal heirs with addresses</li>
+            <li>Court fee on the value of the estate (Court Fees Act)</li>
+          </ul>
+          <span class="info-link" onclick="openModal('fee')">Court fee notes →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any caveat / objection filed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('caveat')">YES – Caveat / objection</button>
+            <button class="btn-no"  onclick="choose('grant-made')">NO – Uncontested</button>
+          </div>
+        </div>`
+    },
+    'loa-will': {
+      label: 'LA with Will annexed', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Letters of Administration with Will annexed</div>
+        <div class="box process">
+          <h3>Petition under s.234 Indian Succession Act</h3>
+          <p>A beneficiary or next-of-kin petitions the District Judge where no executor is available to administer under the Will.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents required</h3>
+          <ul>
+            <li>Original Will</li>
+            <li>Death Certificate</li>
+            <li>Evidence of an attesting witness</li>
+            <li>Schedule & valuation of assets; list of heirs</li>
+            <li>Administration bond with sureties, if directed</li>
+            <li>Court fee on the estate value</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any caveat / objection filed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('caveat')">YES – Caveat / objection</button>
+            <button class="btn-no"  onclick="choose('grant-made')">NO – Uncontested</button>
+          </div>
+        </div>`
+    },
+    'no-will': {
+      label: 'No Will → LA', labelClass: 'no',
+      html: `
+        <div class="path-label no">No Will – Letters of Administration</div>
+        <div class="box process">
+          <h3>Petition for Letters of Administration (s.218/219)</h3>
+          <p>The person entitled under the intestate law petitions the District Judge to administer the estate.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents required</h3>
+          <ul>
+            <li>Death Certificate</li>
+            <li>Family-tree / legal-heir affidavit</li>
+            <li>Schedule & valuation of the estate</li>
+            <li>No-objection / consent of other heirs</li>
+            <li>Administration bond with sureties</li>
+            <li>Court fee on the estate value</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any caveat / objection filed?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('caveat')">YES – Caveat / objection</button>
+            <button class="btn-no"  onclick="choose('grant-made')">NO – Uncontested</button>
+          </div>
+        </div>`
+    },
+    'caveat': {
+      label: 'Caveat filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Caveat / objection received</div>
+        <div class="box danger">
+          <h3>Petition becomes a contentious (testamentary) suit</h3>
+          <p>The caveator must file an affidavit in support. The court frames issues and records evidence on the genuineness and due execution of the Will.</p>
+          <span class="info-link" onclick="openModal('caveat')">How a caveat is dealt with →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Trial & judgment</h3><p>Court decides whether to grant or refuse probate / administration.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Did the court uphold the Will / grant?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('grant-made')">YES – Grant issued</button>
+            <button class="btn-no"  onclick="choose('refused')">NO – Grant refused</button>
+          </div>
+        </div>`
+    },
+    'refused': {
+      label: 'Grant refused', labelClass: 'no',
+      html: `
+        <div class="path-label no">Grant refused</div>
+        <div class="box danger">
+          <h3>Will not established</h3>
+          <p>Where the Will is disbelieved, the estate devolves as on intestacy; an aggrieved party may appeal to the High Court.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Estate administered as intestate</h3></div>`
+    },
+    'grant-made': {
+      label: 'Grant issued', labelClass: 'no',
+      html: `
+        <div class="path-label no">Probate / Letters of Administration granted</div>
+        <div class="box success">
+          <h3>Grant issued under court seal</h3>
+          <p>The grant is conclusive proof of the executor's / administrator's authority to deal with the estate.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>Administer & transfer the estate</h3>
+          <p>Collect assets, pay debts, distribute to beneficiaries. For immovable property, apply for mutation and register any transfer deed (Registration Act s.17).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>For mutation / transfer</h3>
+          <ul>
+            <li>Certified copy of the probate / grant</li>
+            <li>Original Will (where applicable)</li>
+            <li>Death Certificate</li>
+            <li>Property records (Khata / Khatauni / title deed)</li>
+            <li>Registered transfer deed for any sale / settlement</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Estate distributed under the grant</h3><p>Records updated in the beneficiaries' names.</p></div>`
+    }
+  },
+  modals: {
+    valid: `<h2>Essentials of a Valid Will (s.63)</h2>
+      <ul>
+        <li>The testator must be of sound mind and not a minor.</li>
+        <li>The Will must be signed or marked by the testator, intending to give effect to the writing.</li>
+        <li>It must be attested by at least two witnesses who saw the testator sign.</li>
+        <li>It must be made freely, without coercion, fraud or undue influence.</li>
+        <li>Registration is optional but useful evidence of genuineness.</li>
+      </ul>`,
+    grant: `<h2>When is a Grant Needed?</h2>
+      <ul>
+        <li>Probate establishes the Will and the executor's authority; mandatory in presidency-town cases and useful elsewhere for large estates.</li>
+        <li>Letters of Administration with the Will annexed are granted when there is a valid Will but no available executor.</li>
+        <li>Plain Letters of Administration are granted where the person dies intestate.</li>
+        <li>For Hindus in UP, probate is generally not compulsory, but banks and registrars often require a grant or succession certificate.</li>
+      </ul>`,
+    caveat: `<h2>Caveat & Contentious Proceedings</h2>
+      <ul>
+        <li>A person interested may lodge a caveat so that no grant is made without notice to him.</li>
+        <li>On a caveat, the petition is numbered as a testamentary suit.</li>
+        <li>The propounder must prove due execution and dispel suspicious circumstances.</li>
+        <li>The court may grant, refuse, or grant in a modified form.</li>
+      </ul>`,
+    fee: `<h2>Court Fee on Probate / Administration</h2>
+      <ul>
+        <li>Ad valorem court fee is charged on the value of the estate under the Court Fees Act.</li>
+        <li>A correct schedule and valuation of all assets must accompany the petition.</li>
+        <li>Under-valuation can delay or invalidate the grant.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guardianship of a Minor Heir's Share – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Guardianship of a Minor Heir's Share – Complete Flow (UP)",
+  subtitle: "Court permission to manage or sell a minor's inherited share<br>Guardians & Wards Act 1890 + Hindu Minority & Guardianship Act 1956 + Hindu Succession Act 1956",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Succession", href:"index.html"},
+    {label:"Guardianship of Minor Heir"}
+  ],
+  acts: [
+    {name:"Guardians and Wards Act, 1890", href:"../Family/Guardians_and_Wards_Act_1890.pdf"},
+    {name:"Hindu Minority and Guardianship Act, 1956", href:"../Family/Hindu_Minority_and_Guardianship_Act_1956.pdf"},
+    {name:"Hindu Succession Act, 1956 (principal)", href:"Hindu_Succession_Act_1956_principal.pdf"}
+  ],
+  related: [
+    {label:"Guardianship & Child Custody – Family", href:"../Family/guardianship-custody.html"},
+    {label:"Partition of Inherited Estate", href:"partition-of-estate.html"},
+    {label:"Hindu Succession – Full Flow", href:"hindu-succession.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A minor has inherited a share in property in Uttar Pradesh and it must be managed or dealt with</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Who is a minor's guardian of property?</h3>
+          <p>For a Hindu minor the natural guardian (usually the father, then the mother) manages the minor's property under the Hindu Minority & Guardianship Act. Otherwise a guardian is appointed under the Guardians & Wards Act.</p>
+          <span class="info-link" onclick="openModal('guardians')">Natural vs court guardian →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is there a surviving natural guardian?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('natural')">YES – Natural guardian available</button>
+            <button class="btn-no"  onclick="choose('appoint')">NO – No natural guardian</button>
+          </div>
+        </div>`
+    },
+    'appoint': {
+      label: 'Appoint guardian', labelClass: 'no',
+      html: `
+        <div class="path-label no">No natural guardian – court must appoint</div>
+        <div class="box process">
+          <h3>Apply under the Guardians & Wards Act</h3>
+          <p>A relative or interested person applies to the District Court for appointment as guardian of the minor's person and / or property (s.7).</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for the appointment petition</h3>
+          <ul>
+            <li>Minor's birth / age proof</li>
+            <li>Death Certificate(s) of the deceased parent(s) / owner</li>
+            <li>Details of the inherited property & the minor's share</li>
+            <li>Relationship & suitability of the proposed guardian</li>
+            <li>Consent / notice to other near relatives</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>Court appoints guardian considering welfare of the minor</h3>
+          <p>The court's paramount consideration is the minor's welfare; it may require a bond / security.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the guardian only need to manage, or also to sell / mortgage?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('manage')">Only manage / preserve</button>
+            <button class="btn-no"  onclick="choose('transfer')">Sell / mortgage / transfer</button>
+          </div>
+        </div>`
+    },
+    'natural': {
+      label: 'Natural guardian', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Natural guardian available</div>
+        <div class="box process">
+          <h3>Natural guardian manages the share</h3>
+          <p>The natural guardian may do all acts reasonable and proper for the <strong>benefit</strong> of the minor and the protection of the estate.</p>
+          <span class="info-link" onclick="openModal('powers')">Limits on a guardian's powers →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>What does the guardian need to do?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('manage')">Only manage / preserve</button>
+            <button class="btn-no"  onclick="choose('transfer')">Sell / mortgage / gift the share</button>
+          </div>
+        </div>`
+    },
+    'manage': {
+      label: 'Only manage', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Routine management / preservation</div>
+        <div class="box success">
+          <h3>No court permission needed for ordinary management</h3>
+          <p>Collecting rent, paying taxes, routine repairs, applying for mutation to record the minor through the guardian, and preserving the property are permitted without court leave.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>For mutation in the minor's name</h3>
+          <ul>
+            <li>Death Certificate of the deceased owner</li>
+            <li>Legal-heir certificate showing the minor as heir</li>
+            <li>Minor's age proof and guardian's identity proof</li>
+            <li>Guardianship order (where a court guardian was appointed)</li>
+            <li>Latest Khata / Khatauni extract</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Minor's share recorded & managed by the guardian</h3></div>`
+    },
+    'transfer': {
+      label: 'Sell / mortgage', labelClass: 'no',
+      html: `
+        <div class="path-label no">Disposal of the minor's immovable share</div>
+        <div class="box danger">
+          <h3>Prior court permission is mandatory</h3>
+          <p>A guardian must NOT sell, mortgage, gift or otherwise part with the minor's immovable property without prior permission of the court (s.8 Hindu Minority & Guardianship Act / s.29 Guardians & Wards Act).</p>
+          <span class="info-link" onclick="openModal('permission')">Why permission is required →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>File an application for permission to transfer</h3>
+          <p>Apply to the District Court setting out the necessity or evident advantage of the proposed transaction to the minor.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents for the permission application</h3>
+          <ul>
+            <li>Guardianship order / proof of natural guardianship</li>
+            <li>Details & valuation of the minor's share</li>
+            <li>Reason for the transaction (necessity / benefit of the minor)</li>
+            <li>Proposed terms, buyer / mortgagee details and consideration</li>
+            <li>Proposal for safeguarding the sale proceeds for the minor</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Does the court find the transaction necessary or clearly beneficial?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('granted')">YES – Permission granted</button>
+            <button class="btn-no"  onclick="choose('refused')">NO – Permission refused</button>
+          </div>
+        </div>`
+    },
+    'refused': {
+      label: 'Permission refused', labelClass: 'no',
+      html: `
+        <div class="path-label no">Court declines permission</div>
+        <div class="box danger">
+          <h3>Transaction cannot proceed</h3>
+          <p>A transfer made without court permission is voidable at the instance of the minor. The guardian must preserve the share until the minor attains majority.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Share preserved until the minor turns 18</h3></div>`
+    },
+    'granted': {
+      label: 'Permission granted', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Court permission granted</div>
+        <div class="box process">
+          <h3>Execute the transaction on the sanctioned terms</h3>
+          <p>The guardian may now complete the sale / mortgage strictly as permitted. The deed is executed by the guardian for and on behalf of the minor.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Completion requirements</h3>
+          <ul>
+            <li>Certified copy of the permission order</li>
+            <li>Registered deed executed by the guardian for the minor</li>
+            <li>Stamp duty & registration fee</li>
+            <li>Sale proceeds deposited / invested for the minor as directed</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Account to the court</h3><p>The guardian keeps and files accounts of the minor's funds as required.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Transaction completed; proceeds secured for the minor</h3></div>`
+    }
+  },
+  modals: {
+    guardians: `<h2>Natural vs Court Guardian</h2>
+      <ul>
+        <li>For a Hindu minor, the natural guardian is ordinarily the father, and after him the mother (Hindu Minority & Guardianship Act, s.6).</li>
+        <li>If no natural guardian is available, the District Court appoints a guardian under the Guardians & Wards Act, 1890.</li>
+        <li>In all cases the welfare of the minor is the paramount consideration.</li>
+      </ul>`,
+    powers: `<h2>Limits on a Guardian's Powers</h2>
+      <ul>
+        <li>A guardian may do acts reasonable and proper for the benefit of the minor and the estate.</li>
+        <li>Ordinary management (rents, taxes, repairs, preservation) needs no court leave.</li>
+        <li>Disposal of immovable property requires prior court permission.</li>
+        <li>A guardian cannot bind the minor by a personal covenant.</li>
+      </ul>`,
+    permission: `<h2>Why Court Permission is Required</h2>
+      <ul>
+        <li>Section 8 of the Hindu Minority & Guardianship Act bars sale / mortgage / gift of a minor's immovable property without court sanction.</li>
+        <li>Section 29 of the Guardians & Wards Act requires leave of the court for a court-appointed guardian to transfer immovable property.</li>
+        <li>The court sanctions only where there is necessity or an evident advantage to the minor.</li>
+        <li>A transfer without permission is voidable at the minor's option.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

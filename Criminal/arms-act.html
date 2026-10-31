@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Arms Act Offence / Licensing – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Arms Act – Offence / Licensing (Uttar Pradesh)",
+  subtitle: "Licensed vs illegal arm • Prohibited bore • Trial<br>Offences also attract BNS 2023 (earlier IPC); procedure under BNSS 2023 (earlier CrPC)",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Criminal", href:"index.html"},
+    {label:"Arms Act"}
+  ],
+  acts: [
+    {name:"Arms Act, 1959 (and Arms Rules)", href:"Arms_Act_1959.pdf"},
+    {name:"Bharatiya Nyaya Sanhita, 2023 (BNS – connected offences, new)", href:"BNS_2023_Bharatiya_Nyaya_Sanhita_Gazette.pdf"},
+    {name:"Bharatiya Nagarik Suraksha Sanhita, 2023 (BNSS – procedure, new)", href:"BNSS_2023_Bharatiya_Nagarik_Suraksha_Sanhita.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A firearm / ammunition is found with a person in Uttar Pradesh</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>Two tracks</h3>
+          <p>The Arms Act covers both <strong>licensing</strong> (the civil / administrative side) and <strong>offences</strong> for unlicensed or prohibited arms. General procedure follows BNSS 2023 (earlier CrPC); connected acts (e.g. use in crime) attract BNS 2023 (earlier IPC).</p>
+          <span class="info-link" onclick="openModal('categories')">Arms categories →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>1. Does the person hold a valid licence for the arm?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('licensed')">YES – Licensed</button>
+            <button class="btn-no"  onclick="choose('unlicensed')">NO – Unlicensed</button>
+          </div>
+        </div>`
+    },
+    'licensed': {
+      label: 'Licensed arm', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Valid licence held</div>
+        <div class="box decision">
+          <h3>2. Was any licence condition violated (expiry, area, transport)?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('violation')">YES – Condition breached</button>
+            <button class="btn-yes" onclick="choose('nooffence')">NO – Fully compliant</button>
+          </div>
+        </div>`
+    },
+    'nooffence': {
+      label: 'Compliant', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Fully compliant licence</div>
+        <div class="box success">
+          <h3>END – No offence</h3>
+          <p>Possession under a valid, current licence within its conditions is lawful. Remember periodic renewal (Arms Rules) and reporting on sale / transfer.</p>
+        </div>`
+    },
+    'violation': {
+      label: 'Licence condition breached', labelClass: 'no',
+      html: `
+        <div class="path-label no">Breach of licence conditions</div>
+        <div class="box danger">
+          <h3>Administrative + penal consequences</h3>
+          <p>Licensing authority may suspend or cancel the licence (Arms Act s.17). Carrying beyond the permitted area / expired licence can attract prosecution under s.25 etc.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the breach technical or a substantive offence?</h3>
+          <div class="choice-btns">
+            <button class="btn-alt" onclick="choose('nooffence')">Technical → regularise / renew</button>
+            <button class="btn-no"  onclick="choose('seizure')">Substantive → prosecution</button>
+          </div>
+        </div>`
+    },
+    'unlicensed': {
+      label: 'Unlicensed arm', labelClass: 'no',
+      html: `
+        <div class="path-label no">No valid licence</div>
+        <div class="box danger">
+          <h3>Offence under the Arms Act</h3>
+          <p>Acquiring or possessing a firearm without a licence is an offence (s.3 r/w s.25). Severity depends on whether it is a prohibited bore / prohibited arm.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>3. Is it a prohibited bore / prohibited arm (s.7)?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('prohibited')">YES – Prohibited</button>
+            <button class="btn-alt" onclick="choose('ordinary')">NO – Ordinary firearm</button>
+          </div>
+        </div>`
+    },
+    'ordinary': {
+      label: 'Ordinary unlicensed arm', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Ordinary unlicensed firearm</div>
+        <div class="box info">
+          <h3>Punishment range</h3>
+          <p>Imprisonment generally not less than 1 year up to 3 years and fine under s.25. Bail considered on ordinary principles.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to seizure & investigation?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('seizure')">Continue</button>
+          </div>
+        </div>`
+    },
+    'prohibited': {
+      label: 'Prohibited arm', labelClass: 'no',
+      html: `
+        <div class="path-label no">Prohibited bore / prohibited arm</div>
+        <div class="box danger">
+          <h3>Enhanced punishment</h3>
+          <p>Possession of a prohibited arm / ammunition (s.7) carries enhanced punishment under s.25(1AA)/s.27 – up to life / long rigorous imprisonment, especially if used in an offence.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to seizure & investigation?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('seizure')">Continue</button>
+          </div>
+        </div>`
+    },
+    'seizure': {
+      label: 'Seizure & sanction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Seizure, FSL & sanction</div>
+        <div class="box process">
+          <h3>4. Seize the arm & obtain sanction</h3>
+          <p>Weapon and ammunition seized; sent to FSL (ballistic) to confirm it is a firearm. Prosecution needs sanction of the District Magistrate under s.39.</p>
+          <span class="info-link" onclick="openModal('sanction')">Sanction & ballistics →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Evidence to prove</h3>
+          <ul>
+            <li>Seizure memo + independent witnesses</li>
+            <li>Ballistic / FSL report that the article is a firearm</li>
+            <li>Proof of absence of a valid licence</li>
+            <li>Sanction order under s.39 (where required)</li>
+            <li>Recovery panchnama linking arm to accused</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Trial verdict?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('convict')">Guilty</button>
+            <button class="btn-no"  onclick="choose('acquit')">Not Guilty</button>
+          </div>
+        </div>`
+    },
+    'convict': {
+      label: 'Conviction', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Conviction</div>
+        <div class="box success">
+          <h3>END – Convicted & sentenced</h3>
+          <p>Sentence per s.25 / s.27 scaled to the arm type and whether it was used in an offence. Arm confiscated. Appeal lies to the Sessions / High Court.</p>
+        </div>`
+    },
+    'acquit': {
+      label: 'Acquittal', labelClass: 'no',
+      html: `
+        <div class="path-label no">Acquittal</div>
+        <div class="box success"><h3>END – Acquitted</h3><p>Often due to defective seizure, missing sanction (s.39), or an inconclusive ballistic report</p></div>`
+    }
+  },
+  modals: {
+    categories: `<h2>Arms Categories</h2>
+      <ul>
+        <li><strong>Permissible bore</strong> – licensable firearms for self-defence / sport.</li>
+        <li><strong>Prohibited arms / ammunition (s.7)</strong> – automatic weapons and certain ammunition; licences are rarely granted.</li>
+        <li>Licence is issued and renewed by the District Magistrate / licensing authority under the Arms Rules.</li>
+      </ul>`,
+    sanction: `<h2>Sanction & Ballistics</h2>
+      <ul>
+        <li><strong>s.39</strong> – prosecution for certain offences needs prior sanction of the District Magistrate.</li>
+        <li>Ballistic (FSL) examination establishes the seized article is a working firearm and the ammunition is live.</li>
+        <li>A missing or defective sanction, or an inconclusive ballistic report, commonly results in acquittal.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

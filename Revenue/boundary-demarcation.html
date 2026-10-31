@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boundary Demarcation (Paimaish) – Full Flow (UP Revenue)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Boundary Demarcation (Paimaish / Nishandehi) – Complete Flow (Uttar Pradesh)",
+  subtitle: "Fixing plot boundaries on the ground against the shajra map • Lekhpal / Tehsildar • Objection & appeal<br>UP Revenue Code, 2006 – measurement & demarcation of holdings",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Revenue", href:"index.html"},
+    {label:"Boundary Demarcation (Paimaish)"}
+  ],
+  acts: [
+    {name:"UP Revenue Code, 2006", href:"UP_Revenue_Code_2006.pdf"},
+    {name:"UP Revenue Code, 2006 (amended & consolidated)", href:"UP_Revenue_Code_2006_amended_consolidated.pdf"}
+  ],
+  related: [
+    {label:"Correction of Revenue Record", href:"record-correction.html"},
+    {label:"Partition of Agricultural Holding", href:"land-partition.html"},
+    {label:"Gram Sabha Land / Eviction", href:"gram-sabha-land.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A holder wants the boundary of a plot fixed on the ground — e.g. an encroachment or a dispute with a neighbour</p></div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>1. Gather the record & map</h3>
+          <p>Obtain the <strong>khasra</strong>, <strong>khatauni</strong> and the village map (<strong>shajra</strong>) for the plot to be measured.</p>
+          <span class="info-link" onclick="openModal('terms')">Paimaish, nishandehi & shajra →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Is there an active boundary dispute / encroachment?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dispute')">YES – Dispute / encroachment</button>
+            <button class="btn-no"  onclick="choose('routine')">NO – Routine demarcation</button>
+          </div>
+        </div>`
+    },
+    'routine': {
+      label: 'Routine demarcation', labelClass: 'no',
+      html: `
+        <div class="path-label no">Routine paimaish</div>
+        <div class="box process">
+          <h3>3. Apply to the Tehsildar / SDM</h3>
+          <p>Apply for paimaish; the Lekhpal / Revenue Inspector measures the plot against the shajra using the chain / ETS.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Routine Paimaish</h3>
+          <ul>
+            <li>Application with khasra number</li>
+            <li>Khatauni / khasra extract</li>
+            <li>Copy of the shajra (village map)</li>
+            <li>ID + address proof</li>
+            <li>Prescribed paimaish fee</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Lekhpal measures & marks boundaries</h3><p>Pillars / nishan are fixed as per the map.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any neighbour objection at the site?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('dispute')">YES – Objection</button>
+            <button class="btn-no"  onclick="choose('done')">NO – Accepted</button>
+          </div>
+        </div>`
+    },
+    'dispute': {
+      label: 'Boundary dispute', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Dispute / encroachment</div>
+        <div class="box danger">
+          <h3>3. File for demarcation with notice</h3>
+          <p>Apply to the <strong>Tehsildar</strong> for nishandehi; notice issues to the adjoining holders so all are present at measurement.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Disputed Demarcation</h3>
+          <ul>
+            <li>Application describing the encroachment / dispute</li>
+            <li>Khasra, khatauni & shajra of all affected plots</li>
+            <li>Names & addresses of adjoining holders</li>
+            <li>Any earlier paimaish / consolidation map</li>
+            <li>Photographs of the alleged encroachment</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>4. Joint measurement & report</h3>
+          <p>Lekhpal / Revenue Inspector measures in the presence of parties and submits a report showing the correct line and any encroachment.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>5. Do the parties accept the report?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('done')">YES – Accepted</button>
+            <button class="btn-no"  onclick="choose('objection')">NO – Objection filed</button>
+          </div>
+        </div>`
+    },
+    'objection': {
+      label: 'Objection to report', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Report objected to</div>
+        <div class="box danger">
+          <h3>6. Hearing before the Tehsildar</h3>
+          <p>The Tehsildar hears objections to the measurement method or map reading; a re-measurement may be ordered.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Accept the Tehsildar's order?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('done')">YES – Accept</button>
+            <button class="btn-no"  onclick="choose('appeal')">NO – Appeal</button>
+          </div>
+        </div>`
+    },
+    'appeal': {
+      label: 'Appeal', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Appeal / revision</div>
+        <div class="box process">
+          <h3>Appeal ladder</h3>
+          <p>Tehsildar → <strong>SDM</strong> → <strong>Collector</strong> → <strong>Board of Revenue</strong> within limitation.</p>
+          <span class="info-link" onclick="openModal('forums')">Revenue forums →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Appellate order passed</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Fix the boundary as finally ordered?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('done')">YES – Fix boundary</button>
+          </div>
+        </div>`
+    },
+    'done': {
+      label: 'Boundary fixed', labelClass: 'no',
+      html: `
+        <div class="path-label no">Demarcation confirmed</div>
+        <div class="box success">
+          <h3>7. Boundaries fixed on the ground</h3>
+          <p>Pillars / nishan are fixed per the shajra and order; any encroacher is directed to vacate the demarcated area.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Collect after demarcation</h3>
+          <ul>
+            <li>Certified paimaish / nishandehi report with map</li>
+            <li>Order fixing the boundary</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info">
+          <h3>If encroachment persists</h3>
+          <p>Non-compliance can be followed by proceedings for removal of obstruction / eviction from the demarcated strip.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Boundary settled</h3></div>`
+    }
+  },
+  modals: {
+    terms: `<h2>Paimaish, Nishandehi & Shajra</h2>
+      <ul>
+        <li><strong>Paimaish</strong> – measurement of a plot to confirm its area.</li>
+        <li><strong>Nishandehi</strong> – marking the boundary on the ground (fixing nishan / pillars).</li>
+        <li><strong>Shajra</strong> – the village map against which measurement is checked.</li>
+      </ul>`,
+    forums: `<h2>Revenue Forums & Appeal Ladder</h2>
+      <ul>
+        <li><strong>Lekhpal / Revenue Inspector</strong> – carries out measurement.</li>
+        <li><strong>Tehsildar</strong> – orders demarcation.</li>
+        <li><strong>SDM → Collector</strong> – appeal.</li>
+        <li><strong>Board of Revenue</strong> – revision.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

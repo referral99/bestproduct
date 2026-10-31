@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Special Marriage / Court Marriage – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Special Marriage / Court Marriage – Complete Flow (Uttar Pradesh)",
+  subtitle: "Solemnisation • 30-day notice • Objections • Divorce under the Act<br>Special Marriage Act 1954 + Family Courts Act 1984",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Family", href:"index.html"},
+    {label:"Special Marriage"}
+  ],
+  acts: [
+    {name:"Special Marriage Act, 1954", href:"Special_Marriage_Act_1954.pdf"},
+    {name:"Family Courts Act, 1984", href:"Family_Courts_Act_1984.pdf"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>A couple wishes to marry under the Special Marriage Act 1954 (civil / inter-faith / court marriage)</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. Check eligibility</h3>
+          <p>Neither party has a living spouse; both of sound mind; groom 21+, bride 18+; not within prohibited degrees (unless custom permits).</p>
+          <span class="info-link" onclick="openModal('eligibility')">Eligibility conditions →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. Are the parties eligible?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('notice')">YES – eligible</button>
+            <button class="btn-no"  onclick="choose('not-eligible')">NO – a condition fails</button>
+          </div>
+        </div>`
+    },
+    'not-eligible': {
+      label: 'Not eligible', labelClass: 'no',
+      html: `
+        <div class="path-label no">Eligibility condition not met</div>
+        <div class="box danger"><h3>Cannot solemnise</h3><p>Marriage under the Act is barred until the defect (age, existing spouse, prohibited degree) is cured.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Resolve the defect first</h3></div>`
+    },
+    'notice': {
+      label: 'Notice of intended marriage', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Eligible to marry</div>
+        <div class="box process">
+          <h3>3. Give Notice of Intended Marriage</h3>
+          <p>Written notice to the Marriage Officer of the district where at least one party has resided for 30+ days before the notice.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – Notice stage</h3>
+          <ul>
+            <li>Notice of intended marriage in the prescribed form</li>
+            <li>Age proof of both parties (birth certificate / matric / passport)</li>
+            <li>Residence proof (one party, 30+ days in the district)</li>
+            <li>Passport-size photographs</li>
+            <li>Affidavits of marital status, age and no prohibited relationship</li>
+            <li>Declaration of 3 witnesses at solemnisation</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>4. Publication & 30-day window</h3>
+          <p>The Marriage Officer publishes the notice; it stays open for 30 days for objections.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is any objection filed within 30 days?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection')">YES – objection filed</button>
+            <button class="btn-no"  onclick="choose('no-objection')">NO – no objection</button>
+          </div>
+        </div>`
+    },
+    'objection': {
+      label: 'Objection filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Objection received</div>
+        <div class="box process">
+          <h3>5. Marriage Officer enquires</h3>
+          <p>The Officer decides the objection within 30 days. An objection is valid only if it shows a breach of the Act's conditions.</p>
+          <span class="info-link" onclick="openModal('objections')">What counts as a valid objection →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the objection upheld?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('objection-rejected')">NO – rejected</button>
+            <button class="btn-yes" onclick="choose('objection-upheld')">YES – upheld</button>
+          </div>
+        </div>`
+    },
+    'objection-upheld': {
+      label: 'Objection upheld', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Objection upheld</div>
+        <div class="box danger"><h3>Officer refuses to solemnise</h3><p>The parties may appeal to the District Court within 30 days of the refusal.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Appeal or cure the defect</h3></div>`
+    },
+    'objection-rejected': {
+      label: 'Objection rejected', labelClass: 'no',
+      html: `
+        <div class="path-label no">Objection found baseless</div>
+        <div class="box success"><h3>Solemnisation may proceed</h3><p>The Officer rejects the objection and allows the marriage to go ahead.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to solemnisation?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('solemnise')">YES – solemnise</button>
+          </div>
+        </div>`
+    },
+    'no-objection': {
+      label: 'No objection', labelClass: 'no',
+      html: `
+        <div class="path-label no">No objection in 30 days</div>
+        <div class="box success"><h3>Clear to solemnise</h3><p>After the 30-day window closes without a valid objection, the marriage can be solemnised.</p></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed to solemnisation?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('solemnise')">YES – solemnise</button>
+          </div>
+        </div>`
+    },
+    'solemnise': {
+      label: 'Solemnisation', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Solemnisation before the Marriage Officer</div>
+        <div class="box process">
+          <h3>6. Marriage solemnised</h3>
+          <p>Parties and three witnesses sign a declaration before the Marriage Officer, who then enters the marriage in the Marriage Certificate Book.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success">
+          <h3>Marriage Certificate issued</h3>
+          <p>This certificate is conclusive proof of a valid civil marriage under the Act.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Later – is any matrimonial relief needed?</h3>
+          <div class="choice-btns">
+            <button class="btn-no"  onclick="choose('married-end')">NO – all good</button>
+            <button class="btn-yes" onclick="choose('divorce-sma')">YES – divorce under the Act</button>
+          </div>
+        </div>`
+    },
+    'married-end': {
+      label: 'Marriage complete', labelClass: 'no',
+      html: `
+        <div class="path-label no">Validly married</div>
+        <div class="box success"><h3>END – Civil marriage registered</h3><p>Keep the Marriage Certificate for all legal purposes.</p></div>`
+    },
+    'divorce-sma': {
+      label: 'Divorce under SMA', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Dissolution under the Special Marriage Act</div>
+        <div class="box process">
+          <h3>Grounds & forum</h3>
+          <p>Divorce lies under s.27 (fault grounds) or s.28 (mutual consent, after one year of separation). Filed in the Family Court where established.</p>
+          <span class="info-link" onclick="openModal('smadivorce')">SMA divorce grounds →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents – SMA Divorce</h3>
+          <ul>
+            <li>Petition under s.27 or s.28</li>
+            <li>Marriage Certificate under the Act</li>
+            <li>Evidence of the ground / proof of 1-year separation (mutual)</li>
+            <li>Income details for maintenance and alimony</li>
+            <li>Details of children for custody</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box info"><h3>Maintenance note</h3><p>A spouse/child may claim maintenance under BNSS 2023 s.144 (which replaced CrPC s.125 from 1 July 2024) alongside relief under the Act.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Decree dissolves the marriage</h3></div>`
+    }
+  },
+  modals: {
+    eligibility: `<h2>Eligibility – s.4 SMA</h2>
+      <ul>
+        <li>Neither party has a spouse living.</li>
+        <li>Both are capable of giving valid consent (sound mind).</li>
+        <li>Groom has completed 21 years; bride has completed 18 years.</li>
+        <li>The parties are not within degrees of prohibited relationship, unless a custom governing at least one of them permits it.</li>
+      </ul>`,
+    objections: `<h2>Valid Objections</h2>
+      <ul>
+        <li>An objection succeeds only if it shows the marriage would contravene a condition in s.4 (existing spouse, underage, prohibited degree, unsound mind).</li>
+        <li>Mere disapproval by family is not a lawful ground.</li>
+        <li>The Marriage Officer must decide within 30 days; refusal is appealable to the District Court.</li>
+      </ul>`,
+    smadivorce: `<h2>Divorce under the Special Marriage Act</h2>
+      <ul>
+        <li><strong>s.27</strong> – fault grounds: adultery, desertion (2 years), cruelty, imprisonment, unsoundness of mind, venereal disease, presumption of death, etc.</li>
+        <li><strong>s.28</strong> – mutual consent: parties living separately for one year and unable to live together; two-motion procedure similar to HMA s.13B.</li>
+        <li>Forum: the Family Court where established, else the District Court.</li>
+      </ul>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>

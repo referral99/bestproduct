@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Municipal Mutation (Namantaran) – Full Flow (UP)</title>
+<link rel="icon" href="../images/favicon.png">
+<link rel="stylesheet" href="../assets/flow.css">
+</head>
+<body>
+<div class="topbar" id="topbar"></div>
+<h1 id="title"></h1>
+<p class="subtitle" id="subtitle"></p>
+<div class="controls">
+  <button onclick="restart()">↺ Restart</button>
+  <button onclick="goBack()" id="backBtn" style="display:none">← Undo last</button>
+</div>
+<div class="history-bar" id="history"></div>
+<div class="flow" id="flow"></div>
+<div class="acts" id="acts"></div>
+<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal"><button class="modal-close" onclick="closeModal()">×</button><div id="modal-content"></div></div>
+</div>
+
+<script>
+window.FLOW = {
+  title: "Mutation in Municipal Records – Namantaran (Uttar Pradesh)",
+  subtitle: "Change of name in house-tax / ULB records after sale, gift or death<br>UP Municipal Corporation Act 1959 (Nagar Nigam) + UP Municipalities Act 1916 (Nagar Palika)",
+  breadcrumb: [
+    {label:"Home", href:"../index.html"},
+    {label:"Nagar Palika", href:"index.html"},
+    {label:"Municipal Mutation"}
+  ],
+  acts: [
+    {name:"UP Municipal Corporation Act, 1959", href:"UP_Municipal_Corporation_Act_1959.pdf"},
+    {name:"UP Municipalities Act, 1916", href:"UP_Municipalities_Act_1916.pdf"}
+  ],
+  related: [
+    {label:"Property Tax Assessment & Appeal", href:"property-tax.html"},
+    {label:"Property Transfer (Sale / Gift) – Civil", href:"../Civil/property-transfer.html"}
+  ],
+  start: "start",
+  steps: {
+    start: {
+      html: `
+        <div class="box process"><h3>START</h3><p>Ownership of an urban property has changed and the ULB house-tax record still shows the old owner</p></div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>1. What is municipal mutation?</h3>
+          <p>Namantaran updates the name of the owner in the ULB assessment / house-tax register. It is a fiscal record for tax liability, not a document of title.</p>
+          <span class="info-link" onclick="openModal('whatis')">Mutation vs title →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>2. On what basis is mutation sought?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('by-sale')">Sale / registered transfer</button>
+            <button class="btn-alt" onclick="choose('by-gift')">Gift / Will</button>
+            <button class="btn-no"  onclick="choose('by-death')">Death (inheritance)</button>
+          </div>
+        </div>`
+    },
+    'by-sale': {
+      label: 'By sale', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Mutation after Sale / Registered Transfer</div>
+        <div class="box process">
+          <h3>Based on registered sale deed</h3>
+          <p>Buyer applies for name change supported by the registered conveyance.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents (sale)</h3>
+          <ul>
+            <li>Registered sale deed (certified copy)</li>
+            <li>Previous owner's latest house-tax receipt / No-Dues</li>
+            <li>Buyer ID & address proof, photographs</li>
+            <li>Indemnity bond / affidavit</li>
+            <li>Mutation application on prescribed form with fee</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Continue to filing?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('file-application')">File application</button>
+          </div>
+        </div>`
+    },
+    'by-gift': {
+      label: 'By gift / Will', labelClass: 'alt',
+      html: `
+        <div class="path-label alt">Mutation after Gift / Will</div>
+        <div class="box process">
+          <h3>Based on registered gift deed or probated Will</h3>
+          <p>Donee / beneficiary applies with the title document.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents (gift / Will)</h3>
+          <ul>
+            <li>Registered gift deed OR Will (with probate / succession order where required)</li>
+            <li>Death certificate (for a Will taking effect)</li>
+            <li>Latest house-tax receipt / No-Dues</li>
+            <li>Applicant ID, address proof, photographs</li>
+            <li>Affidavit & NOC of other interested persons</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Continue to filing?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('file-application')">File application</button>
+          </div>
+        </div>`
+    },
+    'by-death': {
+      label: 'By death', labelClass: 'no',
+      html: `
+        <div class="path-label no">Mutation after Death (inheritance)</div>
+        <div class="box process">
+          <h3>Based on legal heirship</h3>
+          <p>Legal heirs apply to record their names in place of the deceased owner.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Documents (death)</h3>
+          <ul>
+            <li>Death certificate of the recorded owner</li>
+            <li>Legal-heir / succession certificate or family-tree affidavit</li>
+            <li>NOC / consent of all other legal heirs</li>
+            <li>Latest house-tax receipt / No-Dues</li>
+            <li>Heirs' ID, address proof, photographs</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Continue to filing?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('file-application')">File application</button>
+          </div>
+        </div>`
+    },
+    'file-application': {
+      label: 'Application filed', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Mutation application submitted</div>
+        <div class="box process">
+          <h3>3. Apply to the ULB</h3>
+          <p>Submit to the Nagar Nigam tax department (1959 Act) or the Nagar Palika / Panchayat office (1916 Act). A diary / registration number is issued.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process">
+          <h3>4. Inspection & public notice</h3>
+          <p>Revenue inspector / tax superintendent verifies the property; a public notice invites objections within the prescribed period.</p>
+          <span class="info-link" onclick="openModal('procedure')">Full mutation procedure →</span>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Any objection during the notice period?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('objection')">YES – Objection filed</button>
+            <button class="btn-no"  onclick="choose('no-objection')">NO – No objection</button>
+          </div>
+        </div>`
+    },
+    'objection': {
+      label: 'Objection', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Objection received</div>
+        <div class="box danger">
+          <h3>Hearing before the ULB authority</h3>
+          <p>Both parties are heard. If the dispute is only about possession/tax liability, the ULB decides; if it is about title, parties are relegated to a civil court.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Is the objection about title or only about tax entry?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('title-dispute')">Title dispute</button>
+            <button class="btn-no"  onclick="choose('mutation-ordered')">Only tax entry → ULB decides</button>
+          </div>
+        </div>`
+    },
+    'title-dispute': {
+      label: 'Title dispute', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Title is disputed</div>
+        <div class="box danger">
+          <h3>Civil court decides title</h3>
+          <p>Mutation is kept pending / provisional. The ULB entry follows the civil court decree.</p>
+          <p class="note">Municipal mutation does not create ownership – it only follows proof of title.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Obtain civil court decree / order</h3><p>Submit certified decree to the ULB.</p></div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Mutation follows the decree</h3><p>Name entered as per the court's finding of title.</p></div>`
+    },
+    'no-objection': {
+      label: 'No objection', labelClass: 'no',
+      html: `
+        <div class="path-label no">No objection filed</div>
+        <div class="box process">
+          <h3>Scrutiny of documents</h3>
+          <p>Authority confirms the title document, No-Dues and heirship/consent papers.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Are property-tax dues cleared?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('mutation-ordered')">YES – No-Dues in order</button>
+            <button class="btn-no"  onclick="choose('dues-pending')">NO – Dues pending</button>
+          </div>
+        </div>`
+    },
+    'dues-pending': {
+      label: 'Dues pending', labelClass: 'no',
+      html: `
+        <div class="path-label no">Tax arrears pending</div>
+        <div class="box danger"><h3>Clear arrears first</h3><p>Mutation is held up until the outstanding house tax / user charges are paid and No-Dues is obtained.</p></div>
+        <div class="arrow"></div>
+        <div class="box process"><h3>Pay dues → obtain No-Dues</h3></div>
+        <div class="arrow"></div>
+        <div class="box decision">
+          <h3>Proceed after clearing dues?</h3>
+          <div class="choice-btns">
+            <button class="btn-yes" onclick="choose('mutation-ordered')">Proceed</button>
+          </div>
+        </div>`
+    },
+    'mutation-ordered': {
+      label: 'Mutation ordered', labelClass: 'yes',
+      html: `
+        <div class="path-label yes">Mutation approved</div>
+        <div class="box success">
+          <h3>5. Name changed in ULB record</h3>
+          <p>The house-tax / assessment register is updated to the new owner; future bills issue in the new name.</p>
+        </div>
+        <div class="arrow"></div>
+        <div class="box docs">
+          <h3>Take these after mutation</h3>
+          <ul>
+            <li>Certified mutation order / updated tax record extract</li>
+            <li>Fresh house-tax bill in your name</li>
+            <li>Pay current-year tax to keep record active</li>
+          </ul>
+        </div>
+        <div class="arrow"></div>
+        <div class="box success"><h3>END – Municipal mutation complete</h3><p>Useful for utility connections, loans and future sale; title still rests on the registered deed / succession.</p></div>`
+    }
+  },
+  modals: {
+    whatis: `<h2>Mutation vs Title</h2>
+      <ul>
+        <li>Municipal mutation records who is liable to pay house tax.</li>
+        <li>It is presumptive evidence of possession, not conclusive proof of ownership.</li>
+        <li>Title comes from the registered deed / valid succession.</li>
+        <li>A wrong mutation can be corrected and does not defeat a true owner's title.</li>
+      </ul>`,
+    procedure: `<h2>Municipal Mutation Procedure (UP)</h2>
+      <ol>
+        <li>Application on prescribed form with fee and documents.</li>
+        <li>Verification by tax inspector / revenue staff.</li>
+        <li>Public notice inviting objections.</li>
+        <li>No objection → order of mutation; objection → hearing.</li>
+        <li>Clearance of tax dues / No-Dues.</li>
+        <li>Entry updated in assessment register; appeal to higher ULB authority if aggrieved.</li>
+      </ol>`
+  }
+};
+</script>
+<script src="../assets/flow.js"></script>
+</body>
+</html>
